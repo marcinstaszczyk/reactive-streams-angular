@@ -1,10 +1,22 @@
-import { Component } from '@angular/core';
+import { ApplicationRef, Component } from '@angular/core';
+import { ActivationEnd, Event, NavigationEnd, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'reactive-streams-angular';
+
+    constructor(
+        router: Router,
+        a: ApplicationRef,
+    ) {
+        router.events.subscribe((event: Event) => {
+            if (event instanceof NavigationEnd || event instanceof ActivationEnd) {
+                a.tick();
+            }
+        });
+    }
+
 }
