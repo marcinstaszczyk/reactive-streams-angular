@@ -1,9 +1,8 @@
-import { Observable, ReplaySubject, share } from 'rxjs';
+import { Observable, ReplaySubject, share, tap } from 'rxjs';
 
 type SelectionFunction<T> = () => Observable<T>;
-type SelectionData<T> = [subject: ReplaySubject<T> | null, memoizedObservable: Observable<T>];
 
-const selectorMapSymbol = Symbol('@Selector()');
+const selectorMapSymbol = Symbol('@Selector');
 
 export function Selector() {
     return <T>(target: Object, propertyKey: PropertyKey, descriptor: TypedPropertyDescriptor<SelectionFunction<T>>): void => {
@@ -21,33 +20,46 @@ export function Selector() {
                     value: new Map<PropertyKey, Observable<unknown>>()
                 });
             }
-            const map: Map<PropertyKey, SelectionData<T>> = (this as any)[selectorMapSymbol];
+            const map: Map<PropertyKey, Observable<T>> = (this as any)[selectorMapSymbol];
 
             if (!map.has(propertyKey)) {
                 if (arguments.length > 0) {
-                    throw Error('should not be used on function with parameters');
+                    throw Error('@Selector() decorator should not be used on function with parameters');
                 }
 
-                const selectionData: SelectionData<T> = [
-                    null,
-                    originFunction.apply(this).pipe(
-                        share({
-                            connector: () => {
-                                const replaySubject = new ReplaySubject<T>(1);
-                                selectionData[0] = replaySubject;
-                                return replaySubject;
-                            },
-                            resetOnError: false, // TODO error handling
-                            resetOnComplete: false, // selector should never complete
-                            resetOnRefCountZero: true
+                let logProperty: string | null = `${propertyKey.toString()} - last value`;
+                if (!this.hasOwnProperty(logProperty)) {
+                    Object.defineProperty(this, logProperty, {
+                        configurable: false,
+                        enumerable: false,
+                        writable: true,
+                        value: null
+                    });
+                } else {
+                    logProperty = null;
+                }
+
+                const originObservable: Observable<T> = originFunction.apply(this);
+                const loggedObservable: Observable<T> = logProperty // TODO condition for logging
+                    ? originObservable.pipe(
+                        tap((value: T) => {
+                            (this as any)[logProperty!] = value;
                         })
                     )
-                ];
+                    : originObservable;
+                const sharedObservable: Observable<T> = loggedObservable.pipe(
+                    share({
+                        connector: () => new ReplaySubject<T>(1),
+                        resetOnError: false, // TODO error handling
+                        resetOnComplete: false, // selector should never complete
+                        resetOnRefCountZero: true
+                    })
+                );
 
-                map.set(propertyKey, selectionData);
+                map.set(propertyKey, sharedObservable);
             }
 
-            return map.get(propertyKey)![1];
+            return map.get(propertyKey)!;
         }
     };
 }
