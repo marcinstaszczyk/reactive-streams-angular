@@ -28,6 +28,14 @@ export class BoxComponent implements OnInit {
             this.boxId = boxId;
             this.changeDetectorRef.detectChanges();
         })
+        this.boxService.selectBox$().subscribe((boxId) => {
+            this.boxId = boxId;
+            this.changeDetectorRef.detectChanges();
+        })
+        this.boxService.selectBox$().subscribe((boxId) => {
+            this.boxId = boxId;
+            this.changeDetectorRef.detectChanges();
+        })
     }
 
 }
