@@ -14,7 +14,7 @@ export class BoxService {
     }
 
     @Selector()
-    selectBox$(): Observable<BoxId> {
+    selectBoxId$(): Observable<BoxId> {
         return this.route.params.pipe(
             map((params: Params) => params['boxId']),
             filter((boxId: string | undefined): boxId is string => Boolean(boxId)),

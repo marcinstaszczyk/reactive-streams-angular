@@ -1,3 +1,5 @@
 <p>Box</p>
-<!--<p>BoxId: {{boxId$ | async}}</p>-->
-<p>BoxId: {{boxId}}</p>
+<!--<p>BoxId: {{selectBoxId$() | ngrxPush}}</p>-->
+<p *ngrxLet="selectBoxId$() as boxId">
+    BoxId: {{boxId}}
+</p>
