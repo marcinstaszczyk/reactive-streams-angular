@@ -25,15 +25,14 @@ export function LastObservableValueLogger(
                     writable: true,
                     value: null
                 });
-            } else {
-                logProperty = null;
             }
 
             const originObservable: Observable<T> = originFunction.apply(this);
             const loggedObservable: Observable<T> = logProperty // TODO condition for logging
                 ? originObservable.pipe(
                     tap((value: T) => {
-                        console.log('LastObservableValueLogger', value);
+                        // TODO Chrome plugin to check values
+                        console.log('LastObservableValueLogger', this.constructor.name, value);
                         (this as any)[logProperty!] = value;
                     })
                 )
