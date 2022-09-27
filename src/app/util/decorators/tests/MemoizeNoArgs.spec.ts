@@ -8,7 +8,7 @@ describe('MemoizeNoArgs', () => {
     });
 
     describe('BEHAVIOR:', () => {
-        it('should return same value on consecutive call', () => {
+        it('should return same value on consecutive calls', () => {
             expect(object.memoizedMethod()).toBe(1);
             expect(object.memoizedMethod()).toBe(1);
         });
