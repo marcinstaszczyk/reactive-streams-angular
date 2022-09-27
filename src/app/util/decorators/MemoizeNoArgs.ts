@@ -8,7 +8,7 @@ export function MemoizeNoArgs<
     mapPropertyName = Symbol(decoratorName)
 ) {
     return (target: Object, propertyKey: PropertyKey, descriptor: TypedPropertyDescriptor<NoArgsFunction<T>>): void => {
-        const originFunction: NoArgsFunction<T> | undefined = descriptor.value;
+        const originFunction: NoArgsFunction<T> | undefined = descriptor?.value;
         if (!originFunction || !(originFunction instanceof Function)) {
             throw new Error(`${decoratorName} decorator must be used on method`);
         }
