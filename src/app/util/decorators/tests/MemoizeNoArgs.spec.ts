@@ -1,23 +1,21 @@
 import { MemoizeNoArgs } from '../MemoizeNoArgs';
 
-describe('MemoizeNoArgs', () => {
+describe('@MemoizeNoArgs() decorator', () => {
     let object: TestClass<number>;
 
     beforeEach(() => {
         object = new TestClass([1, 2, 3]);
     });
 
-    describe('BEHAVIOR:', () => {
-        it('should return same value on consecutive calls', () => {
-            expect(object.memoizedMethod()).toBe(1);
-            expect(object.memoizedMethod()).toBe(1);
-        });
-        it('should work separately for each method', () => {
-            expect(object.memoizedMethod()).toBe(1);
-            expect(object.memoizedMethod()).toBe(1);
-            expect(object.memoizedMethod2()).toBe(2);
-            expect(object.memoizedMethod2()).toBe(2);
-        });
+    it('should return same value on consecutive calls', () => {
+        expect(object.memoizedMethod()).toBe(1);
+        expect(object.memoizedMethod()).toBe(1);
+    });
+    it('should work separately for each method', () => {
+        expect(object.memoizedMethod()).toBe(1);
+        expect(object.memoizedMethod()).toBe(1);
+        expect(object.memoizedMethod2()).toBe(2);
+        expect(object.memoizedMethod2()).toBe(2);
     });
 
     describe('EDGE CASES:', () => {

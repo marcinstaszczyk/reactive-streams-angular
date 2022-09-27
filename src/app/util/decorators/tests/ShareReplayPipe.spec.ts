@@ -1,7 +1,7 @@
 import { ShareReplayPipe } from '../ShareReplayPipe';
 import { Observable } from 'rxjs';
 
-describe('ShareReplayPipe', () => {
+describe('@ShareReplayPipe() decorator', () => {
     let nextNumber: number;
     let observable: Observable<number>;
     let object: TestClass<number>;
@@ -15,28 +15,26 @@ describe('ShareReplayPipe', () => {
         object = new TestClass(observable);
     });
 
-    describe('BEHAVIOR:', () => {
-        it('should return shareReplayed observable', () => {
-            const returnedObservable: Observable<number> = object.decoratedMethod();
+    it('should return shareReplayed observable', () => {
+        const returnedObservable: Observable<number> = object.decoratedMethod();
 
-            returnedObservable.subscribe((value) => {
-                expect(value).toBe(1);
-            });
-            returnedObservable.subscribe((value) => {
-                expect(value).toBe(1);
-            });
+        returnedObservable.subscribe((value) => {
+            expect(value).toBe(1);
         });
-        it('should NOT cache method responses (Memoize decorators are for this)', () => {
-            const observableFromFirstCall: Observable<number> = object.decoratedMethod();
-            const observableFromSecondCall: Observable<number> = object.decoratedMethod();
-            expect(observableFromFirstCall).not.toBe(observableFromSecondCall);
+        returnedObservable.subscribe((value) => {
+            expect(value).toBe(1);
+        });
+    });
+    it('should NOT cache method responses (Memoize decorators are for this)', () => {
+        const observableFromFirstCall: Observable<number> = object.decoratedMethod();
+        const observableFromSecondCall: Observable<number> = object.decoratedMethod();
+        expect(observableFromFirstCall).not.toBe(observableFromSecondCall);
 
-            observableFromSecondCall.subscribe((value) => {
-                expect(value).toBe(1);
-            });
-            observableFromFirstCall.subscribe((value) => {
-                expect(value).toBe(2);
-            });
+        observableFromSecondCall.subscribe((value) => {
+            expect(value).toBe(1);
+        });
+        observableFromFirstCall.subscribe((value) => {
+            expect(value).toBe(2);
         });
     });
 
