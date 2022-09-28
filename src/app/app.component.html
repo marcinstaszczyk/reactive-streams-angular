@@ -1,12 +1,8 @@
 <nav>
-    <ul>
+    <ul style="display: flex; gap: 30px;">
         <li><a routerLink="" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">Home</a></li>
-        <li><a [routerLink]="['/box', 1]" routerLinkActive="active" ariaCurrentWhenActive="page">Box 1</a></li>
-        <li><a [routerLink]="['/box', 2]" routerLinkActive="active" ariaCurrentWhenActive="page">Box 2</a></li>
-        <li><a [routerLink]="['/box', 3]" routerLinkActive="active" ariaCurrentWhenActive="page">Box 3</a></li>
+        <li><a [routerLink]="['/box', 'BOX-1']" routerLinkActive="active" ariaCurrentWhenActive="page">Box</a></li>
     </ul>
 </nav>
-
-App root
 
 <router-outlet></router-outlet>

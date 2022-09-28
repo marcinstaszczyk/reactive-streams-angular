@@ -1,13 +1,23 @@
-<p>Box</p>
-<!--<p>BoxId: {{selectBoxId$() | ngrxPush}}</p>-->
-<p *ngrxLet="selectBoxId$(); let boxId">
-    BoxId: {{boxId}}
-</p>
+<div style="border: 1px solid black; width: max-content; padding: 4px">
+    <div>Box</div>
 
-<ng-container *ngrxLet="selectAllBoxes$(); let allBoxes; suspenseTpl: loading">
-    <div *ngFor="let box of allBoxes">{{box.id}} {{box.name}}</div>
-</ng-container>
+    <select *ngrxLet="selectCurrentBoxId$(); let currentBoxId"
+            [ngModel]="currentBoxId"
+            (ngModelChange)="userActionChangeBox($event)"
+            (click)="userActionBoxSelectionClicked()"
+            name="box">
+        <ng-container *ngrxLet="(selectNeverOpened ? selectCurrentBoxAsArray$() : selectAllBoxes$()); let allBoxes; suspenseTpl: loading">
+            <option *ngFor="let box of allBoxes; trackBy: trackByBoxId"
+                    [ngValue]="box.id"
+                    [selected]="box.id === currentBoxId">
+                {{box.id}} - {{box.name}}
+            </option>
+        </ng-container>
 
-<ng-template #loading>
-    <p>Loading...</p>
-</ng-template>
+        <ng-template #loading>
+            <option disabled [ngValue]="currentBoxId">Loading...</option>
+        </ng-template>
+    </select>
+
+</div>
+

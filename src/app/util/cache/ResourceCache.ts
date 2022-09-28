@@ -1,7 +1,8 @@
 import { Single } from '../rxjs/Single';
 import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
 import { ResourceVersion } from './ResourceVersion';
-import { Selector } from '../decorators/Selector';
+import { ShareReplayPipe } from '../decorators/ShareReplayPipe';
+import { MemoizeNoArgs } from '../decorators/MemoizeNoArgs';
 
 export class ResourceCache<T> {
 
@@ -12,14 +13,16 @@ export class ResourceCache<T> {
     ) {
     }
 
-    @Selector()
+    @ShareReplayPipe()
+    @MemoizeNoArgs()
     select$(): Observable<T> {
         return this.selectResourceAndVersion$().pipe(
             map(([resource, _]: readonly [T, ResourceVersion]) => resource)
         );
     }
 
-    @Selector()
+    @ShareReplayPipe()
+    @MemoizeNoArgs()
     selectLoadingInProgress$(): Observable<boolean> { // TODO checking for progress should not initialize resource call. Idea: take(1)+tap(complete)
         return combineLatest([
             this.requestVersion$,
@@ -31,7 +34,8 @@ export class ResourceCache<T> {
         )
     }
 
-    @Selector()
+    @ShareReplayPipe()
+    @MemoizeNoArgs()
     selectResourceAndVersion$(): Observable<readonly [resource: T, version: ResourceVersion]> {
         return this.requestVersion$.pipe(
             switchMap((version: ResourceVersion) => { // TODO will mergeMap ever be needed?

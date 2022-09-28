@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { BoxService } from './services/box.service';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { BoxId } from './domain/BoxId';
 import { Selector } from '../util/decorators/Selector';
 import { LetModule } from '@ngrx/component';
 import { Box } from './domain/Box';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-box',
@@ -15,6 +16,7 @@ import { CommonModule } from '@angular/common';
     imports: [
         LetModule,
         CommonModule,
+        FormsModule,
     ],
     providers: [
         BoxService, // provided in root is not getting boxId route param right
@@ -22,19 +24,42 @@ import { CommonModule } from '@angular/common';
 })
 export class BoxComponent {
 
+    selectNeverOpened = true;
+
     constructor(
-        private boxService: BoxService,
+        private readonly boxService: BoxService,
+        private readonly changeDetectorRef: ChangeDetectorRef
     ) {
     }
 
     @Selector()
-    selectBoxId$(): Observable<BoxId> {
-        return this.boxService.selectBoxId$()
+    selectCurrentBoxId$(): Observable<BoxId> {
+        return this.boxService.selectCurrentBoxId$()
+    }
+
+    @Selector()
+    selectCurrentBoxAsArray$(): Observable<[Box]> {
+        return this.boxService.selectCurrentBox$().pipe(
+            map((box: Box) => [box])
+        );
     }
 
     @Selector()
     selectAllBoxes$(): Observable<Box[]> {
         return this.boxService.selectAllBoxes$();
+    }
+
+    userActionBoxSelectionClicked(): void {
+        this.selectNeverOpened = false;
+        this.changeDetectorRef.detectChanges();
+    }
+
+    userActionChangeBox(boxId: BoxId): void {
+        this.boxService.userActionChangeBox(boxId);
+    }
+
+    trackByBoxId(_: number, box: Box) {
+        return box.id;
     }
 
 }

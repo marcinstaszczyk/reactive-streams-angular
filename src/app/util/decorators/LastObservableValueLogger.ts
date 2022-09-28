@@ -32,7 +32,7 @@ export function LastObservableValueLogger(
                 ? originObservable.pipe(
                     tap((value: T) => {
                         // TODO Chrome plugin to check values
-                        console.log('LastObservableValueLogger', this.constructor.name, value);
+                        console.log(this.constructor.name, propertyKey.toString() + '()', value);
                         (this as any)[logProperty!] = value;
                     })
                 )

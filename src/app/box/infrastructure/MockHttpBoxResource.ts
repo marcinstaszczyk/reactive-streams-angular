@@ -12,17 +12,17 @@ export class MockHttpBoxResource implements BoxResource {
         const boxDTO: BoxDTO = generateMockBoxDTO(boxId.boxId);
         return Single.from(
             of(boxDTO).pipe(
-                delay(10)
+                delay(200)
             )
         );
     }
 
     selectAllBoxes(): Single<BoxDTO[]> {
-        const boxDTOs: BoxDTO[] = [1,2,3,4,5,6,7,8,9,10].map((boxId: number) => generateMockBoxDTO(''+boxId));
+        const boxDTOs: BoxDTO[] = [1,2,3,4,5,6,7,8,9,10].map((boxId: number) => generateMockBoxDTO('BOX-' + boxId));
 
         return Single.from(
             of(boxDTOs).pipe(
-                delay(1000)
+                delay(500)
             )
         );
     }

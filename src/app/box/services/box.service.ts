@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { filter, map, Observable } from 'rxjs';
+import { filter, map, Observable, switchMap } from 'rxjs';
 import { Selector } from '../../util/decorators/Selector';
 import { BoxId } from '../domain/BoxId';
 import { BoxRepository } from '../domain/BoxRepository';
@@ -20,7 +20,7 @@ export class BoxService {
     }
 
     @Selector()
-    selectBoxId$(): Observable<BoxId> {
+    selectCurrentBoxId$(): Observable<BoxId> {
         return this.route.params.pipe(
             map((params: Params) => params['boxId']),
             filter((boxId: string | undefined): boxId is string => Boolean(boxId)),
@@ -28,7 +28,13 @@ export class BoxService {
         );
     }
 
-    // TODO selectBox$()
+    @Selector()
+    selectCurrentBox$(): Observable<Box> {
+        // TODO reuse data between allBoxes and currentBox
+        return this.selectCurrentBoxId$().pipe(
+            switchMap((boxId: BoxId) => this.boxRepository.selectBoxData(boxId))
+        )
+    }
 
     @Selector()
     selectAllBoxes$(): Observable<Box[]> {
