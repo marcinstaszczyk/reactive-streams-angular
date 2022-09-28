@@ -1,5 +1,13 @@
 <p>Box</p>
 <!--<p>BoxId: {{selectBoxId$() | ngrxPush}}</p>-->
-<p *ngrxLet="selectBoxId$() as boxId">
+<p *ngrxLet="selectBoxId$(); let boxId">
     BoxId: {{boxId}}
 </p>
+
+<ng-container *ngrxLet="selectAllBoxes$(); let allBoxes; suspenseTpl: loading">
+    <div *ngFor="let box of allBoxes">{{box.id}} {{box.name}}</div>
+</ng-container>
+
+<ng-template #loading>
+    <p>Loading...</p>
+</ng-template>
