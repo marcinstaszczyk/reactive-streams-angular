@@ -1,23 +1,28 @@
-<div style="border: 1px solid black; width: max-content; padding: 4px">
-    <div>Box</div>
+<div style="display: flex; flex-direction: row-reverse; flex-wrap: wrap">
 
-    <select *ngrxLet="selectCurrentBoxId$(); let currentBoxId"
-            [ngModel]="currentBoxId"
-            (ngModelChange)="userActionChangeBox($event)"
-            (click)="userActionBoxSelectionClicked()"
-            name="box">
-        <ng-container *ngrxLet="(selectNeverOpened ? selectCurrentBoxAsArray$() : selectAllBoxes$()); let allBoxes; suspenseTpl: loading">
-            <option *ngFor="let box of allBoxes; trackBy: trackByBoxId"
-                    [ngValue]="box.id"
-                    [selected]="box.id === currentBoxId">
-                {{box.id}} - {{box.name}}
-            </option>
-        </ng-container>
+    <app-circle-loader *ngIf="selectLoadingInProgress$() | ngrxPush"></app-circle-loader>
 
-        <ng-template #loading>
-            <option disabled [ngValue]="currentBoxId">Loading...</option>
-        </ng-template>
-    </select>
+    <div style="border: 1px solid black; width: max-content; padding: 4px; margin-right: auto">
+        <div>Box</div>
+
+        <select *ngrxLet="selectCurrentBoxId$(); let currentBoxId"
+                [ngModel]="currentBoxId"
+                (ngModelChange)="userActionChangeBox($event)"
+                (click)="userActionBoxSelectionClicked()"
+                name="box">
+            <ng-container *ngrxLet="(selectNeverOpened ? selectCurrentBoxAsArray$() : selectAllBoxes$()); let allBoxes; suspenseTpl: loading">
+                <option *ngFor="let box of allBoxes; trackBy: trackByBoxId"
+                        [ngValue]="box.id"
+                        [selected]="box.id === currentBoxId">
+                    {{box.id}} - {{box.name}}
+                </option>
+            </ng-container>
+
+            <ng-template #loading>
+                <option disabled [ngValue]="currentBoxId">Loading...</option>
+            </ng-template>
+        </select>
+    </div>
 
 </div>
 

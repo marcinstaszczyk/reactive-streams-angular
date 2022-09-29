@@ -1,10 +1,11 @@
-import { ApplicationRef, Component } from '@angular/core';
+import { ApplicationRef, ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivationEnd, Event, NavigationEnd, Router } from '@angular/router';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
 

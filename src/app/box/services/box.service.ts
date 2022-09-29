@@ -41,6 +41,12 @@ export class BoxService {
         return this.allBoxesCache.select$();
     }
 
+    @Selector()
+    selectBoxesAreLoading$(): Observable<boolean> {
+        // TODO Single box loading
+        return this.allBoxesCache.selectLoadingInProgress$();
+    }
+
     userActionChangeBox(targetBox: BoxId): void {
         this.router.navigate(['box', targetBox.boxId]);
     }

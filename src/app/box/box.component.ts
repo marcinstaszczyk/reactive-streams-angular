@@ -1,22 +1,26 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { BoxService } from './services/box.service';
 import { map, Observable } from 'rxjs';
 import { BoxId } from './domain/BoxId';
 import { Selector } from '../util/decorators/Selector';
-import { LetModule } from '@ngrx/component';
+import { LetModule, PushModule } from '@ngrx/component';
 import { Box } from './domain/Box';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CircleLoaderComponent } from '../util/ui/circle-loader/circle-loader.component';
 
 @Component({
     selector: 'app-box',
     standalone: true,
     templateUrl: './box.component.html',
     styleUrls: ['./box.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         LetModule,
         CommonModule,
         FormsModule,
+        CircleLoaderComponent,
+        PushModule,
     ],
     providers: [
         BoxService, // provided in root is not getting boxId route param right
@@ -47,6 +51,11 @@ export class BoxComponent {
     @Selector()
     selectAllBoxes$(): Observable<Box[]> {
         return this.boxService.selectAllBoxes$();
+    }
+
+    @Selector()
+    selectLoadingInProgress$(): Observable<boolean> {
+        return this.boxService.selectBoxesAreLoading$();
     }
 
     userActionBoxSelectionClicked(): void {

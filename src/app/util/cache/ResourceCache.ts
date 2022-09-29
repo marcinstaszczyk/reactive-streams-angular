@@ -1,12 +1,15 @@
 import { Single } from '../rxjs/Single';
-import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, switchMap, tap } from 'rxjs';
 import { ResourceVersion } from './ResourceVersion';
 import { ShareReplayPipe } from '../decorators/ShareReplayPipe';
 import { MemoizeNoArgs } from '../decorators/MemoizeNoArgs';
 
 export class ResourceCache<T> {
 
-    private requestVersion$ = new BehaviorSubject<ResourceVersion>(ResourceVersion.new(this))
+    private requestVersion$ = new BehaviorSubject<ResourceVersion | null>(null);
+    private lastResponseVersion$ = new BehaviorSubject<ResourceVersion | null>(null);
+    private lastResponse: T | null = null;
+
 
     constructor(
         private readonly deferredResourceCall: () => Single<T>
@@ -16,32 +19,32 @@ export class ResourceCache<T> {
     @ShareReplayPipe()
     @MemoizeNoArgs()
     select$(): Observable<T> {
-        return this.selectResourceAndVersion$().pipe(
-            map(([resource, _]: readonly [T, ResourceVersion]) => resource)
-        );
-    }
+        setTimeout(() => { // TODO FIXME side-effect during change detection which changes value loadingInProgress$
+            this.requestVersion$.next(ResourceVersion.new(this));
+        })
 
-    @ShareReplayPipe()
-    @MemoizeNoArgs()
-    selectLoadingInProgress$(): Observable<boolean> { // TODO checking for progress should not initialize resource call. Idea: take(1)+tap(complete)
-        return combineLatest([
-            this.requestVersion$,
-            this.selectResourceAndVersion$()
-        ]).pipe(
-            map(([requestVersion, [_, resourceVersion]]: [ResourceVersion, readonly [T, ResourceVersion]]) => {
-                return requestVersion === resourceVersion;
+        return this.requestVersion$.pipe(
+            switchMap((version: ResourceVersion | null) => { // TODO will mergeMap ever be needed?
+                return this.deferredResourceCall().pipe(
+                    tap({ // this way checking for progress is not initializing resource call.
+                        next: (response: T) => this.lastResponse = response,
+                        complete: () => this.lastResponseVersion$.next(version) // BEHAVIOUR: version signal goes after value signal
+                    })
+                )
             })
         )
     }
 
     @ShareReplayPipe()
     @MemoizeNoArgs()
-    selectResourceAndVersion$(): Observable<readonly [resource: T, version: ResourceVersion]> {
-        return this.requestVersion$.pipe(
-            switchMap((version: ResourceVersion) => { // TODO will mergeMap ever be needed?
-                return this.deferredResourceCall().pipe(
-                    map((resource: T) => [resource, version] as const)
-                )
+    selectLoadingInProgress$(): Observable<boolean> { // Idea: take(1)+tap(complete)
+        // BEHAVIOUR: checking for progress should not initialize resource call.
+        return combineLatest([
+            this.requestVersion$,
+            this.lastResponseVersion$
+        ]).pipe(
+            map(([requestVersion, lastResponseVersion]: [ResourceVersion | null, ResourceVersion | null]) => {
+                return requestVersion !== lastResponseVersion;
             })
         )
     }
