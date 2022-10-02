@@ -19,9 +19,7 @@ export class ResourceCache<T> {
     @ShareReplayPipe()
     @MemoizeNoArgs()
     select$(): Observable<T> {
-        setTimeout(() => { // TODO FIXME side-effect during change detection which changes value loadingInProgress$
-            this.requestVersion$.next(ResourceVersion.new(this));
-        })
+        this.requestVersion$.next(ResourceVersion.new(this));
 
         return this.requestVersion$.pipe(
             switchMap((version: ResourceVersion | null) => { // TODO will mergeMap ever be needed?

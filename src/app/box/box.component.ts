@@ -3,7 +3,7 @@ import { BoxService } from './services/box.service';
 import { map, Observable } from 'rxjs';
 import { BoxId } from './domain/BoxId';
 import { Selector } from '../util/decorators/Selector';
-import { LetModule, PushModule } from '@ngrx/component';
+import { LetModule, PushModule } from '@rx-angular/template';
 import { Box } from './domain/Box';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
