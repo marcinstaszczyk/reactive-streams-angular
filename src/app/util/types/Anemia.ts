@@ -1,3 +1,3 @@
-type WithoutFunctions<T> = DeepWithout<T, Function>;
+type WithoutFunctions<T> = DeepOmitByType<T, Function>;
 
 export type Anemia<T> = WithoutFunctions<T>;
