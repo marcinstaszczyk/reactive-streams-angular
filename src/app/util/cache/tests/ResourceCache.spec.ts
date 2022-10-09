@@ -3,17 +3,17 @@ import { ResourceCache } from '../ResourceCache';
 import { Single } from '../../rxjs/Single';
 
 describe('Resource Cache', () => {
-    let value: symbol;
+    let VALUE: symbol;
     let resourceCalledCount: number;
     let resourceCache: ResourceCache<symbol>;
     let returnedValue: symbol | null = null;
 
     beforeEach(() => {
-        value = Symbol(1);
+        VALUE = Symbol(1);
         resourceCalledCount = 0;
         resourceCache = new ResourceCache(() => {
             ++resourceCalledCount;
-            return Single.from(of(value));
+            return Single.from(of(VALUE));
         });
         returnedValue = null;
     });
@@ -23,7 +23,7 @@ describe('Resource Cache', () => {
             returnedValue = value;
         });
 
-        expect(returnedValue).toBe(value as any);
+        expect(returnedValue).toBe(VALUE as any);
     });
 
     describe('should not call resource', () => {
@@ -55,7 +55,7 @@ describe('Resource Cache', () => {
         });
 
         it('should return same value', () => {
-            expect(returnedValue).toBe(value as any);
+            expect(returnedValue).toBe(VALUE as any);
         });
     });
 
@@ -90,17 +90,17 @@ describe('Resource Cache', () => {
 
         it('"in progress" === false after resource returns value', () => {
             resourceCache.select$().subscribe();
-            resourceResponseSubject.next(value);
+            resourceResponseSubject.next(VALUE);
             resourceResponseSubject.complete();
             expect(lastInProgressState).toBeFalse();
         });
 
-        it('after resource returns value the value signal should go before "no longer in progress" signal', () => {
+        it('after resource returns value, the value signal should go before "no longer in progress" signal', () => {
             resourceCache.select$().subscribe((returnedValue) => {
-                expect(returnedValue).toBe(value);
+                expect(returnedValue).toBe(VALUE);
                 expect(lastInProgressState).toBeTrue();
             });
-            resourceResponseSubject.next(value);
+            resourceResponseSubject.next(VALUE);
             resourceResponseSubject.complete();
             expect(lastInProgressState).toBeFalse();
         });
@@ -119,16 +119,16 @@ describe('Resource Cache', () => {
         });
 
         it('and also return second value to all subscribers', () => {
-            let secondValue = Symbol(2);
+            let SECOND_VALUE = Symbol(2);
             resourceCache = new ResourceCache<symbol>(() => {
-                return Single.from(of(resourceCalledCount++ === 0 ? value : secondValue));
+                return Single.from(of(resourceCalledCount++ === 0 ? VALUE : SECOND_VALUE));
             })
             resourceCache.select$().subscribe((value) => {
                 returnedValue = value;
             });
             resourceCache.actionRefreshCache();
-            expect(returnedValue).toBe(secondValue);
-            expect(returnedValue).not.toBe(value);
+            expect(returnedValue).toBe(SECOND_VALUE);
+            expect(returnedValue).not.toBe(VALUE);
         });
 
         it('but should not call resource if never subscribed', () => {
@@ -146,38 +146,47 @@ describe('Resource Cache', () => {
     });
 
     describe('should enable external providing of value', () => {
-        let secondValue: symbol;
+        let EXTERNAL_VALUE: symbol;
 
         beforeEach(() => {
-            secondValue = Symbol();
+            EXTERNAL_VALUE = Symbol(2);
         });
 
         it('and should return it to subscribers', () => {
             resourceCache.select$().subscribe((value) => {
                 returnedValue = value;
             });
-            resourceCache.actionSetValue(secondValue);
-            expect(returnedValue).toBe(secondValue);
-            expect(returnedValue).not.toBe(value);
+            resourceCache.actionSetValue(EXTERNAL_VALUE);
+            expect(returnedValue).toBe(EXTERNAL_VALUE);
+            expect(returnedValue).not.toBe(VALUE);
         });
 
-        it('if done before first subscription should return value without resource call', () => {
-            resourceCache.actionSetValue(secondValue);
-            resourceCache.select$().subscribe((value) => {
-                expect(returnedValue).toBe(secondValue);
-                expect(returnedValue).not.toBe(value);
+        describe('if done before first subscription', () => {
+            it('should return value without resource call', () => {
+                resourceCache.actionSetValue(EXTERNAL_VALUE);
+                resourceCache.select$().subscribe((returnedValue) => {
+                    expect(returnedValue).toBe(EXTERNAL_VALUE);
+                    expect(returnedValue).not.toBe(VALUE);
+                });
+                expect(resourceCalledCount).toBe(0);
             });
-            expect(resourceCalledCount).toBe(0);
+
+            it('should not cause "in progress" === true signal', () => {
+                resourceCache.selectLoadingInProgress$().subscribe((inProgress: boolean) => {
+                    expect(inProgress).toBeFalse();
+                });
+                resourceCache.actionSetValue(EXTERNAL_VALUE);
+            });
         });
 
         it('should still enable refreshing of the cache', () => {
-            resourceCache.actionSetValue(secondValue);
+            resourceCache.actionSetValue(EXTERNAL_VALUE);
             resourceCache.select$().subscribe((value) => {
                 returnedValue = value;
             });
             resourceCache.actionRefreshCache();
             expect(resourceCalledCount).toBe(1);
-            expect(returnedValue).toBe(value);
+            expect(returnedValue).toBe(VALUE);
         });
     });
 
