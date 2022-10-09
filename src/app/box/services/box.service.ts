@@ -6,11 +6,16 @@ import { BoxId } from '../domain/BoxId';
 import { BoxRepository } from '../domain/BoxRepository';
 import { ResourceCache } from '../../util/cache/ResourceCache';
 import { Box } from '../domain/Box';
+import { callProgress, DeferredCallWithProgress } from '../../util/progress/callProgress';
+import { combineProgress } from '../../util/progress/combineProgress';
 
 @Injectable() // provided in root is not getting boxId route param right
 export class BoxService {
 
     private allBoxesCache = new ResourceCache(() => this.boxRepository.selectAllBoxes())
+    private boxResourceCall$: DeferredCallWithProgress<[BoxId], Box> = callProgress(
+        (boxId: BoxId) => this.boxRepository.selectBoxData(boxId)
+    );
 
     constructor(
         private route: ActivatedRoute,
@@ -32,7 +37,7 @@ export class BoxService {
     selectCurrentBox$(): Observable<Box> {
         // TODO reuse data between allBoxes and currentBox
         return this.selectCurrentBoxId$().pipe(
-            switchMap((boxId: BoxId) => this.boxRepository.selectBoxData(boxId))
+            switchMap((boxId: BoxId) => this.boxResourceCall$(boxId))
         )
     }
 
@@ -43,8 +48,10 @@ export class BoxService {
 
     @Selector()
     selectBoxesAreLoading$(): Observable<boolean> {
-        // TODO Single box loading
-        return this.allBoxesCache.selectLoadingInProgress$();
+        return combineProgress([
+            this.allBoxesCache.selectLoadingInProgress$(),
+            this.boxResourceCall$.selectLoadingInProgress$()
+        ]);
     }
 
     userActionChangeBox(targetBox: BoxId): void {

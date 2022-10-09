@@ -1,40 +1,31 @@
 import { Single } from '../rxjs/Single';
-import { BehaviorSubject, combineLatest, map, mergeMap, Observable, of, ReplaySubject, share, take, tap } from 'rxjs';
-import { ResourceVersion } from './ResourceVersion';
+import { BehaviorSubject, mergeMap, Observable, of, ReplaySubject, share } from 'rxjs';
 import { ShareReplayPipe } from '../decorators/ShareReplayPipe';
 import { MemoizeNoArgs } from '../decorators/MemoizeNoArgs';
+import { callProgress, DeferredCallWithProgress } from '../progress/callProgress';
 
 export class ResourceCache<T> {
 
-    private start$ = new BehaviorSubject<void>(void 0);
-    private requestVersion$ = new BehaviorSubject<ResourceVersion | null>(null);
-    private lastResponseVersion$ = new BehaviorSubject<ResourceVersion | null>(null);
+    private readonly start$ = new BehaviorSubject<void>(void 0);
+    private readonly deferredResourceCall: DeferredCallWithProgress<[], T>;
 
     private externallyProvidedValue?: T;
     private value$?: ReplaySubject<T>;
 
     constructor(
-        private readonly deferredResourceCall: () => Single<T>
+        deferredResourceCall: () => Single<T>
     ) {
+        this.deferredResourceCall = callProgress(deferredResourceCall)
     }
 
     @MemoizeNoArgs()
     select$(): Observable<T> {
         return this.start$.pipe(
-            map(() => ResourceVersion.new(this)),
-            mergeMap((version: ResourceVersion) => { // TODO mergeMap or switchMap?
+            mergeMap(() => { // TODO mergeMap or switchMap?
                 if (this.externallyProvidedValue) {
                     return of(this.externallyProvidedValue);
                 } else {
-                    this.requestVersion$.next(version);
-                    return this.deferredResourceCall().pipe(
-                        take(1),
-                        tap({ // this way checking for progress is not initializing resource call.
-                            complete: () => {
-                                this.lastResponseVersion$.next(version);
-                            } // BEHAVIOUR: version signal goes after value signal
-                        })
-                    )
+                    return this.deferredResourceCall();
                 }
             }),
             share({
@@ -52,14 +43,7 @@ export class ResourceCache<T> {
     @ShareReplayPipe()
     @MemoizeNoArgs()
     selectLoadingInProgress$(): Observable<boolean> {
-        return combineLatest([
-            this.requestVersion$,
-            this.lastResponseVersion$
-        ]).pipe(
-            map(([requestVersion, lastResponseVersion]: [ResourceVersion | null, ResourceVersion | null]) => {
-                return requestVersion !== lastResponseVersion;
-            })
-        )
+        return this.deferredResourceCall.selectLoadingInProgress$();
     }
 
     actionRefreshCache() {
