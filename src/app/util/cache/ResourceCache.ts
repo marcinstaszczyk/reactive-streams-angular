@@ -1,6 +1,6 @@
 import { Single } from '../rxjs/Single';
 import { BehaviorSubject, mergeMap, Observable, of, ReplaySubject, share } from 'rxjs';
-import { ShareReplayPipe } from '../decorators/ShareReplayPipe';
+import { ShareReplay } from '../decorators/ShareReplay';
 import { MemoizeNoArgs } from '../decorators/MemoizeNoArgs';
 import { callProgress, DeferredCallWithProgress } from '../progress/callProgress';
 
@@ -40,7 +40,7 @@ export class ResourceCache<T> {
         )
     }
 
-    @ShareReplayPipe()
+    @ShareReplay()
     @MemoizeNoArgs()
     selectLoadingInProgress$(): Observable<boolean> {
         return this.deferredResourceCall.selectLoadingInProgress$();

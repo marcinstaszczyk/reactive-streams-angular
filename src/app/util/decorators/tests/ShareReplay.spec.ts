@@ -1,7 +1,7 @@
-import { ShareReplayPipe } from '../ShareReplayPipe';
+import { ShareReplay } from '../ShareReplay';
 import { Observable } from 'rxjs';
 
-describe('@ShareReplayPipe() decorator', () => {
+describe('@ShareReplay() decorator', () => {
     let nextNumber: number;
     let observable: Observable<number>;
     let object: TestClass<number>;
@@ -47,19 +47,19 @@ class TestClass<T> {
     ) {
     }
 
-    @ShareReplayPipe()
+    @ShareReplay()
     decoratedMethod(): Observable<T> {
         return this.observable;
     };
 
     // @ts-ignore TODO add tests to check compile error: https://github.com/SamVerschueren/tsd https://github.com/Microsoft/dtslint
-    @ShareReplayPipe()
+    @ShareReplay()
     memoizedMethodWithParams(value: T): T {
         return value;
     }
 
     // TODO add tests to check compile error: https://github.com/SamVerschueren/tsd https://github.com/Microsoft/dtslint
-    // @ShareReplayPipe()
+    // @ShareReplay()
     param: T | undefined;
 
 }

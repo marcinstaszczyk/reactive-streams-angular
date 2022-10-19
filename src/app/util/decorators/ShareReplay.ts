@@ -3,8 +3,8 @@ import { NoArgsFunction } from './core/NoArgsFunction';
 
 type SelectionFunction<T> = NoArgsFunction<Observable<T>>;
 
-export function ShareReplayPipe(
-    decoratorName = '@Share',
+export function ShareReplay(
+    decoratorName = '@ShareReplay',
 ) {
     return <T>(target: Object, propertyKey: PropertyKey, descriptor: TypedPropertyDescriptor<SelectionFunction<T>>): void => {
         const originFunction: SelectionFunction<T> | undefined = descriptor.value;
