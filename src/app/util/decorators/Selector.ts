@@ -11,8 +11,8 @@ const SELECTOR_NAME = '@Selector';
 
 export function Selector() {
     return <T>(target: Object, propertyKey: PropertyKey, descriptor: TypedPropertyDescriptor<SelectionFunction<T>>): void => {
-        LastObservableValueLogger(SELECTOR_NAME)(target, propertyKey, descriptor);
         DistinctUntilChanged(SELECTOR_NAME)(target, propertyKey, descriptor);
+        LastObservableValueLogger(SELECTOR_NAME)(target, propertyKey, descriptor);
         ShareReplay(SELECTOR_NAME)(target, propertyKey, descriptor);
         MemoizeNoArgs(SELECTOR_NAME)(target, propertyKey, descriptor);
     };
