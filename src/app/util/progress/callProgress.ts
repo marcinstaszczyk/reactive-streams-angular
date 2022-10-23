@@ -1,9 +1,10 @@
+import { select, Selector } from '../rxjs/Selector';
 import { Single } from '../rxjs/Single';
-import { BehaviorSubject, combineLatest, defer, map, Observable, of, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, defer, map, of, switchMap, take, tap } from 'rxjs';
 import { ResourceVersion } from '../cache/ResourceVersion';
 
 export type Progress = {
-    selectLoadingInProgress$: () => Observable<boolean>;
+    selectLoadingInProgress$: () => Selector<boolean>;
 };
 
 type DeferredCall<Args extends any[], R> = (...args: Args) => Single<R>;
@@ -35,15 +36,17 @@ export function callProgress<Args extends any[], R>(
     }
 
     const deferredCallWithProgress = deferredCallProxy as DeferredCall<Args, R> & Progress;
-    deferredCallWithProgress.selectLoadingInProgress$ = function (): Observable<boolean> {
-        return combineLatest([
-            requestVersion$,
-            lastResponseVersion$
-        ]).pipe(
-            map(([requestVersion, lastResponseVersion]: [ResourceVersion | null, ResourceVersion | null]) => {
-                return requestVersion !== lastResponseVersion;
-            })
-        )
+    deferredCallWithProgress.selectLoadingInProgress$ = function (): Selector<boolean> {
+        return select(
+            combineLatest([
+                requestVersion$,
+                lastResponseVersion$
+            ]).pipe(
+                map(([requestVersion, lastResponseVersion]: [ResourceVersion | null, ResourceVersion | null]) => {
+                    return requestVersion !== lastResponseVersion;
+                }),
+            )
+        );
     }
 
     return deferredCallWithProgress;
