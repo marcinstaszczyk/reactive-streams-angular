@@ -1,6 +1,6 @@
-import { Selector } from '../rxjs/Selector';
+import { Selector } from '../rxjs/selector/Selector';
 import { Single } from '../rxjs/Single';
-import { BehaviorSubject, distinctUntilChanged, mergeMap, of, ReplaySubject, share } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, mergeMap, of, ReplaySubject, share, tap } from 'rxjs';
 import { callProgress, DeferredCallWithProgress } from '../progress/callProgress';
 
 export class ResourceCache<T> extends Selector<T> {
@@ -40,7 +40,7 @@ export class ResourceCache<T> extends Selector<T> {
         }
     }
 
-    private initSource() {
+    protected override initSource() {
         this.source = this.start$.pipe(
             mergeMap(() => { // TODO mergeMap or switchMap?
                 if (this.externallyProvidedValue) {
@@ -50,6 +50,7 @@ export class ResourceCache<T> extends Selector<T> {
                 }
             }),
             distinctUntilChanged(),
+            tap((value: T) => this.lastValue = value),
             share({
                 connector: () => {
                     this.value$ = new ReplaySubject<T>();

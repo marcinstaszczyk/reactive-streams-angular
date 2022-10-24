@@ -1,13 +1,12 @@
-import { distinctUntilChanged, firstValueFrom, mergeAll, Observable, of, ReplaySubject, shareReplay } from 'rxjs';
-import { Selector } from '../rxjs/Selector';
+import { distinctUntilChanged, firstValueFrom, mergeAll, Observable, of, ReplaySubject, shareReplay, tap } from 'rxjs';
+import { Selector } from '../rxjs/selector/Selector';
 
-export class State<T> extends Selector<Exclude<T, Function>> {
+export class State<T extends Exclude<any, Function>> extends Selector<T> {
 
     sources$ = new ReplaySubject<Observable<T>>(1);
 
     constructor(initialValue?: Exclude<T, undefined | null>) {
         super();
-        // const viewContainerRef: ViewContainerRef = inject(ViewContainerRef);
         this.initSource();
         if (initialValue !== null && initialValue !== undefined) {
             this.set(initialValue);
@@ -15,24 +14,31 @@ export class State<T> extends Selector<Exclude<T, Function>> {
     }
 
     set(value: T): void;
-    // set(projectFn: (oldValue: T) => T): void;
+    set(projectFn: (oldValue: T) => T): void;
     set(valueOrProjectFn: T | ((oldValue: T) => T)): void {
         if (typeof valueOrProjectFn === 'function') {
-            // TODO how to do this?
+            const projectFn = valueOrProjectFn as (oldValue: T) => T;
+            if (this.autoSubscribed) {
+                this.sources$.next(of(projectFn(this.lastValue!)));
+            } else {
+                this.asyncUpdate(projectFn);
+            }
         } else {
-            this.sources$.next(of(valueOrProjectFn))
+            const value: T = valueOrProjectFn;
+            this.sources$.next(of(value));
         }
     }
 
-    async update(projectFn: (oldValue: T) => T): Promise<void> {
+    private async asyncUpdate(projectFn: (oldValue: T) => T): Promise<void> {
         const oldValue: T = await firstValueFrom(this);
         this.set(projectFn(oldValue));
     }
 
-    private initSource() {
+    protected override initSource() {
         this.source = this.sources$.pipe(
             mergeAll(),
             distinctUntilChanged(),
+            tap((value: T) => this.lastValue = value),
             shareReplay({
                 bufferSize: 1,
                 refCount: true

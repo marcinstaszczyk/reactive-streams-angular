@@ -1,5 +1,5 @@
 import { Observable, of, Subject } from 'rxjs';
-import { Selector } from '../../rxjs/Selector';
+import { Selector } from '../../rxjs/selector/Selector';
 import { ResourceCache } from '../ResourceCache';
 import { Single } from '../../rxjs/Single';
 
@@ -58,6 +58,14 @@ describe('Resource Cache', () => {
         it('should return same value', () => {
             expect(returnedValue).toBe(VALUE as any);
         });
+    });
+
+    it('second call and subscription after previous unsubscribe should call data again', () => {
+        resourceCache.select$().subscribe().unsubscribe();
+        resourceCache.select$().subscribe((value) => {
+            returnedValue = value;
+        });
+        expect(resourceCalledCount).toBe(2);
     });
 
     describe('should return correct loading "in progress" state', () => {
