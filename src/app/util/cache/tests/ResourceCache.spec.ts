@@ -1,4 +1,5 @@
 import { Observable, of, Subject } from 'rxjs';
+import { Selector } from '../../rxjs/Selector';
 import { ResourceCache } from '../ResourceCache';
 import { Single } from '../../rxjs/Single';
 
@@ -188,6 +189,10 @@ describe('Resource Cache', () => {
             expect(resourceCalledCount).toBe(1);
             expect(returnedValue).toBe(VALUE);
         });
+    });
+
+    it('using itself or calling select$() should have no difference', () => {
+        expect(resourceCache.select$()).toBe(resourceCache as Selector<symbol>);
     });
 
 });

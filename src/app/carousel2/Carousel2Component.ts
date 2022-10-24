@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PushModule } from '@rx-angular/template';
-import { BehaviorSubject } from 'rxjs';
 import { CatsRepositoryService } from '../carousel/services/CatsRepositoryService';
 import { HttpCat } from '../carousel/services/HttpCat';
 import { ResourceCache } from '../util/cache/ResourceCache';
-import { select, Selector } from '../util/rxjs/Selector';
+import { Selector } from '../util/rxjs/Selector';
+import { State } from '../util/state/State';
 
 @Component({
     selector: 'app-carousel',
@@ -18,15 +18,13 @@ import { select, Selector } from '../util/rxjs/Selector';
 })
 export class Carousel2Component {
 
-    readonly catsCache = new ResourceCache(() => this.catsRepositoryService.selectCats$());
-    readonly catIndexState = new BehaviorSubject(0);
-
     // TODO logging
-    readonly cats$: Selector<HttpCat[]> = this.catsCache.select$();
-    readonly catIndex$: Selector<number> = select(this.catIndexState.asObservable());
-    readonly cat$: Selector<HttpCat> = this.cats$.combineWith(
-        this.catIndex$,
-        (cats: HttpCat[], catIndex: number) => cats[catIndex]!
+    readonly cats$ = new ResourceCache(() => this.catsRepositoryService.selectCats$());
+    readonly catIndex$ = new State(0);
+
+    readonly cat$: Selector<HttpCat> = this.catIndex$.combineWith(
+        this.cats$,
+        (catIndex: number, cats: HttpCat[]) => cats[catIndex]!
     );
     readonly hasPrevious$: Selector<boolean> = this.catIndex$.map((index) => {
         console.count('compute hasPrevious...');
@@ -46,15 +44,15 @@ export class Carousel2Component {
     }
 
     actionNext() {
-        this.catIndexState.next(this.catIndexState.value + 1);
+        this.catIndex$.update((value: number) => value + 1);
     }
 
     actionPrevious() {
-        this.catIndexState.next(this.catIndexState.value - 1);
+        this.catIndex$.update((value: number) => value - 1);
     }
 
     actionReset() {
-        this.catIndexState.next(0);
+        this.catIndex$.set(0);
     }
 
 }
