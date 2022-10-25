@@ -1,4 +1,4 @@
-import { combineLatest, distinctUntilChanged, map, Observable, ReplaySubject, share, ShareConfig, takeUntil, tap } from 'rxjs';
+import { combineLatest, distinctUntilChanged, lastValueFrom, map, Observable, ReplaySubject, share, ShareConfig, takeUntil, tap } from 'rxjs';
 
 export function select<T>(source$: Observable<T>): Selector<T> {
     return Selector.from(source$);
@@ -7,7 +7,6 @@ export function select<T>(source$: Observable<T>): Selector<T> {
 export class Selector<T> extends Observable<T> {
 
     protected autoSubscribed = false;
-    protected lastValue: T | undefined;
 
     static from<T>(
         source$: Observable<T>,
@@ -41,10 +40,18 @@ export class Selector<T> extends Observable<T> {
         );
     }
 
-    autoSubscribe(destroy$: Observable<unknown>): void {
+    actionGet(): Promise<T> {
+        return lastValueFrom(this);
+    }
+
+    /**
+     * @Internal
+     */
+    autoSubscribe(destroy$: Observable<unknown>, observer?: (value: T) => void): void {
         if (!this.autoSubscribed) {
             this.autoSubscribed = true;
             this.pipe(
+                tap(observer),
                 takeUntil(destroy$)
             ).subscribe()
         } else {
@@ -64,9 +71,6 @@ export class Selector<T> extends Observable<T> {
                 config?.distinctUntilChangedComparator
             ),
             tap({
-                next: (value: T) => {
-                    this.lastValue = value;
-                },
                 complete: () => {
                     console.error('source$ of Selector observable should never complete');
                 }

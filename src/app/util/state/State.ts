@@ -3,7 +3,9 @@ import { Selector } from '../rxjs/selector/Selector';
 
 export class State<T extends Exclude<any, Function>> extends Selector<T> {
 
-    sources$ = new ReplaySubject<Observable<T>>(1);
+    private sources$ = new ReplaySubject<Observable<T>>(1);
+
+    private lastValue: T | undefined;
 
     constructor(initialValue?: Exclude<T, undefined | null>) {
         super();
