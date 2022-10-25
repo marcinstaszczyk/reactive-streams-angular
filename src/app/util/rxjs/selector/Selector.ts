@@ -1,4 +1,5 @@
-import { combineLatest, distinctUntilChanged, lastValueFrom, map, Observable, ReplaySubject, share, ShareConfig, takeUntil, tap } from 'rxjs';
+import { combineLatest, distinctUntilChanged, lastValueFrom, map, Observable, ReplaySubject, share, ShareConfig, takeUntil, tap, timeout } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export function select<T>(source$: Observable<T>): Selector<T> {
     return Selector.from(source$);
@@ -41,7 +42,10 @@ export class Selector<T> extends Observable<T> {
     }
 
     actionGet(): Promise<T> {
-        return lastValueFrom(this);
+        return lastValueFrom(environment.production ? this : this.pipe(
+            // If waiting over 10s then it's most likely the value will never arrive and action will be stuck forever. Developer should correct this.
+            timeout(10000)
+        ));
     }
 
     /**
