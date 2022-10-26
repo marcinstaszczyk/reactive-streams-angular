@@ -30,13 +30,18 @@ export class Selector<T> extends Observable<T> {
     }
 
     // TODO add more parameters
-    combineWith<T1, R>(selector1: Selector<T1>, project: (t: T, t1: T1) => R): Selector<R> {
+    combineWith<T1, R>(selector1: Selector<T1>, projectFn: (t: T, t1: T1) => R): Selector<R>;
+    combineWith<T1, T2, R>(selector1: Selector<T1>, selector2: Selector<T1>, projectFn: (t: T, t1: T1, t2: T2) => R): Selector<R>;
+    combineWith<T1, T2, T3, R>(s1: Selector<T1>, s2: Selector<T1>, s3: Selector<T1>, projectFn: (t: T, t1: T1, t2: T2, t3: T3) => R): Selector<R>;
+    combineWith<R>(...selectorsAndProjectFn: Array<Selector<any> | ((...props: any[]) => R)>): Selector<R> {
+        const projectFn = selectorsAndProjectFn.pop() as ((...props: any[]) => R);
+        const selectors = selectorsAndProjectFn as Array<Selector<any>>;
         return select(
             combineLatest([
                 this,
-                selector1
+                ...selectors
             ]).pipe(
-                map(([t, t1]: [T, T1]) => project(t, t1))
+                map((props: any[]) => projectFn(...props))
             )
         );
     }
