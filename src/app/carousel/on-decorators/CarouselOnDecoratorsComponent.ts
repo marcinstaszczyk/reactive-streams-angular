@@ -2,21 +2,21 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PushModule } from '@rx-angular/template';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
-import { ResourceCache } from '../util/cache/ResourceCache';
-import { Selector } from '../util/decorators/Selector';
-import { CatsRepositoryService } from './services/CatsRepositoryService';
-import { HttpCat } from './services/HttpCat';
+import { ResourceCache } from '../../util/cache/ResourceCache';
+import { Selector } from '../../util/decorators/Selector';
+import { CatsRepositoryService } from '../core/CatsRepositoryService';
+import { HttpCat } from '../core/HttpCat';
 
 @Component({
-    selector: 'app-carousel',
+    selector: 'app-carousel-on-decorators',
     standalone: true,
     imports: [CommonModule, PushModule],
     providers: [CatsRepositoryService],
-    templateUrl: './CarouselComponent.html',
-    styleUrls: ['./CarouselComponent.scss'],
+    templateUrl: './CarouselOnDecoratorsComponent.html',
+    styleUrls: ['./CarouselOnDecoratorsComponent.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CarouselComponent {
+export class CarouselOnDecoratorsComponent {
 
     readonly cats$ = new ResourceCache(() => this.catsRepositoryService.selectCats$());
     readonly catIndex$ = new BehaviorSubject(0);

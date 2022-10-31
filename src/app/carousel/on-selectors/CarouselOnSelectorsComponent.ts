@@ -1,24 +1,24 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PushModule } from '@rx-angular/template';
-import { CatsRepositoryService } from '../carousel/services/CatsRepositoryService';
-import { HttpCat } from '../carousel/services/HttpCat';
-import { Base } from '../util/angular/Base';
-import { ResourceCache } from '../util/cache/ResourceCache';
-import { autoSubscribeAllSelectors } from '../util/rxjs/selector/autoSubscribeAllSelectors';
-import { Selector } from '../util/rxjs/selector/Selector';
-import { State } from '../util/state/State';
+import { CatsRepositoryService } from '../core/CatsRepositoryService';
+import { HttpCat } from '../core/HttpCat';
+import { Base } from '../../util/angular/Base';
+import { ResourceCache } from '../../util/cache/ResourceCache';
+import { autoSubscribeAllSelectors } from '../../util/rxjs/selector/autoSubscribeAllSelectors';
+import { Selector } from '../../util/rxjs/selector/Selector';
+import { State } from '../../util/state/State';
 
 @Component({
     selector: 'app-carousel',
     standalone: true,
     imports: [CommonModule, PushModule],
     providers: [CatsRepositoryService],
-    templateUrl: './Carousel2Component.html',
-    styleUrls: ['./Carousel2Component.scss'],
+    templateUrl: './CarouselOnSelectorsComponent.html',
+    styleUrls: ['./CarouselOnSelectorsComponent.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Carousel2Component extends Base {
+export class CarouselOnSelectorsComponent extends Base {
 
     readonly cats$ = new ResourceCache(() => this.catsRepositoryService.selectCats$());
     readonly catIndex$ = new State(0);

@@ -1,8 +1,8 @@
 <nav>
     <ul style="display: flex; gap: 30px;">
         <li><a routerLink="" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">Home</a></li>
-        <li><a routerLink="carousel" routerLinkActive="active" ariaCurrentWhenActive="page">Carousel</a></li>
-        <li><a routerLink="carousel2" routerLinkActive="active" ariaCurrentWhenActive="page">Carousel on Selector</a></li>
+        <li><a routerLink="carousel-on-decorators" routerLinkActive="active" ariaCurrentWhenActive="page">Carousel (@Selector())</a></li>
+        <li><a routerLink="carousel-on-selectors" routerLinkActive="active" ariaCurrentWhenActive="page">Carousel (Selector Observable)</a></li>
         <li><a [routerLink]="['/box', 'BOX-1']" routerLinkActive="active" ariaCurrentWhenActive="page">Box</a></li>
     </ul>
 </nav>
