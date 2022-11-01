@@ -7,7 +7,7 @@ export class State<T extends Exclude<any, Function>> extends Selector<T> {
 
     private lastValue: T | undefined;
 
-    private disconnect$ = new Subject();
+    private disconnectPrevious$: Subject<void> | undefined;
 
     constructor(initialValue?: Exclude<T, undefined | null>) {
         super();
@@ -29,12 +29,24 @@ export class State<T extends Exclude<any, Function>> extends Selector<T> {
         }
     }
 
-    connect(obs$: Observable<T>, config?: { disconnectPrevious: boolean }): void {
-        if (config?.disconnectPrevious ?? true) {
-            obs$ = obs$.pipe(
-                takeUntil(this.disconnect$)
-            );
+    // TODO Split into State/Atom and InputSelector?
+    connect(obs$: Observable<T>, config?: { previousConnectionHandling: 'fail' | 'disconnect' | 'append' }): void {
+        if (this.disconnectPrevious$) {
+            const previousConnectionHandling = config?.previousConnectionHandling ?? 'fail';
+            if (previousConnectionHandling === 'fail') {
+                throw Error('Adding second connection to state with previousConnectionHandling = "fail"');
+            } else if (previousConnectionHandling === 'disconnect') {
+                this.disconnectPrevious$.next();
+            }
         }
+
+        if (!this.disconnectPrevious$) {
+            this.disconnectPrevious$ = new Subject<void>();
+        }
+
+        obs$ = obs$.pipe(
+            takeUntil(this.disconnectPrevious$)
+        );
         this.sources$.next(obs$);
     }
 
