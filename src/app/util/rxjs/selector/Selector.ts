@@ -56,16 +56,14 @@ export class Selector<T> extends Observable<T> {
     /**
      * @Internal
      */
-    autoSubscribe(destroy$: Observable<unknown>, observer?: (value: T) => void): void {
-        if (!this.autoSubscribed) {
-            this.autoSubscribed = true;
-            this.pipe(
-                tap(observer),
-                takeUntil(destroy$)
-            ).subscribe()
-        } else {
-            throw Error('Should not be auto-subscribed twice');
-        }
+    autoSubscribe(destroy$: Observable<unknown>, observer: (value: T, primaryAutoSubscription: boolean) => void): void {
+        const firstAutoSubscriber = !this.autoSubscribed;
+        this.autoSubscribed = true;
+
+        this.pipe(
+            tap((value: T) => observer(value, firstAutoSubscriber)),
+            takeUntil(destroy$)
+        ).subscribe();
     }
 
     protected initSource(

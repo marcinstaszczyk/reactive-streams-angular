@@ -7,8 +7,8 @@ export function autoSubscribeAllSelectors(componentOrService: Base) {
         if (fieldValue instanceof Selector) {
             fieldValue.autoSubscribe(
                 (componentOrService as any).destroy$,
-                (value: unknown) => {
-                    globalConsoleLogger(componentOrService, property, value);
+                (value: unknown, primaryAutoSubscription: boolean) => {
+                    globalConsoleLogger(componentOrService, property, value, primaryAutoSubscription);
                     (componentOrService as any)['_last_value_' + property] = value;
                 }
             );
@@ -16,7 +16,7 @@ export function autoSubscribeAllSelectors(componentOrService: Base) {
     })
 }
 
-type SelectorValueListener = (componentOrService: Base, property: string, value: unknown) => void;
+type SelectorValueListener = (componentOrService: Base, property: string, value: unknown, primaryAutoSubscription: boolean) => void;
 const NOOP = () => {};
 
 let globalConsoleLogger: SelectorValueListener = NOOP;
@@ -62,16 +62,31 @@ class AppBrowserConsole {
         this.#saveAndEnableConditionalLogger();
     }
 
-    enableObjectLogging(object: Base): void {
-        this.objectsToLog.add(object);
-        this.fullLoggingEnabled = false;
-        this.#saveAndEnableConditionalLogger();
+    enableObjectLogging(object: Base | Element): void {
+        const component: Base | undefined = this.#getAngularComponent(object);
+        if (component) {
+            this.objectsToLog.add(component);
+            this.fullLoggingEnabled = false;
+            this.#saveAndEnableConditionalLogger();
+        }
     }
 
     disableObjectLogging(object: Base): void {
         this.objectsToLog.delete(object);
         this.fullLoggingEnabled = false;
         this.#saveAndEnableConditionalLogger();
+    }
+
+    #getAngularComponent(object: Base | Element): Base | undefined {
+        if (object instanceof Element) {
+            const component: Base | undefined = (self as any)['ng']?.getComponent(object);
+            if (!component) {
+                console.error('Unable to get component for DOM Element:' , object);
+            }
+            return component;
+        } else {
+            return object;
+        }
     }
 
     #saveAndEnableConditionalLogger(): void {
@@ -98,7 +113,11 @@ class AppBrowserConsole {
     }
 
     #enableGlobalLogger(): void {
-        globalConsoleLogger = AppBrowserConsole.logToConsole;
+        globalConsoleLogger = (componentOrService: Base, property: string, value: unknown, primaryAutoSubscription: boolean) => {
+            if (primaryAutoSubscription) {
+                AppBrowserConsole.logToConsole(componentOrService, property, value);
+            }
+        }
     }
 
     #disableLogger(): void {

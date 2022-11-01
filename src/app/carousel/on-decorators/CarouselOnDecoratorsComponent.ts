@@ -8,10 +8,9 @@ import { CatsRepositoryService } from '../core/CatsRepositoryService';
 import { HttpCat } from '../core/HttpCat';
 
 @Component({
-    selector: 'app-carousel-on-decorators',
+    selector: 'app-carousel',
     standalone: true,
     imports: [CommonModule, PushModule],
-    providers: [CatsRepositoryService],
     templateUrl: './CarouselOnDecoratorsComponent.html',
     styleUrls: ['./CarouselOnDecoratorsComponent.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

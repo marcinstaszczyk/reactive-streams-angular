@@ -18,7 +18,7 @@
                 (click)="actionPrevious()">
             PREVIOUS
         </button>
-        <button [disabled]="!(selectHasNext$() | async)"
+        <button [disabled]="!(selectHasNext$() | push)"
                 (click)="actionNext()">
             NEXT
         </button>

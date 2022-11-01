@@ -22,11 +22,7 @@ export class State<T extends Exclude<any, Function>> extends Selector<T> {
     set(valueOrProjectFn: T | ((oldValue: T) => T)): void {
         if (typeof valueOrProjectFn === 'function') {
             const projectFn = valueOrProjectFn as (oldValue: T) => T;
-            if (this.autoSubscribed) {
-                this.sources$.next(of(projectFn(this.lastValue!)));
-            } else {
-                this.asyncUpdate(projectFn);
-            }
+            this.asyncUpdate(projectFn);
         } else {
             const value: T = valueOrProjectFn;
             this.sources$.next(of(value));

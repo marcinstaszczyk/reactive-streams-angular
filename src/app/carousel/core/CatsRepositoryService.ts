@@ -3,7 +3,7 @@ import { defer, delay, of } from 'rxjs';
 import { Single } from '../../util/rxjs/Single';
 import { HttpCat } from './HttpCat';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CatsRepositoryService {
 
     selectCats$(): Single<HttpCat[]> {

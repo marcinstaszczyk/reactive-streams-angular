@@ -13,7 +13,6 @@ import { State } from '../../util/state/State';
     selector: 'app-carousel',
     standalone: true,
     imports: [CommonModule, PushModule],
-    providers: [CatsRepositoryService],
     templateUrl: './CarouselOnSelectorsComponent.html',
     styleUrls: ['./CarouselOnSelectorsComponent.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
