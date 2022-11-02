@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { BoxComponent } from './box/box.component';
+import { BoxComponent } from './box/BoxComponent';
 import { CarouselOnDecoratorsComponent } from './carousel/on-decorators/CarouselOnDecoratorsComponent';
 import { CarouselContainerComponent } from './carousel/on-selectors-service/CarouselContainerComponent';
 import { CarouselOnSelectorsComponent } from './carousel/on-selectors/CarouselOnSelectorsComponent';

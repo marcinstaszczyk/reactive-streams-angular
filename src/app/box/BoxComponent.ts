@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { BoxService } from './services/box.service';
+import { BoxService } from './services/BoxService';
 import { map, Observable } from 'rxjs';
 import { BoxId } from './domain/BoxId';
 import { Selector } from '../util/decorators/Selector';
@@ -12,8 +12,7 @@ import { CircleLoaderComponent } from '../util/ui/circle-loader/circle-loader.co
 @Component({
     selector: 'app-box',
     standalone: true,
-    templateUrl: './box.component.html',
-    styleUrls: ['./box.component.scss'],
+    templateUrl: './BoxComponent.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         LetModule,

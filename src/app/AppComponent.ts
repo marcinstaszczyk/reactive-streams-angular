@@ -3,8 +3,7 @@ import { ActivationEnd, Event, NavigationEnd, Router } from '@angular/router';
 
 @Component({
     selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
+    templateUrl: './AppComponent.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
