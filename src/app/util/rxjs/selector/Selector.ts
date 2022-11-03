@@ -1,22 +1,19 @@
 import {
-    BehaviorSubject,
     combineLatest,
     distinctUntilChanged,
     lastValueFrom,
     map,
     Observable,
-    of,
     ReplaySubject,
     share,
     ShareConfig,
     Subject,
     switchMap,
-    take,
     tap,
     timeout,
 } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { ResourceVersion } from '../../cache/ResourceVersion';
+import { callProgress, DeferredCallWithProgress } from '../../progress/callProgress';
 import { Single } from '../Single';
 
 export function select<T>(source$: Observable<T>): Selector<T> {
@@ -33,10 +30,7 @@ export class Selector<T> extends Observable<T> {
 
     static from<T>(
         source$: Observable<T>,
-        config?: {
-            distinctUntilChangedComparator?: (previous: T, current: T) => boolean,
-            shareConfig?: ShareConfig<T>
-        }
+        config?: SourceConfig<T>
     ): Selector<T> {
         const selector$ = new Selector<T>();
         selector$.initSource(source$, config);
@@ -68,47 +62,20 @@ export class Selector<T> extends Observable<T> {
         );
     }
 
-    asyncMap<R>(project: (t: T) => Single<R>): Selector<R> {
-        return select(this.pipe(switchMap(project)));
+    asyncMap<R>(projectFn: (t: T) => Single<R>, config?: SourceConfig<R>): Selector<R> {
+        return Selector.from(
+            this.pipe(switchMap(projectFn)),
+            config
+        );
     }
 
-    asyncMapWithProgress<R>(project: (t: T) => Single<R>): SelectorWithProgress<R> {
-        const requestVersion$ = new BehaviorSubject<ResourceVersion | null>(null);
-        const responseVersion$ = new BehaviorSubject<ResourceVersion | null>(null);
+    asyncMapWithProgress<R>(projectFn: (t: T) => Single<R>, config?: SourceConfig<R>): SelectorWithProgress<R> {
+        const projectFnWithProgress: DeferredCallWithProgress<[T], R> = callProgress(projectFn);
 
-        const selector$ = select(
-            this.pipe(
-                switchMap((value: T) => {
-                    return of(ResourceVersion.new()).pipe(
-                        tap((version: ResourceVersion) => {
-                            requestVersion$.next(version);
-                        }),
-                        switchMap((version: ResourceVersion) => {
-                            return project(value).pipe(
-                                take(1),
-                                tap({
-                                    complete: () => {
-                                        responseVersion$.next(version);
-                                    } // BEHAVIOUR: version signal goes after value signal
-                                })
-                            )
-                        })
-                    );
-                })
-            )
-        );
+        const selector$: Selector<R> = this.asyncMap(projectFnWithProgress, config);
 
         const selectorWithProgress$ = selector$ as Selector<R> & InProgress;
-        selectorWithProgress$.inProgress$ = select(
-            combineLatest([
-                requestVersion$,
-                responseVersion$
-            ]).pipe(
-                map(([requestVersion, lastResponseVersion]: [ResourceVersion | null, ResourceVersion | null]) => {
-                    return requestVersion !== lastResponseVersion;
-                }),
-            )
-        );
+        selectorWithProgress$.inProgress$ = projectFnWithProgress.inProgress$;
 
         return selectorWithProgress$;
     }
@@ -122,10 +89,7 @@ export class Selector<T> extends Observable<T> {
 
     protected initSource(
         source$: Observable<T>,
-        config?: {
-            equals?: (previous: T, current: T) => boolean,
-            shareConfig?: ShareConfig<T>
-        }
+        config?: SourceConfig<T>
     ) {
         this.source = source$.pipe(
             distinctUntilChanged(
@@ -149,6 +113,11 @@ export class Selector<T> extends Observable<T> {
     }
 
 }
+
+type SourceConfig<T> = {
+    equals?: (previous: T, current: T) => boolean,
+    shareConfig?: ShareConfig<T>
+};
 
 type InProgress = { inProgress$: Selector<boolean> };
 

@@ -22,7 +22,7 @@ export class BoxService extends Base {
         .asyncMapWithProgress((boxId: BoxId) => this.boxRepository.selectBoxData(boxId));
 
     readonly loadingInProgress$ = combineProgress(
-        this.allBoxes$.selectLoadingInProgress$(),
+        this.allBoxes$.inProgress$,
         this.currentBox$.inProgress$
     );
 

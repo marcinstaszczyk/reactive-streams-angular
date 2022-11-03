@@ -52,7 +52,7 @@ describe('callProgress', () => {
                 return Single.from(resourceResponseSubject);
             });
             lastInProgressState = null;
-            resourceCallWithProgress$.selectLoadingInProgress$().subscribe((inProgress: boolean) => {
+            resourceCallWithProgress$.inProgress$.subscribe((inProgress: boolean) => {
                 lastInProgressState = inProgress;
             });
         });

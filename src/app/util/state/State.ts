@@ -7,9 +7,14 @@ export class State<T extends Exclude<any, Function>> extends Selector<T> {
 
     private disconnectPrevious$: Subject<void> | undefined;
 
+    constructor(initialValue: undefined, config: { equals?: (previous: T, current: T) => boolean, allowEmptyValues: boolean });
+    constructor(initialValue?: T, config?: { equals?: (previous: T, current: T) => boolean })
     constructor(
         initialValue?: T,
-        config?: { equals?: (previous: T, current: T) => boolean }
+        config?: {
+            equals?: (previous: T, current: T) => boolean,
+            allowEmptyValues?: boolean
+        }
     ) {
         super();
 
@@ -20,8 +25,8 @@ export class State<T extends Exclude<any, Function>> extends Selector<T> {
             config
         );
 
-        if (initialValue !== undefined) {
-            this.set(initialValue);
+        if (initialValue !== undefined || (config?.allowEmptyValues ?? false)) {
+            this.set(initialValue as T);
         }
     }
 

@@ -1,7 +1,7 @@
 import { Observable, of, Subject } from 'rxjs';
 import { Selector } from '../../rxjs/selector/Selector';
-import { ResourceCache } from '../ResourceCache';
 import { Single } from '../../rxjs/Single';
+import { ResourceCache } from '../ResourceCache';
 
 describe('Resource Cache', () => {
     let VALUE: symbol;
@@ -78,7 +78,7 @@ describe('Resource Cache', () => {
                 return Single.from(resourceResponseSubject);
             });
             lastInProgressState = null;
-            resourceCache.selectLoadingInProgress$().subscribe((inProgress: boolean) => {
+            resourceCache.inProgress$.subscribe((inProgress: boolean) => {
                 lastInProgressState = inProgress;
             });
         });
@@ -116,7 +116,7 @@ describe('Resource Cache', () => {
     });
 
     it('should not initialize resource call when checking for progress', () => {
-        resourceCache.selectLoadingInProgress$().subscribe();
+        resourceCache.inProgress$.subscribe();
         expect(resourceCalledCount).toBe(0);
     });
 
@@ -181,7 +181,7 @@ describe('Resource Cache', () => {
             });
 
             it('should not cause "in progress" === true signal', () => {
-                resourceCache.selectLoadingInProgress$().subscribe((inProgress: boolean) => {
+                resourceCache.inProgress$.subscribe((inProgress: boolean) => {
                     expect(inProgress).toBeFalse();
                 });
                 resourceCache.actionSetValue(EXTERNAL_VALUE);
