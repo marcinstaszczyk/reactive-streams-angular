@@ -1,15 +1,15 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { LetModule, PushModule } from '@rx-angular/template';
 import { Base } from '../util/angular/Base';
-import { autoSubscribeAllSelectors } from '../util/rxjs/selector/autoSubscribeAllSelectors';
+import { observeSelectorsPassingValues } from '../util/rxjs/selector/observeSelectorsPassingValues';
 import { Selector } from '../util/rxjs/selector/Selector';
 import { State } from '../util/state/State';
-import { BoxService } from './services/BoxService';
-import { BoxId } from './domain/BoxId';
-import { LetModule, PushModule } from '@rx-angular/template';
-import { Box } from './domain/Box';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { CircleLoaderComponent } from '../util/ui/circle-loader/circle-loader.component';
+import { Box } from './domain/Box';
+import { BoxId } from './domain/BoxId';
+import { BoxService } from './services/BoxService';
 
 @Component({
     selector: 'app-box',
@@ -39,7 +39,7 @@ export class BoxComponent extends Base {
         readonly boxService: BoxService,
     ) {
         super();
-        autoSubscribeAllSelectors(this);
+        observeSelectorsPassingValues(this);
     }
 
     userActionBoxSelectionClicked(): void {

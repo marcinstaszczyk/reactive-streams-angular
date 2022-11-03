@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { Base } from '../../util/angular/Base';
-import { autoSubscribeAllSelectors } from '../../util/rxjs/selector/autoSubscribeAllSelectors';
+import { ResourceCache } from '../../util/cache/ResourceCache';
 import { combineProgress } from '../../util/rxjs/selector/combineProgress';
+import { observeSelectorsPassingValues } from '../../util/rxjs/selector/observeSelectorsPassingValues';
 import { SelectorWithProgress } from '../../util/rxjs/selector/Selector';
 import { State } from '../../util/state/State';
+import { Box } from '../domain/Box';
 import { BoxId } from '../domain/BoxId';
 import { BoxRepository } from '../domain/BoxRepository';
-import { ResourceCache } from '../../util/cache/ResourceCache';
-import { Box } from '../domain/Box';
 
 @Injectable() // provided in root is not getting boxId route param right
 export class BoxService extends Base {
@@ -32,7 +32,7 @@ export class BoxService extends Base {
         private boxRepository: BoxRepository
     ) {
         super();
-        autoSubscribeAllSelectors(this);
+        observeSelectorsPassingValues(this);
 
         this.currentBoxId$.connect(
             this.route.params.pipe(

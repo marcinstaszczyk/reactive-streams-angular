@@ -4,12 +4,14 @@ import {
     distinctUntilChanged,
     lastValueFrom,
     map,
-    Observable, of,
+    Observable,
+    of,
     ReplaySubject,
     share,
     ShareConfig,
-    switchMap, take,
-    takeUntil,
+    Subject,
+    switchMap,
+    take,
     tap,
     timeout,
 } from 'rxjs';
@@ -23,7 +25,11 @@ export function select<T>(source$: Observable<T>): Selector<T> {
 
 export class Selector<T> extends Observable<T> {
 
-    protected autoSubscribed = false;
+    /**
+     * Enables listening to values passing through Selector without activating it.
+     * Activation still is done by subscribing to primary Selector/observable.
+     */
+    readonly passingValues$ = new Subject<T>();
 
     static from<T>(
         source$: Observable<T>,
@@ -61,7 +67,6 @@ export class Selector<T> extends Observable<T> {
             )
         );
     }
-
 
     asyncMap<R>(project: (t: T) => Single<R>): Selector<R> {
         return select(this.pipe(switchMap(project)));
@@ -115,40 +120,30 @@ export class Selector<T> extends Observable<T> {
         ));
     }
 
-    /**
-     * @Internal
-     */
-    autoSubscribe(destroy$: Observable<unknown>, observer: (value: T, primaryAutoSubscription: boolean) => void): void {
-        const firstAutoSubscriber = !this.autoSubscribed;
-        this.autoSubscribed = true;
-
-        this.pipe(
-            tap((value: T) => observer(value, firstAutoSubscriber)),
-            takeUntil(destroy$)
-        ).subscribe();
-    }
-
     protected initSource(
         source$: Observable<T>,
         config?: {
-            distinctUntilChangedComparator?: (previous: T, current: T) => boolean,
+            equals?: (previous: T, current: T) => boolean,
             shareConfig?: ShareConfig<T>
         }
     ) {
         this.source = source$.pipe(
             distinctUntilChanged(
-                config?.distinctUntilChangedComparator
+                config?.equals
             ),
             tap({
+                next: (value: T) => {
+                    this.passingValues$.next(value);
+                },
                 complete: () => {
                     console.error('source$ of Selector observable should never complete');
                 }
             }),
             share(config?.shareConfig ?? {
                 connector: () => new ReplaySubject(1),
-                resetOnError: true,
-                resetOnComplete: false,
                 resetOnRefCountZero: true,
+                resetOnComplete: false,
+                resetOnError: true, // TODO error handling
             }),
         );
     }

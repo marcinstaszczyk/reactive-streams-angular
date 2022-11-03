@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Base } from '../../../util/angular/Base';
 import { ResourceCache } from '../../../util/cache/ResourceCache';
-import { autoSubscribeAllSelectors } from '../../../util/rxjs/selector/autoSubscribeAllSelectors';
+import { observeSelectorsPassingValues } from '../../../util/rxjs/selector/observeSelectorsPassingValues';
 import { Selector } from '../../../util/rxjs/selector/Selector';
 import { State } from '../../../util/state/State';
 import { CatsRepositoryService } from '../../core/CatsRepositoryService';
@@ -28,7 +28,7 @@ export class CatsService extends Base {
         private catsRepositoryService: CatsRepositoryService
     ) {
         super();
-        autoSubscribeAllSelectors(this);
+        observeSelectorsPassingValues(this);
     }
 
     actionNext() {

@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 @Injectable()
 export class Base implements OnDestroy {
 
-    protected destroy$ = new Subject<void>();
+    readonly destroy$ = new Subject<void>();
 
     ngOnDestroy(): void {
         this.destroy$.next();

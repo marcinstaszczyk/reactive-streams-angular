@@ -1,22 +1,23 @@
+import { takeUntil } from 'rxjs';
 import { Base } from '../../angular/Base';
 import { Selector } from './Selector';
 
-export function autoSubscribeAllSelectors(componentOrService: Base) {
+export function observeSelectorsPassingValues(componentOrService: Base) {
     Object.getOwnPropertyNames(componentOrService).forEach((property: string) => {
         const fieldValue: unknown = (componentOrService as any)[property];
         if (fieldValue instanceof Selector) {
-            fieldValue.autoSubscribe(
-                (componentOrService as any).destroy$,
-                (value: unknown, primaryAutoSubscription: boolean) => {
-                    globalConsoleLogger(componentOrService, property, value, primaryAutoSubscription);
-                    (componentOrService as any)['_last_value_' + property] = value;
-                }
-            );
+            const firstObserver: boolean = !fieldValue.passingValues$.observed;
+            fieldValue.passingValues$.pipe(
+                takeUntil(componentOrService.destroy$),
+            ).subscribe((value: unknown) => {
+                globalConsoleLogger(componentOrService, property, value, firstObserver);
+                (componentOrService as any)['_last_value_' + property] = value;
+            });
         }
     })
 }
 
-type SelectorValueListener = (componentOrService: Base, property: string, value: unknown, primaryAutoSubscription: boolean) => void;
+type SelectorValueListener = (componentOrService: Base, property: string, value: unknown, firstObserver: boolean) => void;
 const NOOP = () => {};
 
 let globalConsoleLogger: SelectorValueListener = NOOP;

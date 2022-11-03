@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PushModule } from '@rx-angular/template';
 import { Base } from '../../../util/angular/Base';
-import { autoSubscribeAllSelectors } from '../../../util/rxjs/selector/autoSubscribeAllSelectors';
+import { observeSelectorsPassingValues } from '../../../util/rxjs/selector/observeSelectorsPassingValues';
 import { Selector } from '../../../util/rxjs/selector/Selector';
 import { CatsService } from '../service/CatsService';
 
@@ -24,7 +24,7 @@ export class CarouselNavigationComponent extends Base {
         private catsService: CatsService
     ) {
         super();
-        autoSubscribeAllSelectors(this);
+        observeSelectorsPassingValues(this);
     }
 
     actionNext() {

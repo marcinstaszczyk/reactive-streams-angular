@@ -1,18 +1,26 @@
-import { distinctUntilChanged, firstValueFrom, mergeAll, Observable, of, ReplaySubject, shareReplay, Subject, takeUntil, tap } from 'rxjs';
+import { firstValueFrom, mergeAll, Observable, of, ReplaySubject, Subject, takeUntil } from 'rxjs';
 import { Selector } from '../rxjs/selector/Selector';
 
 export class State<T extends Exclude<any, Function>> extends Selector<T> {
 
     private sources$ = new ReplaySubject<Observable<T>>(1);
 
-    private lastValue: T | undefined;
-
     private disconnectPrevious$: Subject<void> | undefined;
 
-    constructor(initialValue?: Exclude<T, undefined | null>) {
+    constructor(
+        initialValue?: T,
+        config?: { equals?: (previous: T, current: T) => boolean }
+    ) {
         super();
-        this.initSource();
-        if (initialValue !== null && initialValue !== undefined) {
+
+        super.initSource(
+            this.sources$.pipe(
+                mergeAll(),
+            ),
+            config
+        );
+
+        if (initialValue !== undefined) {
             this.set(initialValue);
         }
     }
@@ -55,15 +63,4 @@ export class State<T extends Exclude<any, Function>> extends Selector<T> {
         this.set(projectFn(oldValue));
     }
 
-    protected override initSource() {
-        this.source = this.sources$.pipe(
-            mergeAll(),
-            distinctUntilChanged(),
-            tap((value: T) => this.lastValue = value),
-            shareReplay({
-                bufferSize: 1,
-                refCount: true
-            })
-        )
-    }
 }

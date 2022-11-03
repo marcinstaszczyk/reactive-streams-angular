@@ -1,7 +1,7 @@
+import { BehaviorSubject, mergeMap, of, ReplaySubject } from 'rxjs';
+import { callProgress, DeferredCallWithProgress } from '../progress/callProgress';
 import { Selector } from '../rxjs/selector/Selector';
 import { Single } from '../rxjs/Single';
-import { BehaviorSubject, distinctUntilChanged, mergeMap, of, ReplaySubject, share } from 'rxjs';
-import { callProgress, DeferredCallWithProgress } from '../progress/callProgress';
 
 export class ResourceCache<T> extends Selector<T> {
 
@@ -12,11 +12,14 @@ export class ResourceCache<T> extends Selector<T> {
     private value$?: ReplaySubject<T>;
 
     constructor(
-        deferredResourceCall: () => Single<T>
+        deferredResourceCall: () => Single<T>,
+        config?: { equals?: (previous: T, current: T) => boolean }
     ) {
         super();
+
         this.deferredResourceCall = callProgress(deferredResourceCall);
-        this.initSource();
+
+        this.initializeSource(config);
     }
 
     select$(): Selector<T> {
@@ -41,25 +44,31 @@ export class ResourceCache<T> extends Selector<T> {
         }
     }
 
-    protected override initSource() {
-        this.source = this.start$.pipe(
-            mergeMap(() => { // TODO mergeMap or switchMap?
-                if (this.externallyProvidedValue) {
-                    return of(this.externallyProvidedValue);
-                } else {
-                    return this.deferredResourceCall();
+    private initializeSource(
+        config?: { equals?: (previous: T, current: T) => boolean }
+    ): void {
+        super.initSource(
+            this.start$.pipe(
+                mergeMap(() => { // TODO mergeMap or switchMap?
+                    if (this.externallyProvidedValue) {
+                        return of(this.externallyProvidedValue);
+                    } else {
+                        return this.deferredResourceCall();
+                    }
+                }),
+            ),
+            {
+                equals: config?.equals,
+                shareConfig: {
+                    connector: () => {
+                        this.value$ = new ReplaySubject<T>();
+                        return this.value$;
+                    },
+                    resetOnRefCountZero: true,
+                    resetOnComplete: false,
+                    resetOnError: true // TODO error handling
                 }
-            }),
-            distinctUntilChanged(),
-            share({
-                connector: () => {
-                    this.value$ = new ReplaySubject<T>();
-                    return this.value$;
-                },
-                resetOnRefCountZero: true,
-                resetOnComplete: false,
-                resetOnError: true // TODO error handling
-            })
+            }
         );
     }
 
