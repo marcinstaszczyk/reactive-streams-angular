@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Base } from '../util/angular/Base';
+import { autoSubscribeAllSelectors } from '../util/rxjs/selector/autoSubscribeAllSelectors';
+import { Selector } from '../util/rxjs/selector/Selector';
+import { State } from '../util/state/State';
 import { BoxService } from './services/BoxService';
-import { map, Observable } from 'rxjs';
 import { BoxId } from './domain/BoxId';
-import { Selector } from '../util/decorators/Selector';
 import { LetModule, PushModule } from '@rx-angular/template';
 import { Box } from './domain/Box';
 import { CommonModule } from '@angular/common';
@@ -25,41 +27,23 @@ import { CircleLoaderComponent } from '../util/ui/circle-loader/circle-loader.co
         BoxService, // provided in root is not getting boxId route param right
     ],
 })
-export class BoxComponent {
+export class BoxComponent extends Base {
 
-    selectNeverOpened = true;
+    readonly selectNeverOpened$ = new State(true);
+
+    readonly currentBoxId$: Selector<BoxId> = this.boxService.currentBoxId$;
+    readonly currentBoxAsArray$: Selector<Box[]> = this.boxService.currentBox$.map((box: Box) => [box]);
+    readonly loadingInProgress$: Selector<boolean> = this.boxService.loadingInProgress$;
 
     constructor(
-        private readonly boxService: BoxService,
-        private readonly changeDetectorRef: ChangeDetectorRef
+        readonly boxService: BoxService,
     ) {
-    }
-
-    @Selector()
-    selectCurrentBoxId$(): Observable<BoxId> {
-        return this.boxService.selectCurrentBoxId$()
-    }
-
-    @Selector()
-    selectCurrentBoxAsArray$(): Observable<[Box]> {
-        return this.boxService.selectCurrentBox$().pipe(
-            map((box: Box) => [box])
-        );
-    }
-
-    @Selector()
-    selectAllBoxes$(): Observable<Box[]> {
-        return this.boxService.selectAllBoxes$();
-    }
-
-    @Selector()
-    selectLoadingInProgress$(): Observable<boolean> {
-        return this.boxService.selectBoxesAreLoading$();
+        super();
+        autoSubscribeAllSelectors(this);
     }
 
     userActionBoxSelectionClicked(): void {
-        this.selectNeverOpened = false;
-        this.changeDetectorRef.detectChanges();
+        this.selectNeverOpened$.set(false);
     }
 
     userActionChangeBox(boxId: BoxId): void {

@@ -23,6 +23,7 @@ export class ResourceCache<T> extends Selector<T> {
         return this;
     }
 
+    // TODO convert to SelectorWithProgress
     selectLoadingInProgress$(): Selector<boolean> {
         return this.deferredResourceCall.selectLoadingInProgress$();
     }

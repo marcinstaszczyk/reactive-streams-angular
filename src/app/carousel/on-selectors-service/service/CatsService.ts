@@ -10,7 +10,7 @@ import { HttpCat } from '../../core/HttpCat';
 @Injectable()
 export class CatsService extends Base {
 
-    readonly cats$ = new ResourceCache(() => this.catsRepositoryService.selectCats$());
+    readonly cats$ = new ResourceCache<HttpCat[]>(() => this.catsRepositoryService.selectCats$());
     readonly catIndex$ = new State(0);
 
     readonly cat$: Selector<HttpCat> = this.catIndex$.combineWith(

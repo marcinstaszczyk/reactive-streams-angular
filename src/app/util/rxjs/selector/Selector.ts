@@ -1,5 +1,21 @@
-import { combineLatest, distinctUntilChanged, lastValueFrom, map, Observable, ReplaySubject, share, ShareConfig, takeUntil, tap, timeout } from 'rxjs';
+import {
+    BehaviorSubject,
+    combineLatest,
+    distinctUntilChanged,
+    lastValueFrom,
+    map,
+    Observable, of,
+    ReplaySubject,
+    share,
+    ShareConfig,
+    switchMap, take,
+    takeUntil,
+    tap,
+    timeout,
+} from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { ResourceVersion } from '../../cache/ResourceVersion';
+import { Single } from '../Single';
 
 export function select<T>(source$: Observable<T>): Selector<T> {
     return Selector.from(source$);
@@ -44,6 +60,52 @@ export class Selector<T> extends Observable<T> {
                 map((props: any[]) => projectFn(...props))
             )
         );
+    }
+
+
+    asyncMap<R>(project: (t: T) => Single<R>): Selector<R> {
+        return select(this.pipe(switchMap(project)));
+    }
+
+    asyncMapWithProgress<R>(project: (t: T) => Single<R>): SelectorWithProgress<R> {
+        const requestVersion$ = new BehaviorSubject<ResourceVersion | null>(null);
+        const responseVersion$ = new BehaviorSubject<ResourceVersion | null>(null);
+
+        const selector$ = select(
+            this.pipe(
+                switchMap((value: T) => {
+                    return of(ResourceVersion.new()).pipe(
+                        tap((version: ResourceVersion) => {
+                            requestVersion$.next(version);
+                        }),
+                        switchMap((version: ResourceVersion) => {
+                            return project(value).pipe(
+                                take(1),
+                                tap({
+                                    complete: () => {
+                                        responseVersion$.next(version);
+                                    } // BEHAVIOUR: version signal goes after value signal
+                                })
+                            )
+                        })
+                    );
+                })
+            )
+        );
+
+        const selectorWithProgress$ = selector$ as Selector<R> & InProgress;
+        selectorWithProgress$.inProgress$ = select(
+            combineLatest([
+                requestVersion$,
+                responseVersion$
+            ]).pipe(
+                map(([requestVersion, lastResponseVersion]: [ResourceVersion | null, ResourceVersion | null]) => {
+                    return requestVersion !== lastResponseVersion;
+                }),
+            )
+        );
+
+        return selectorWithProgress$;
     }
 
     actionGet(): Promise<T> {
@@ -92,3 +154,7 @@ export class Selector<T> extends Observable<T> {
     }
 
 }
+
+type InProgress = { inProgress$: Selector<boolean> };
+
+export type SelectorWithProgress<T> = Selector<T> & Readonly<InProgress>;

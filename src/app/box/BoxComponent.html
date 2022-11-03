@@ -1,16 +1,16 @@
 <div style="display: flex; flex-direction: row-reverse; flex-wrap: wrap">
 
-    <app-circle-loader *ngIf="selectLoadingInProgress$() | push"></app-circle-loader>
+    <app-circle-loader *ngIf="loadingInProgress$ | push"></app-circle-loader>
 
     <div style="border: 1px solid black; width: max-content; padding: 4px; margin-right: auto">
         <div>Box</div>
 
-        <select *rxLet="selectCurrentBoxId$(); let currentBoxId"
+        <select *rxLet="currentBoxId$; let currentBoxId"
                 [ngModel]="currentBoxId"
                 (ngModelChange)="userActionChangeBox($event)"
                 (click)="userActionBoxSelectionClicked()"
                 name="box">
-            <ng-container *rxLet="(selectNeverOpened ? selectCurrentBoxAsArray$() : selectAllBoxes$()); let allBoxes; suspense: loading">
+            <ng-container *rxLet="(selectNeverOpened$ | push) ? currentBoxAsArray$ : this.boxService.allBoxes$; let allBoxes; suspense: loading">
                 <option *ngFor="let box of allBoxes; trackBy: trackByBoxId"
                         [ngValue]="box.id"
                         [selected]="box.id === currentBoxId">

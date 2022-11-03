@@ -19,7 +19,7 @@ import { State } from '../../util/state/State';
 })
 export class CarouselOnSelectorsComponent extends Base {
 
-    readonly cats$ = new ResourceCache(() => this.catsRepositoryService.selectCats$());
+    readonly cats$ = new ResourceCache<HttpCat[]>(() => this.catsRepositoryService.selectCats$());
     readonly catIndex$ = new State(0);
 
     readonly cat$: Selector<HttpCat> = this.catIndex$.combineWith(
