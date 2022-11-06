@@ -1,4 +1,4 @@
-import { BoxSelectionComponent, BoxService } from '@/box/box';
+import { BoxSelectionComponent, BoxService } from '@/box-content/box';
 import { Base } from '@/util/angular/Base';
 import { observeSelectorsPassingValues } from '@/util/rxjs/selector/observeSelectorsPassingValues';
 import { Selector } from '@/util/rxjs/selector/Selector';
@@ -10,7 +10,7 @@ import { PushModule } from '@rx-angular/template';
 @Component({
     selector: 'app-box',
     standalone: true,
-    templateUrl: './BoxComponent.html',
+    templateUrl: './BoxContentComponent.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
@@ -22,7 +22,7 @@ import { PushModule } from '@rx-angular/template';
         BoxService, // provided in root is not getting boxId route param right
     ],
 })
-export class BoxComponent extends Base {
+export class BoxContentComponent extends Base {
 
     readonly loadingInProgress$: Selector<boolean> = this.boxService.loadingInProgress$;
 

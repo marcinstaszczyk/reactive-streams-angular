@@ -1,6 +1,6 @@
-import { BoxService } from '@/box/box/domain/services/BoxService';
-import { Box } from '@/box/box/domain/types/Box';
-import { BoxId } from '@/box/box/domain/types/BoxId';
+import { BoxService } from '@/box-content/box/domain/services/BoxService';
+import { Box } from '@/box-content/box/domain/types/Box';
+import { BoxId } from '@/box-content/box/domain/types/BoxId';
 import { Base } from '@/util/angular/Base';
 import { observeSelectorsPassingValues } from '@/util/rxjs/selector/observeSelectorsPassingValues';
 import { Selector } from '@/util/rxjs/selector/Selector';
