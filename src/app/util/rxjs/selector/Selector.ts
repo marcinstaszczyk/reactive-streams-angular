@@ -116,7 +116,7 @@ export class Selector<T> extends Observable<T> {
         );
     }
 
-    asyncMap<R>(projectFn: (t: T) => Single<R>, config?: SourceConfig<R>): Selector<R> {
+    asyncMap<R>(projectFn: (t: T) => Observable<R>, config?: SourceConfig<R>): Selector<R> {
         return Selector.from(
             this.pipe(switchMap(projectFn)),
             config

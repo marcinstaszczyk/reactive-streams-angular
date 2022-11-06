@@ -26,6 +26,10 @@ export class BoxSelectionComponent extends Base {
     readonly currentBoxId$: Selector<BoxId> = this.boxService.currentBoxId$;
     readonly currentBoxAsArray$: Selector<Box[]> = this.boxService.currentBox$.map((box: Box) => [box]);
 
+    readonly boxes$: Selector<Box[]> = this.selectNeverOpened$.asyncMap((selectNeverOpened: boolean) => {
+        return selectNeverOpened ? this.currentBoxAsArray$ : this.boxService.allBoxes$;
+    });
+
     constructor(
         readonly boxService: BoxService,
     ) {
