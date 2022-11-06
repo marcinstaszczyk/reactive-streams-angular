@@ -1,9 +1,9 @@
-import { BoxResource } from './BoxResource';
 import { Injectable } from '@angular/core';
-import { Single } from '../../util/rxjs/Single';
-import { BoxId } from '../domain/BoxId';
-import { BoxDTO } from './types/BoxDTO';
 import { delay, of } from 'rxjs';
+import { Single } from '../../../util/rxjs/Single';
+import { BoxId } from '../domain/types/BoxId';
+import { BoxResource } from './BoxResource';
+import { BoxDTO } from './types/BoxDTO';
 
 @Injectable()
 export class MockHttpBoxResource implements BoxResource {

@@ -1,0 +1,17 @@
+<select *rxLet="currentBoxId$; let currentBoxId"
+        [ngModel]="currentBoxId"
+        (ngModelChange)="userActionChangeBox($event)"
+        (click)="userActionBoxSelectionClicked()"
+        name="box">
+    <ng-container *rxLet="(selectNeverOpened$ | push) ? currentBoxAsArray$ : this.boxService.allBoxes$; let allBoxes; suspense: loading">
+        <option *ngFor="let box of allBoxes; trackBy: trackByBoxId"
+                [ngValue]="box.id"
+                [selected]="box.id === currentBoxId">
+            {{box.id}} - {{box.name}}
+        </option>
+    </ng-container>
+
+    <ng-template #loading>
+        <option disabled [ngValue]="currentBoxId">Loading...</option>
+    </ng-template>
+</select>

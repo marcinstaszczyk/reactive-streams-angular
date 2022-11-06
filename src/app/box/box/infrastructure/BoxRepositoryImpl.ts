@@ -1,11 +1,11 @@
-import { BoxRepository } from '../domain/BoxRepository';
-import { Single } from '../../util/rxjs/Single';
-import { Box } from '../domain/Box';
-import { BoxId } from '../domain/BoxId';
 import { Injectable } from '@angular/core';
+import { map } from 'rxjs/operators';
+import { Single } from '../../../util/rxjs/Single';
+import { BoxRepository } from '../domain/interfaces/BoxRepository';
+import { Box } from '../domain/types/Box';
+import { BoxId } from '../domain/types/BoxId';
 import { BoxResource } from './BoxResource';
 import { BoxDTO } from './types/BoxDTO';
-import { map } from 'rxjs/operators';
 
 @Injectable()
 export class BoxRepositoryImpl implements BoxRepository {
