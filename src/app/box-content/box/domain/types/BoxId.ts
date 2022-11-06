@@ -1,4 +1,4 @@
-import { getOrCreate } from '../../../../util/functions/getOrCreate';
+import { getOrCreate } from '@/util';
 
 export class BoxId {
 

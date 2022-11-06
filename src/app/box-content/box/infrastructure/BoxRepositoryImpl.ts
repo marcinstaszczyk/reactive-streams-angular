@@ -1,6 +1,6 @@
+import { Single } from '@/util';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { Single } from '../../../util/rxjs/Single';
 import { BoxRepository } from '../domain/interfaces/BoxRepository';
 import { Box } from '../domain/types/Box';
 import { BoxId } from '../domain/types/BoxId';

@@ -1,5 +1,5 @@
+import { Single } from '@/util';
 import { Injectable } from '@angular/core';
-import { Single } from '../../../../util/rxjs/Single';
 import { BoxRepositoryImpl } from '../../infrastructure/BoxRepositoryImpl';
 import { Box } from '../types/Box';
 import { BoxId } from '../types/BoxId';

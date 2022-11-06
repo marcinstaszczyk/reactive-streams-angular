@@ -1,8 +1,5 @@
 import { BoxSelectionComponent, BoxService } from '@/box-content/box';
-import { Base } from '@/util/angular/Base';
-import { observeSelectorsPassingValues } from '@/util/rxjs/selector/observeSelectorsPassingValues';
-import { Selector } from '@/util/rxjs/selector/Selector';
-import { CircleLoaderComponent } from '@/util/ui/circle-loader/circle-loader.component';
+import { Base, CircleLoaderComponent, observeSelectorsPassingValues, Selector } from '@/util';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PushModule } from '@rx-angular/template';

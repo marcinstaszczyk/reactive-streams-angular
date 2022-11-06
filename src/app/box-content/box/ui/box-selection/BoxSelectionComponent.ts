@@ -1,14 +1,11 @@
-import { BoxService } from '@/box-content/box/domain/services/BoxService';
-import { Box } from '@/box-content/box/domain/types/Box';
-import { BoxId } from '@/box-content/box/domain/types/BoxId';
-import { Base } from '@/util/angular/Base';
-import { observeSelectorsPassingValues } from '@/util/rxjs/selector/observeSelectorsPassingValues';
-import { Selector } from '@/util/rxjs/selector/Selector';
-import { State } from '@/util/state/State';
+import { Base, observeSelectorsPassingValues, Selector, State } from '@/util';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LetModule, PushModule } from '@rx-angular/template';
+import { BoxService } from '../../domain/services/BoxService';
+import { Box } from '../../domain/types/Box';
+import { BoxId } from '../../domain/types/BoxId';
 
 @Component({
     selector: 'app-box-selection',

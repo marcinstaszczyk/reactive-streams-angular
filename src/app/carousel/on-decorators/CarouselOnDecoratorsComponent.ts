@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ResourceCache } from '@/util';
+import { Selector } from '@/util/decorators/Selector';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PushModule } from '@rx-angular/template';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
-import { ResourceCache } from '../../util/cache/ResourceCache';
-import { Selector } from '../../util/decorators/Selector';
 import { CatsRepositoryService } from '../core/CatsRepositoryService';
 import { HttpCat } from '../core/HttpCat';
 

@@ -1,11 +1,7 @@
+import { Base, observeSelectorsPassingValues, ResourceCache, Selector, State } from '@/util';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PushModule } from '@rx-angular/template';
-import { Base } from '../../util/angular/Base';
-import { ResourceCache } from '../../util/cache/ResourceCache';
-import { observeSelectorsPassingValues } from '../../util/rxjs/selector/observeSelectorsPassingValues';
-import { Selector } from '../../util/rxjs/selector/Selector';
-import { State } from '../../util/state/State';
 import { CatsRepositoryService } from '../core/CatsRepositoryService';
 import { HttpCat } from '../core/HttpCat';
 

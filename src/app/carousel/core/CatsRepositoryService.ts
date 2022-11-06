@@ -1,6 +1,6 @@
+import { Single } from '@/util';
 import { Injectable } from '@angular/core';
 import { defer, delay, of } from 'rxjs';
-import { Single } from '../../util/rxjs/Single';
 import { HttpCat } from './HttpCat';
 
 @Injectable({ providedIn: 'root' })
