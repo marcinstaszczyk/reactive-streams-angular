@@ -2,6 +2,7 @@ export { Base } from './angular/Base';
 
 export { Single } from './rxjs/Single';
 export { Selector } from './rxjs/selector/Selector';
+export { SelectorWithProgress } from './rxjs/selector/Selector';
 export { observeSelectorsPassingValues } from './rxjs/selector/observeSelectorsPassingValues';
 export { combineProgress } from './rxjs/selector/combineProgress';
 export { State } from './state/State';

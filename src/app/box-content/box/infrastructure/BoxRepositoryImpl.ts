@@ -1,7 +1,7 @@
 import { Single } from '@/util';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { BoxRepository } from '../domain/interfaces/BoxRepository';
+import { BoxRepository } from '../domain/repositories/BoxRepository';
 import { Box } from '../domain/types/Box';
 import { BoxId } from '../domain/types/BoxId';
 import { BoxResource } from './BoxResource';

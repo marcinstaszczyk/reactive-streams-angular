@@ -1,7 +1,7 @@
 import {
     combineLatest,
     distinctUntilChanged,
-    lastValueFrom,
+    firstValueFrom,
     map,
     Observable,
     ReplaySubject,
@@ -135,7 +135,7 @@ export class Selector<T> extends Observable<T> {
     }
 
     actionGet(): Promise<T> {
-        return lastValueFrom(environment.production ? this : this.pipe(
+        return firstValueFrom(environment.production ? this : this.pipe(
             // If waiting over 10s then it's most likely the value will never arrive and action will be stuck forever. Developer should correct this.
             timeout(10000)
         ));

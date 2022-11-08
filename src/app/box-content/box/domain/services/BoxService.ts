@@ -1,9 +1,8 @@
-import { Base, combineProgress, observeSelectorsPassingValues, ResourceCache, State } from '@/util';
-import { SelectorWithProgress } from '@/util/rxjs/selector/Selector';
+import { Base, combineProgress, observeSelectorsPassingValues, ResourceCache, SelectorWithProgress, State } from '@/util';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
-import { BoxRepository } from '../interfaces/BoxRepository';
+import { BoxRepository } from '../repositories/BoxRepository';
 import { Box } from '../types/Box';
 import { BoxId } from '../types/BoxId';
 
