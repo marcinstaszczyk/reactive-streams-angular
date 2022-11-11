@@ -40,7 +40,7 @@ describe('@Selector() decorator', () => {
         let lastComputedValue: number | undefined;
 
         beforeEach(() => {
-            subject = new ReplaySubject<number>();
+            subject = new ReplaySubject<number>(1);
             lastComputedValue = undefined;
             object = new TestClass(subject.asObservable().pipe(
                 tap((value) => {

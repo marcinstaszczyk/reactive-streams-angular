@@ -3,42 +3,42 @@ import { Selector, SelectorWithProgress } from '../rxjs/selector/Selector';
 import { Single } from '../rxjs/Single';
 import { State } from '../state/State';
 
-export class ResourceCache<T> extends Selector<T> implements SelectorWithProgress<T> {
-
-    private readonly start$ = new State<void>(void 0, { equals: () => false, allowEmptyValues: true });
+export class ResourceCache<T, S = null> extends Selector<T> implements SelectorWithProgress<T> {
 
     readonly inProgress$: Selector<boolean>;
+
+    private readonly start$: State<S>;
+    private lastStartValue?: S;
 
     private externallyProvidedValue?: T;
     private value$?: ReplaySubject<T>;
 
+    constructor(deferredResourceCall: () => Single<T>);
     constructor(
-        private readonly deferredResourceCall: () => Single<T>,
-        config?: { equals?: (previous: T, current: T) => boolean }
+        deferredResourceCall: () => Single<T>,
+        config?: {
+            equals?: (previous: T, current: T) => boolean,
+        }
+    );
+    constructor(
+        deferredResourceCall: (source: S) => Single<T>,
+        config: {
+            equals?: (previous: T, current: T) => boolean,
+            start$: Selector<S>,
+        }
+    );
+    constructor(
+        private readonly deferredResourceCall: (source: S) => Single<T>,
+        config?: {
+            equals?: (previous: T, current: T) => boolean,
+            start$?: Selector<S>,
+        }
     ) {
         super();
 
-        const source$: SelectorWithProgress<T> = this.start$.asyncMapWithProgress(
-            () => {
-                if (this.externallyProvidedValue) {
-                    return Single.from(of(this.externallyProvidedValue));
-                } else {
-                    return this.deferredResourceCall();
-                }
-            },
-            {
-                equals: config?.equals,
-                shareConfig: {
-                    connector: () => {
-                        this.value$ = new ReplaySubject<T>();
-                        return this.value$;
-                    },
-                    resetOnRefCountZero: true,
-                    resetOnComplete: false,
-                    resetOnError: true // TODO error handling
-                }
-            }
-        );
+        this.start$ = this.getStart(config);
+
+        const source$: SelectorWithProgress<T> = this.getSource(config);
 
         this.inProgress$ = source$.inProgress$;
 
@@ -51,7 +51,9 @@ export class ResourceCache<T> extends Selector<T> implements SelectorWithProgres
 
     actionRefreshCache() {
         this.externallyProvidedValue = undefined;
-        this.start$.set(void 0);
+        if (this.lastStartValue !== undefined) {
+            this.start$.set(this.lastStartValue);
+        }
     }
 
     actionSetValue(value: T): void {
@@ -60,6 +62,41 @@ export class ResourceCache<T> extends Selector<T> implements SelectorWithProgres
         } else {
             this.externallyProvidedValue = value;
         }
+    }
+
+    private getStart(config?: { start$?: Selector<S> }): State<S> {
+        if (config?.start$) {
+            const start$ = new State<S>(undefined, { equals: () => false });
+            start$.connect(config?.start$);
+            return start$;
+        } else {
+            return new State<S>(null as unknown as S, { equals: () => false });
+        }
+    }
+
+    private getSource(config?: { equals?: ((previous: T, current: T) => boolean) }): SelectorWithProgress<T> {
+        return this.start$.asyncMapWithProgress(
+            (value: S) => {
+                this.lastStartValue = value;
+                if (this.externallyProvidedValue) {
+                    return Single.from(of(this.externallyProvidedValue));
+                } else {
+                    return this.deferredResourceCall(value);
+                }
+            },
+            {
+                equals: config?.equals,
+                shareConfig: {
+                    connector: () => {
+                        this.value$ = new ReplaySubject<T>(1);
+                        return this.value$;
+                    },
+                    resetOnRefCountZero: true,
+                    resetOnComplete: false,
+                    resetOnError: true, // TODO error handling
+                },
+            },
+        );
     }
 
 }

@@ -1,5 +1,5 @@
 import { BoxId, BoxService } from '@/box-content/box';
-import { combineProgress, Selector, SelectorWithProgress } from '@/util';
+import { combineProgress, ResourceCache, Selector, SelectorWithProgress } from '@/util';
 import { Injectable } from '@angular/core';
 import { FiltersRepository } from '../repositories/FiltersRepository';
 import { Filter } from '../types/Filter';
@@ -14,10 +14,12 @@ export class FiltersService {
             return this.filtersRepository.selectBoxFilters(boxId);
         });
 
-    readonly activeFiltersIds$: SelectorWithProgress<Set<FilterId>> = this.currentBoxId$
-        .asyncMapWithProgress((boxId: BoxId) => {
+    readonly activeFiltersIds$ = new ResourceCache(
+        (boxId: BoxId) => {
             return this.filtersRepository.selectActiveFilterIds(boxId);
-        });
+        },
+        { start$: this.currentBoxId$ }
+    );
 
     readonly loadingInProgress$ = combineProgress(
         this.filters$.inProgress$,
@@ -32,6 +34,7 @@ export class FiltersService {
 
     async actionSetActiveFilters(activeFilters: Set<FilterId>): Promise<void> {
         const boxId: BoxId = await this.currentBoxId$.actionGet();
+        this.activeFiltersIds$.actionSetValue(activeFilters);
         await this.filtersRepository.actionSetActiveFilterIds(boxId, activeFilters);
     }
 

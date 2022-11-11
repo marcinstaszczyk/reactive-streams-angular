@@ -140,6 +140,19 @@ describe('Resource Cache', () => {
             expect(returnedValue).not.toBe(VALUE);
         });
 
+        it('but late subscribers should only receive last value', () => {
+            let SECOND_VALUE = Symbol(2);
+            resourceCache = new ResourceCache<symbol>(() => {
+                return Single.from(of(resourceCalledCount++ === 0 ? VALUE : SECOND_VALUE));
+            })
+            resourceCache.select$().subscribe();
+            resourceCache.actionRefreshCache();
+            resourceCache.select$().subscribe((value) => {
+                expect(value).toBe(SECOND_VALUE);
+                expect(value).not.toBe(VALUE);
+            });
+        });
+
         it('but should not call resource if never subscribed', () => {
             resourceCache.select$();
             resourceCache.actionRefreshCache();
@@ -168,6 +181,15 @@ describe('Resource Cache', () => {
             resourceCache.actionSetValue(EXTERNAL_VALUE);
             expect(returnedValue).toBe(EXTERNAL_VALUE);
             expect(returnedValue).not.toBe(VALUE);
+        });
+
+        it('but late subscribers should only receive last value', () => {
+            resourceCache.select$().subscribe();
+            resourceCache.actionSetValue(EXTERNAL_VALUE);
+            resourceCache.select$().subscribe((value) => {
+                expect(value).toBe(EXTERNAL_VALUE);
+                expect(value).not.toBe(VALUE);
+            });
         });
 
         describe('if done before first subscription', () => {
