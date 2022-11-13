@@ -4,8 +4,8 @@ export class FilterId {
 
     static filterIds = new Map<string, FilterId>();
 
-    static create(boxId: string): FilterId {
-        return getOrCreate(this.filterIds, boxId, () => new FilterId(boxId));
+    static create(filterId: string): FilterId {
+        return getOrCreate(this.filterIds, filterId, () => new FilterId(filterId));
     }
 
     private constructor(

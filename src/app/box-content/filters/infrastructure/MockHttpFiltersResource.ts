@@ -1,8 +1,8 @@
 import { BoxId } from '@/box-content/box';
-import { FiltersResource } from '@/box-content/filters/infrastructure/FiltersResource';
 import { Single } from '@/util';
 import { Injectable } from '@angular/core';
 import { delay, of, tap } from 'rxjs';
+import { FiltersResource } from './FiltersResource';
 import { FilterDTO } from './types/FilterDTO';
 
 @Injectable()
