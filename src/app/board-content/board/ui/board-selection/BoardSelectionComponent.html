@@ -1,0 +1,18 @@
+<select *rxLet="currentBoardId$; let currentBoardId"
+        [ngModel]="currentBoardId"
+        (ngModelChange)="userActionChangeBoard($event)"
+        (click)="userActionBoardSelectionClicked()"
+        name="board">
+    <ng-container *rxLet="boards$; let allBoards; suspense: loading">
+        <option *ngFor="let board of allBoards; trackBy: trackByBoardId"
+                [ngValue]="board.id"
+                [selected]="board.id === currentBoardId">
+            {{board.id}} - {{board.name}}
+        </option>
+        <option disabled *ngIf="this.boardService.allBoards$.inProgress$ | push">Loading...</option>
+    </ng-container>
+
+    <ng-template #loading>
+        <option disabled [ngValue]="currentBoardId">Loading...</option>
+    </ng-template>
+</select>

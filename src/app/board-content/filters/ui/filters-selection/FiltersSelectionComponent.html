@@ -1,0 +1,9 @@
+<ng-container *rxLet="filters$; let filters; suspense: loading">
+    <div *ngFor="let filter of filters; trackBy: trackByBoardId">
+        <app-filter-selection [filter]="filter"></app-filter-selection>
+    </div>
+</ng-container>
+
+<ng-template #loading>
+    Loading filters...
+</ng-template>

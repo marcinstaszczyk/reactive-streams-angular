@@ -1,4 +1,4 @@
-import { BoxContentComponent } from '@/box-content/BoxContentComponent';
+import { BoardContentComponent } from '@/board-content/BoardContentComponent';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CarouselOnDecoratorsComponent } from './carousel/on-decorators/CarouselOnDecoratorsComponent';
@@ -11,7 +11,7 @@ const routes: Routes = [
     { path: 'carousel-on-decorators', component: CarouselOnDecoratorsComponent },
     { path: 'carousel-on-selectors', component: CarouselOnSelectorsComponent },
     { path: 'carousel-on-selectors-service', component: CarouselContainerComponent },
-    { path: 'box/:boxId', component: BoxContentComponent },
+    { path: 'board/:boardId', component: BoardContentComponent },
     { path: '**', redirectTo: '' },
 ];
 
