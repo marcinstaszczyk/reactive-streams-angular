@@ -1,5 +1,5 @@
 {{ filter.name }}
 <input type="checkbox"
        [ngModel]="isActive$ | push"
-       (ngModelChange)="actionSetActivity($event)">
+       (ngModelChange)="setFilterActivity($event)">
 {{ isActive$ | push }}

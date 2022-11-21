@@ -41,15 +41,15 @@ export class CarouselOnSelectorsComponent extends Base {
         observeSelectorsPassingValues(this);
     }
 
-    actionNext() {
+    next() {
         this.catIndex$.set((value: number) => value + 1);
     }
 
-    actionPrevious() {
+    previous() {
         this.catIndex$.set((value: number) => value - 1);
     }
 
-    actionReset() {
+    reset() {
         this.catIndex$.set(0);
     }
 

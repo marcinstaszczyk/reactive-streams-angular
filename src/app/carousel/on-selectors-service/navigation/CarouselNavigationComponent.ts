@@ -25,16 +25,16 @@ export class CarouselNavigationComponent extends Base {
         observeSelectorsPassingValues(this);
     }
 
-    actionNext() {
-        this.catsService.actionNext();
+    next() {
+        this.catsService.nextCat();
     }
 
-    actionPrevious() {
-        this.catsService.actionPrevious();
+    previous() {
+        this.catsService.previousCat();
     }
 
-    actionReset() {
-        this.catsService.actionReset();
+    reset() {
+        this.catsService.firstCat();
     }
 
 }

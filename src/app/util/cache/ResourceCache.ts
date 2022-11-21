@@ -49,14 +49,15 @@ export class ResourceCache<T, S = null> extends Selector<T> implements SelectorW
         return this;
     }
 
-    actionRefreshCache() {
+    refreshCache() {
         this.externallyProvidedValue = undefined;
         if (this.lastStartValue !== undefined) {
             this.start$.set(this.lastStartValue);
         }
     }
 
-    actionSetValue(value: T): void {
+    // TODO add check to last value
+    setValue(value: T): void {
         if (this.value$) {
             this.value$.next(value);
         } else {

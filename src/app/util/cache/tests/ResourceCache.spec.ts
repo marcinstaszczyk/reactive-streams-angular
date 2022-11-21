@@ -123,7 +123,7 @@ describe('Resource Cache', () => {
     describe('should enable refreshing of the cache', () => {
         it('and redo resource call if subscribed', () => {
             resourceCache.select$().subscribe();
-            resourceCache.actionRefreshCache();
+            resourceCache.refreshCache();
             expect(resourceCalledCount).toBe(2);
         });
 
@@ -135,7 +135,7 @@ describe('Resource Cache', () => {
             resourceCache.select$().subscribe((value) => {
                 returnedValue = value;
             });
-            resourceCache.actionRefreshCache();
+            resourceCache.refreshCache();
             expect(returnedValue).toBe(SECOND_VALUE);
             expect(returnedValue).not.toBe(VALUE);
         });
@@ -146,7 +146,7 @@ describe('Resource Cache', () => {
                 return Single.from(of(resourceCalledCount++ === 0 ? VALUE : SECOND_VALUE));
             })
             resourceCache.select$().subscribe();
-            resourceCache.actionRefreshCache();
+            resourceCache.refreshCache();
             resourceCache.select$().subscribe((value) => {
                 expect(value).toBe(SECOND_VALUE);
                 expect(value).not.toBe(VALUE);
@@ -155,14 +155,14 @@ describe('Resource Cache', () => {
 
         it('but should not call resource if never subscribed', () => {
             resourceCache.select$();
-            resourceCache.actionRefreshCache();
+            resourceCache.refreshCache();
             expect(resourceCalledCount).toBe(0);
         });
 
         it('but should not call resource if already unsubscribed', () => {
             resourceCache.select$().subscribe().unsubscribe();
             expect(resourceCalledCount).toBe(1);
-            resourceCache.actionRefreshCache();
+            resourceCache.refreshCache();
             expect(resourceCalledCount).toBe(1);
         });
     });
@@ -178,14 +178,14 @@ describe('Resource Cache', () => {
             resourceCache.select$().subscribe((value) => {
                 returnedValue = value;
             });
-            resourceCache.actionSetValue(EXTERNAL_VALUE);
+            resourceCache.setValue(EXTERNAL_VALUE);
             expect(returnedValue).toBe(EXTERNAL_VALUE);
             expect(returnedValue).not.toBe(VALUE);
         });
 
         it('but late subscribers should only receive last value', () => {
             resourceCache.select$().subscribe();
-            resourceCache.actionSetValue(EXTERNAL_VALUE);
+            resourceCache.setValue(EXTERNAL_VALUE);
             resourceCache.select$().subscribe((value) => {
                 expect(value).toBe(EXTERNAL_VALUE);
                 expect(value).not.toBe(VALUE);
@@ -194,7 +194,7 @@ describe('Resource Cache', () => {
 
         describe('if done before first subscription', () => {
             it('should return value without resource call', () => {
-                resourceCache.actionSetValue(EXTERNAL_VALUE);
+                resourceCache.setValue(EXTERNAL_VALUE);
                 resourceCache.select$().subscribe((returnedValue) => {
                     expect(returnedValue).toBe(EXTERNAL_VALUE);
                     expect(returnedValue).not.toBe(VALUE);
@@ -206,16 +206,16 @@ describe('Resource Cache', () => {
                 resourceCache.inProgress$.subscribe((inProgress: boolean) => {
                     expect(inProgress).toBeFalse();
                 });
-                resourceCache.actionSetValue(EXTERNAL_VALUE);
+                resourceCache.setValue(EXTERNAL_VALUE);
             });
         });
 
         it('should still enable refreshing of the cache', () => {
-            resourceCache.actionSetValue(EXTERNAL_VALUE);
+            resourceCache.setValue(EXTERNAL_VALUE);
             resourceCache.select$().subscribe((value) => {
                 returnedValue = value;
             });
-            resourceCache.actionRefreshCache();
+            resourceCache.refreshCache();
             expect(resourceCalledCount).toBe(1);
             expect(returnedValue).toBe(VALUE);
         });

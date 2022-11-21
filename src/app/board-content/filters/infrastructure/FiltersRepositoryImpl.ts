@@ -36,7 +36,7 @@ export class FiltersRepositoryImpl implements FiltersRepository {
         )
     }
 
-    actionSetActiveFilterIds(boardId: BoardId, activeFilters: Set<FilterId>): Promise<void> {
+    setActiveFilterIds(boardId: BoardId, activeFilters: Set<FilterId>): Promise<void> {
         const filterIds: string[] = [...activeFilters].map((filterId: FilterId) => filterId.toString());
         return firstValueFrom(
             this.filtersResource.setActiveFiltersIds(boardId, filterIds)

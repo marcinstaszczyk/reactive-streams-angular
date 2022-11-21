@@ -27,15 +27,15 @@ export class CatsService extends Base {
         observeSelectorsPassingValues(this);
     }
 
-    actionNext() {
+    nextCat() {
         this.catIndex$.set((value: number) => value + 1);
     }
 
-    actionPrevious() {
+    previousCat() {
         this.catIndex$.set((value: number) => value - 1);
     }
 
-    actionReset() {
+    firstCat() {
         this.catIndex$.set(0);
     }
 

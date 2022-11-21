@@ -32,14 +32,8 @@ export class FiltersService {
     ) {
     }
 
-    async actionSetActiveFilters(activeFilters: Set<FilterId>): Promise<void> {
-        const boardId: BoardId = await this.currentBoardId$.actionGet();
-        this.activeFiltersIds$.actionSetValue(activeFilters);
-        await this.filtersRepository.actionSetActiveFilterIds(boardId, activeFilters);
-    }
-
-    async actionSetFilterActivity(filterId: FilterId, setAsActive: boolean): Promise<void> {
-        const filterIds: Set<FilterId> = await this.activeFiltersIds$.actionGet();
+    async setFilterActivity(filterId: FilterId, setAsActive: boolean): Promise<void> {
+        const filterIds: Set<FilterId> = await this.activeFiltersIds$.getValue();
         const changedIds = new Set(filterIds);
         if (setAsActive) {
             changedIds.add(filterId);
@@ -47,7 +41,13 @@ export class FiltersService {
             changedIds.delete(filterId);
         }
 
-        await this.actionSetActiveFilters(changedIds);
+        await this.setActiveFilters(changedIds);
+    }
+
+    private async setActiveFilters(activeFilters: Set<FilterId>): Promise<void> {
+        const boardId: BoardId = await this.currentBoardId$.getValue();
+        this.activeFiltersIds$.setValue(activeFilters);
+        await this.filtersRepository.setActiveFilterIds(boardId, activeFilters);
     }
 
 }

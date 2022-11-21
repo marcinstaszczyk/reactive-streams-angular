@@ -134,7 +134,7 @@ export class Selector<T> extends Observable<T> {
         return selectorWithProgress$;
     }
 
-    actionGet(): Promise<T> {
+    getValue(): Promise<T> {
         return firstValueFrom(environment.production ? this : this.pipe(
             // If waiting over 10s then it's most likely the value will never arrive and action will be stuck forever. Developer should correct this.
             timeout(10000)

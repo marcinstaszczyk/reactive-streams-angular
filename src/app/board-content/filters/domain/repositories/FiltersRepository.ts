@@ -11,5 +11,5 @@ export abstract class FiltersRepository {
 
     abstract selectActiveFilterIds(boardId: BoardId): Single<Set<FilterId>>;
 
-    abstract actionSetActiveFilterIds(boardId: BoardId, activeFilters: Set<FilterId>): Promise<void>;
+    abstract setActiveFilterIds(boardId: BoardId, activeFilters: Set<FilterId>): Promise<void>;
 }
