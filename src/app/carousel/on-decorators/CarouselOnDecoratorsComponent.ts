@@ -2,7 +2,7 @@ import { ResourceCache } from '@/util';
 import { Selector } from '@/util/decorators/Selector';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { PushModule } from '@rx-angular/template';
+import { PushModule } from '@rx-angular/template/push';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { CatsRepositoryService } from '../core/CatsRepositoryService';
 import { HttpCat } from '../core/HttpCat';

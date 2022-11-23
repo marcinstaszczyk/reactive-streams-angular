@@ -1,7 +1,7 @@
 import { Base, observeSelectorsPassingValues, SelectorWithProgress } from '@/util';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LetModule } from '@rx-angular/template';
+import { LetModule } from '@rx-angular/template/let';
 import { TaskService } from '../../domain/services/TaskService';
 import { TaskId } from '../../domain/types/TaskId';
 import { TasksTableRowComponent } from '../tasks-table-row/TasksTableRowComponent';

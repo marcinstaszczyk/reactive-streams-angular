@@ -4,7 +4,7 @@ import { TaskService, TasksTableComponent } from '@/board-content/task';
 import { Base, CircleLoaderComponent, combineProgress, observeSelectorsPassingValues, Selector } from '@/util';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { PushModule } from '@rx-angular/template';
+import { PushModule } from '@rx-angular/template/push';
 
 @Component({
     selector: 'app-board',

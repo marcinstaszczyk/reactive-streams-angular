@@ -1,7 +1,7 @@
 import { Base, Selector, State } from '@/util';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { LetModule } from '@rx-angular/template';
+import { LetModule } from '@rx-angular/template/let';
 import { TaskService } from '../../domain/services/TaskService';
 import { Task } from '../../domain/types/Task';
 import { TaskId } from '../../domain/types/TaskId';

@@ -2,7 +2,7 @@ import { FilterSelectionComponent } from '@/board-content/filters/ui/filter-sele
 import { Base, observeSelectorsPassingValues, SelectorWithProgress } from '@/util';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LetModule } from '@rx-angular/template';
+import { LetModule } from '@rx-angular/template/let';
 import { FiltersService } from '../../domain/services/FiltersService';
 import { Filter } from '../../domain/types/Filter';
 
