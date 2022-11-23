@@ -1,0 +1,7 @@
+<ng-container *rxLet="task$; let task; suspense: loading">
+    {{ task.id }} {{ task.name }} {{ task.assignee }} {{ task.completed }} {{ task.description }}
+</ng-container>
+
+<ng-template #loading>
+    Loading task...
+</ng-template>

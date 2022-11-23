@@ -1,0 +1,9 @@
+<ng-container *rxLet="taskIds$; let taskIds; suspense: loading">
+    <div>
+        <app-tasks-table-row *ngFor="let taskId of taskIds" [taskId]="taskId" style="height: 20px; display: block; "></app-tasks-table-row>
+    </div>
+</ng-container>
+
+<ng-template #loading>
+    Loading tasks...
+</ng-template>

@@ -23,7 +23,7 @@ export class MockHttpTaskResource implements TaskResource {
 
         return Single.from(
             of(filterDTOs).pipe(
-                delay(10 * taskIds.length)
+                delay(20 + 10 * taskIds.length)
             )
         );
     }
