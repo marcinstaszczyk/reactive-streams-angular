@@ -1,4 +1,5 @@
 import { Base, observeSelectorsPassingValues, SelectorWithProgress } from '@/util';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LetModule } from '@rx-angular/template/let';
@@ -15,6 +16,7 @@ import { TasksTableRowComponent } from '../tasks-table-row/TasksTableRowComponen
         CommonModule,
         LetModule,
         TasksTableRowComponent,
+        ScrollingModule,
     ],
 })
 export class TasksTableComponent extends Base {
