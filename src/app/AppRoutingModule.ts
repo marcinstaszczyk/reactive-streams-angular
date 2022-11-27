@@ -1,4 +1,5 @@
 import { BoardContentComponent } from '@/board-content/BoardContentComponent';
+import { PerformanceComponent } from '@/performance/PerformanceComponent';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CarouselOnDecoratorsComponent } from './carousel/on-decorators/CarouselOnDecoratorsComponent';
@@ -12,6 +13,7 @@ const routes: Routes = [
     { path: 'carousel-on-selectors', component: CarouselOnSelectorsComponent },
     { path: 'carousel-on-selectors-service', component: CarouselContainerComponent },
     { path: 'board/:boardId', component: BoardContentComponent },
+    { path: 'performance', component: PerformanceComponent },
     { path: '**', redirectTo: '' },
 ];
 
