@@ -1,6 +1,6 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { PushModule } from '@rx-angular/template/push';
 import { BehaviorSubject } from 'rxjs';
 import { WrappedValue } from '../core/WrappedValue';
@@ -32,6 +32,15 @@ export class SingleValueByServiceObservableTableComponent implements OnChanges, 
     @Input()
     columnsCount?: number;
 
+    @Input()
+    tableWidth?: number;
+
+    @Input()
+    tableHeight?: number;
+
+    @ViewChild('scrollViewport', { read: ElementRef, static: true })
+    scrollViewport?: ElementRef;
+
     value$ = new BehaviorSubject<WrappedValue | undefined>(new WrappedValue('1'));
 
     table?: number[];
@@ -51,6 +60,22 @@ export class SingleValueByServiceObservableTableComponent implements OnChanges, 
 
     ngAfterViewInit(): void {
         console.log('table.ngAfterViewInit');
+    }
+
+    scrollToTop(): void {
+        const startTime = performance.now();
+        this.scrollViewport?.nativeElement.scrollTo(0, 0);
+        setTimeout(() => {
+            console.log('scrollToTop', performance.now() - startTime);
+        })
+    }
+
+    scrollToBottom(): void {
+        const startTime = performance.now();
+        this.scrollViewport?.nativeElement.scrollTo(0, 10000);
+        setTimeout(() => {
+            console.log('scrollToBottom', performance.now() - startTime);
+        })
     }
 
     changeValue(): void {

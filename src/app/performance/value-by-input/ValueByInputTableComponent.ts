@@ -25,6 +25,12 @@ export class ValueByInputTableComponent implements OnChanges, AfterViewInit {
     @Input()
     columnsCount?: number;
 
+    @Input()
+    tableWidth?: number;
+
+    @Input()
+    tableHeight?: number;
+
     @ViewChild('scrollViewport', { read: ElementRef, static: true })
     scrollViewport?: ElementRef;
 

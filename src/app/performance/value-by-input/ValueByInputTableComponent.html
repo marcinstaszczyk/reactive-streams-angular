@@ -8,15 +8,11 @@
         <button (click)="scrollToBottom()">Scroll to bottom</button>
     </div>
 
-<!--    <div style="height: 540px; width: 500px; overflow-y: scroll;">-->
-<!--        <app-value-by-input-row *ngFor="let item of table"-->
-<!--                                [columnsCount]="columnsCount"-->
-<!--                                [value]="value"-->
-<!--                                style="display: block">-->
-<!--        </app-value-by-input-row>-->
-<!--    </div>-->
-
-    <cdk-virtual-scroll-viewport #scrollViewport itemSize="18" [maxBufferPx]="0" [minBufferPx]="0" style="height: 540px; width: 1200px">
+    <cdk-virtual-scroll-viewport #scrollViewport
+                                 itemSize="18"
+                                 [maxBufferPx]="0"
+                                 [minBufferPx]="0"
+                                 [ngStyle]="{ height: tableHeight + 'px', width: tableWidth + 'px' }">
         <app-value-by-input-row *cdkVirtualFor="let value of table"
                                 [columnsCount]="columnsCount"
                                 [value]="value"

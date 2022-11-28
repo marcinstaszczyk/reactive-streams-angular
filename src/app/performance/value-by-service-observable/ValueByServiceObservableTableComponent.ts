@@ -32,6 +32,12 @@ export class ValueByServiceObservableTableComponent implements OnChanges, AfterV
     @Input()
     columnsCount?: number;
 
+    @Input()
+    tableWidth?: number;
+
+    @Input()
+    tableHeight?: number;
+
     @ViewChild('scrollViewport', { read: ElementRef, static: true })
     scrollViewport?: ElementRef;
 
