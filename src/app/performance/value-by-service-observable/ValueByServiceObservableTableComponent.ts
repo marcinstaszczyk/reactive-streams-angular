@@ -3,7 +3,7 @@ import { ValueService } from '@/performance/value-by-service-observable/ValueSer
 import { ValueServiceImpl } from '@/performance/value-by-service-observable/ValueServiceImpl';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { PushModule } from '@rx-angular/template/push';
 import { BehaviorSubject } from 'rxjs';
 import { ValueByServiceObservableRowComponent } from './ValueByServiceObservableRowComponent';
@@ -32,9 +32,14 @@ export class ValueByServiceObservableTableComponent implements OnChanges, AfterV
     @Input()
     columnsCount?: number;
 
+    @ViewChild('scrollViewport', { read: ElementRef, static: true })
+    scrollViewport?: ElementRef;
+
     value$ = new BehaviorSubject<WrappedValue | undefined>(new WrappedValue('1'));
 
-    table?: number[];
+    baseValue?: number = 1;
+
+    table?: Array<WrappedValue | undefined>;
 
     constructor(
         private readonly valueServiceImpl: ValueServiceImpl,
@@ -45,7 +50,7 @@ export class ValueByServiceObservableTableComponent implements OnChanges, AfterV
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['rowsCount']) {
-            this.table = Array.from({ length: this.rowsCount ?? 0 }, (_, i) => i);
+            this.generateTable();
         }
     }
 
@@ -53,18 +58,42 @@ export class ValueByServiceObservableTableComponent implements OnChanges, AfterV
         console.log('table.ngAfterViewInit');
     }
 
+    scrollToTop(): void {
+        const startTime = performance.now();
+        this.scrollViewport?.nativeElement.scrollTo(0, 0);
+        setTimeout(() => {
+            console.log('scrollToTop', performance.now() - startTime);
+        })
+    }
+
+    scrollToBottom(): void {
+        const startTime = performance.now();
+        this.scrollViewport?.nativeElement.scrollTo(0, 10000);
+        setTimeout(() => {
+            console.log('scrollToBottom', performance.now() - startTime);
+        })
+    }
+
     changeValue(): void {
         const startTime = performance.now();
-        this.value$.next(new WrappedValue('' + (+(this.value$.value?.value ?? 0) + 1)));
+        this.baseValue = (this.baseValue ?? 0) + 1;
+        this.generateTable();
         this.changeDetectorRef.detectChanges();
         console.log('changeValue', performance.now() - startTime);
     }
 
     resetValue(): void {
         const startTime = performance.now();
-        this.value$.next(undefined);
+        this.baseValue = undefined;
+        this.generateTable();
         this.changeDetectorRef.detectChanges();
         console.log('changeValue', performance.now() - startTime);
+    }
+
+    private generateTable(): void {
+        this.table = Array.from({ length: this.rowsCount ?? 0 }, (_, i) => {
+            return this.baseValue ? new WrappedValue('' + (this.baseValue + i)) : undefined;
+        });
     }
 
 }
