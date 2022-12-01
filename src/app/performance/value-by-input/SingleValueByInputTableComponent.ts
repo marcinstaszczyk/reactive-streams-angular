@@ -1,30 +1,23 @@
+import { WrappedValue } from '@/performance/core/WrappedValue';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { PushModule } from '@rx-angular/template/push';
-import { BehaviorSubject } from 'rxjs';
-import { WrappedValue } from '../core/WrappedValue';
-import { SingleValueByServiceObservableRowComponent } from './SingleValueByServiceObservableRowComponent';
-import { ValueService } from './ValueService';
-import { ValueServiceImpl } from './ValueServiceImpl';
+import { ValueByInputRowComponent } from './ValueByInputRowComponent';
 
 @Component({
-    selector: 'app-single-value-by-service-observable-table',
+    selector: 'app-single-value-by-input-table',
     standalone: true,
-    templateUrl: './SingleValueByServiceObservableTableComponent.html',
+    templateUrl: './SingleValueByInputTableComponent.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
         PushModule,
+        ValueByInputRowComponent,
         ScrollingModule,
-        SingleValueByServiceObservableRowComponent,
-    ],
-    providers: [
-        ValueServiceImpl,
-        { provide: ValueService, useExisting: ValueServiceImpl },
     ],
 })
-export class SingleValueByServiceObservableTableComponent implements OnChanges, AfterViewInit {
+export class SingleValueByInputTableComponent implements OnChanges, AfterViewInit {
 
     @Input()
     rowsCount?: number;
@@ -41,14 +34,13 @@ export class SingleValueByServiceObservableTableComponent implements OnChanges, 
     @ViewChild('scrollViewport', { read: ElementRef, static: true })
     scrollViewport?: ElementRef;
 
-    value$ = new BehaviorSubject<WrappedValue | undefined>(new WrappedValue('1'));
+    value?: WrappedValue = new WrappedValue('1');
 
     table?: number[];
 
     constructor(
-        private readonly valueServiceImpl: ValueServiceImpl,
+        private readonly changeDetectorRef: ChangeDetectorRef
     ) {
-        valueServiceImpl.value$ = this.value$;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -78,14 +70,16 @@ export class SingleValueByServiceObservableTableComponent implements OnChanges, 
     }
 
     changeValue(): void {
+        this.value = new WrappedValue('' + (+(this.value?.value ?? 0) + 1));
         const startTime = performance.now();
-        this.value$.next(new WrappedValue('' + (+(this.value$.value?.value ?? 0) + 1)));
+        this.changeDetectorRef.detectChanges();
         console.log('changeValue', performance.now() - startTime);
     }
 
     resetValue(): void {
+        this.value = undefined;
         const startTime = performance.now();
-        this.value$.next(undefined);
+        this.changeDetectorRef.detectChanges();
         console.log('changeValue', performance.now() - startTime);
     }
 

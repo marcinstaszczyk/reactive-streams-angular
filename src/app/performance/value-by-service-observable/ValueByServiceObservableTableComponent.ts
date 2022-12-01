@@ -81,17 +81,17 @@ export class ValueByServiceObservableTableComponent implements OnChanges, AfterV
     }
 
     changeValue(): void {
-        const startTime = performance.now();
         this.baseValue = (this.baseValue ?? 0) + 1;
         this.generateTable();
+        const startTime = performance.now();
         this.changeDetectorRef.detectChanges();
         console.log('changeValue', performance.now() - startTime);
     }
 
     resetValue(): void {
-        const startTime = performance.now();
         this.baseValue = undefined;
         this.generateTable();
+        const startTime = performance.now();
         this.changeDetectorRef.detectChanges();
         console.log('changeValue', performance.now() - startTime);
     }

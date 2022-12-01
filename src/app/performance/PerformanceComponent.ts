@@ -1,3 +1,4 @@
+import { SingleValueByInputTableComponent } from '@/performance/value-by-input/SingleValueByInputTableComponent';
 import { SingleValueByServiceObservableTableComponent } from '@/performance/value-by-service-observable/SingleValueByServiceObservableTableComponent';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -17,6 +18,7 @@ import { ValueByServiceObservableTableComponent } from './value-by-service-obser
         ValueByInputTableComponent,
         ValueByServiceObservableTableComponent,
         SingleValueByServiceObservableTableComponent,
+        SingleValueByInputTableComponent,
     ],
 })
 export class PerformanceComponent {

@@ -1,8 +1,8 @@
-import { WrappedValue } from '@/performance/core/WrappedValue';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { PushModule } from '@rx-angular/template/push';
+import { WrappedValue } from '../core/WrappedValue';
 import { ValueByInputRowComponent } from './ValueByInputRowComponent';
 
 @Component({
@@ -70,17 +70,17 @@ export class ValueByInputTableComponent implements OnChanges, AfterViewInit {
     }
 
     changeValue(): void {
-        const startTime = performance.now();
         this.baseValue = (this.baseValue ?? 0) + 1;
         this.generateTable();
+        const startTime = performance.now();
         this.changeDetectorRef.detectChanges();
         console.log('changeValue', performance.now() - startTime);
     }
 
     resetValue(): void {
-        const startTime = performance.now();
         this.baseValue = undefined;
         this.generateTable();
+        const startTime = performance.now();
         this.changeDetectorRef.detectChanges();
         console.log('resetValue', performance.now() - startTime);
     }
