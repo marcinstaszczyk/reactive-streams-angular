@@ -1,7 +1,7 @@
 import { WrappedValue } from '@/performance/core/WrappedValue';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { PushModule } from '@rx-angular/template/push';
+import { RxPush } from '@rx-angular/template/push';
 
 @Component({
     selector: 'app-value-by-input-cell',
@@ -10,7 +10,7 @@ import { PushModule } from '@rx-angular/template/push';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        PushModule,
+        RxPush,
     ],
 })
 export class ValueByInputCellComponent {

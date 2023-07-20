@@ -1,7 +1,7 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { PushModule } from '@rx-angular/template/push';
+import { RxPush } from '@rx-angular/template/push';
 import { BehaviorSubject } from 'rxjs';
 import { WrappedValue } from '../core/WrappedValue';
 import { SingleValueByServiceObservableRowComponent } from './SingleValueByServiceObservableRowComponent';
@@ -15,7 +15,7 @@ import { ValueServiceImpl } from './ValueServiceImpl';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        PushModule,
+        RxPush,
         ScrollingModule,
         SingleValueByServiceObservableRowComponent,
     ],

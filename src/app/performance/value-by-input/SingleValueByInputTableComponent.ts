@@ -2,7 +2,7 @@ import { WrappedValue } from '@/performance/core/WrappedValue';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { PushModule } from '@rx-angular/template/push';
+import { RxPush } from '@rx-angular/template/push';
 import { ValueByInputRowComponent } from './ValueByInputRowComponent';
 
 @Component({
@@ -12,7 +12,7 @@ import { ValueByInputRowComponent } from './ValueByInputRowComponent';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        PushModule,
+        RxPush,
         ValueByInputRowComponent,
         ScrollingModule,
     ],

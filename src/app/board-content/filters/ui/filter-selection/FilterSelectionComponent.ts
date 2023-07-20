@@ -2,8 +2,8 @@ import { Base, observeSelectorsPassingValues, Selector, State } from '@/util';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LetModule } from '@rx-angular/template/let';
-import { PushModule } from '@rx-angular/template/push';
+import { RxLet } from '@rx-angular/template/let';
+import { RxPush } from '@rx-angular/template/push';
 import { FiltersService } from '../../domain/services/FiltersService';
 import { Filter } from '../../domain/types/Filter';
 import { FilterId } from '../../domain/types/FilterId';
@@ -15,8 +15,8 @@ import { FilterId } from '../../domain/types/FilterId';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        LetModule,
-        PushModule,
+        RxLet,
+        RxPush,
         FormsModule,
     ],
 })

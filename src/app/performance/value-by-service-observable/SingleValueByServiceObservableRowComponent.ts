@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { PushModule } from '@rx-angular/template/push';
+import { RxPush } from '@rx-angular/template/push';
 import { ValueByServiceObservableCellComponent } from './ValueByServiceObservableCellComponent';
 
 @Component({
@@ -10,7 +10,7 @@ import { ValueByServiceObservableCellComponent } from './ValueByServiceObservabl
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        PushModule,
+        RxPush,
         ValueByServiceObservableCellComponent,
     ],
 })

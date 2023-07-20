@@ -4,7 +4,7 @@ import { ValueServiceImpl } from '@/performance/value-by-service-observable/Valu
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { PushModule } from '@rx-angular/template/push';
+import { RxPush } from '@rx-angular/template/push';
 import { BehaviorSubject } from 'rxjs';
 import { ValueByServiceObservableRowComponent } from './ValueByServiceObservableRowComponent';
 
@@ -15,7 +15,7 @@ import { ValueByServiceObservableRowComponent } from './ValueByServiceObservable
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        PushModule,
+        RxPush,
         ScrollingModule,
         ValueByServiceObservableRowComponent,
     ],

@@ -1,14 +1,14 @@
 import { Base, observeSelectorsPassingValues, Selector } from '@/util';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { PushModule } from '@rx-angular/template/push';
+import { RxPush } from '@rx-angular/template/push';
 import { HttpCat } from '../../core/HttpCat';
 import { CatsService } from '../service/CatsService';
 
 @Component({
     selector: 'app-carousel-content',
     standalone: true,
-    imports: [CommonModule, PushModule],
+    imports: [CommonModule, RxPush],
     templateUrl: './CarouselContentComponent.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })

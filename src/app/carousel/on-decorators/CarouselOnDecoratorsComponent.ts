@@ -2,7 +2,7 @@ import { ResourceCache } from '@/util';
 import { Selector } from '@/util/decorators/Selector';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { PushModule } from '@rx-angular/template/push';
+import { RxPush } from '@rx-angular/template/push';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { CatsRepositoryService } from '../core/CatsRepositoryService';
 import { HttpCat } from '../core/HttpCat';
@@ -10,7 +10,7 @@ import { HttpCat } from '../core/HttpCat';
 @Component({
     selector: 'app-carousel',
     standalone: true,
-    imports: [CommonModule, PushModule],
+    imports: [CommonModule, RxPush],
     templateUrl: './CarouselOnDecoratorsComponent.html',
     styleUrls: ['./CarouselOnDecoratorsComponent.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

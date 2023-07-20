@@ -2,7 +2,7 @@ import { Base, observeSelectorsPassingValues, SelectorWithProgress } from '@/uti
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LetModule } from '@rx-angular/template/let';
+import { RxLet } from '@rx-angular/template/let';
 import { TaskService } from '../../domain/services/TaskService';
 import { TaskId } from '../../domain/types/TaskId';
 import { TasksTableRowComponent } from '../tasks-table-row/TasksTableRowComponent';
@@ -14,7 +14,7 @@ import { TasksTableRowComponent } from '../tasks-table-row/TasksTableRowComponen
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        LetModule,
+        RxLet,
         TasksTableRowComponent,
         ScrollingModule,
     ],

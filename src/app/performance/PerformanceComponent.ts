@@ -2,7 +2,7 @@ import { SingleValueByInputTableComponent } from '@/performance/value-by-input/S
 import { SingleValueByServiceObservableTableComponent } from '@/performance/value-by-service-observable/SingleValueByServiceObservableTableComponent';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { PushModule } from '@rx-angular/template/push';
+import { RxPush } from '@rx-angular/template/push';
 import { Configuration } from './core/Configuration';
 import { ValueByInputTableComponent } from './value-by-input/ValueByInputTableComponent';
 import { ValueByServiceObservableTableComponent } from './value-by-service-observable/ValueByServiceObservableTableComponent';
@@ -14,7 +14,7 @@ import { ValueByServiceObservableTableComponent } from './value-by-service-obser
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        PushModule,
+        RxPush,
         ValueByInputTableComponent,
         ValueByServiceObservableTableComponent,
         SingleValueByServiceObservableTableComponent,

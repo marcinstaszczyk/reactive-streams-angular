@@ -2,7 +2,7 @@ import { ValueService } from '@/performance/value-by-service-observable/ValueSer
 import { ValueServiceImpl } from '@/performance/value-by-service-observable/ValueServiceImpl';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { PushModule } from '@rx-angular/template/push';
+import { RxPush } from '@rx-angular/template/push';
 import { ReplaySubject } from 'rxjs';
 import { WrappedValue } from '../core/WrappedValue';
 import { ValueByServiceObservableCellComponent } from './ValueByServiceObservableCellComponent';
@@ -14,7 +14,7 @@ import { ValueByServiceObservableCellComponent } from './ValueByServiceObservabl
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        PushModule,
+        RxPush,
         ValueByServiceObservableCellComponent,
     ],
     providers: [

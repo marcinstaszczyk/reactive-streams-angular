@@ -4,7 +4,7 @@ import { TaskService, TasksTableComponent } from '@/board-content/task';
 import { Base, CircleLoaderComponent, combineProgress, observeSelectorsPassingValues, Selector } from '@/util';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { PushModule } from '@rx-angular/template/push';
+import { RxPush } from '@rx-angular/template/push';
 
 @Component({
     selector: 'app-board',
@@ -13,7 +13,7 @@ import { PushModule } from '@rx-angular/template/push';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        PushModule,
+        RxPush,
         CircleLoaderComponent,
         BoardSelectionComponent,
         FiltersSelectionComponent,
