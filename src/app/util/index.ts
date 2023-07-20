@@ -1,17 +1,20 @@
-export { Base } from './angular/Base';
+export * from './angular/Base';
 
-export { Single } from './rxjs/Single';
-export { Selector } from './rxjs/selector/Selector';
-export { SelectorWithProgress } from './rxjs/selector/Selector';
-export { observeSelectorsPassingValues } from './rxjs/selector/observeSelectorsPassingValues';
-export { combineProgress } from './rxjs/selector/combineProgress';
-export { State } from './state/State';
-export { ResourceCache } from './cache/ResourceCache';
+export * from './rxjs/Single';
+export * from './rxjs/selector/Selector';
+export * from './rxjs/selector/Selector';
+export * from './rxjs/selector/observeSelectorsPassingValues';
+export * from './rxjs/selector/combineProgress';
 
-export { CircleLoaderComponent } from './ui/circle-loader/CircleLoaderComponent';
+export * from './state/State';
 
-export { getOrCreate } from './functions/getOrCreate';
+export * from './cache/single-resource/ResourceCache';
+export * from './cache/items-set/ItemsCache';
 
-export { Anemia } from './types/Anemia';
+export * from './ui/circle-loader/CircleLoaderComponent';
 
-export { MemoizeNoArgs } from './decorators/MemoizeNoArgs';
+export * from './functions/getOrCreate';
+
+export * from './types/Anemia';
+
+export * from './decorators/MemoizeNoArgs';

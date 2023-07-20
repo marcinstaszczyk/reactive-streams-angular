@@ -1,7 +1,7 @@
 import { of, ReplaySubject } from 'rxjs';
-import { Selector, SelectorWithProgress } from '../rxjs/selector/Selector';
-import { Single } from '../rxjs/Single';
-import { State } from '../state/State';
+import { Selector, SelectorWithProgress } from '../../rxjs/selector/Selector';
+import { Single } from '../../rxjs/Single';
+import { State } from '../../state/State';
 
 export class ResourceCache<T, S = null> extends Selector<T> implements SelectorWithProgress<T> {
 

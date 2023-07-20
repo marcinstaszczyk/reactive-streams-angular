@@ -91,6 +91,12 @@ export class Selector<T> extends Observable<T> {
         return selector$;
     }
 
+    static is<T>(selectorLike$: Observable<T>): Selector<T> {
+        const selector$ = new Selector<T>();
+        selector$.source = selectorLike$;
+        return selector$;
+    }
+
     protected constructor() {
         super();
     }

@@ -1,4 +1,4 @@
-import { ResourceVersion } from '@/util/cache/ResourceVersion';
+import { ResourceVersion } from '@/util/cache/single-resource/ResourceVersion';
 import { select, Selector } from '@/util/rxjs/selector/Selector';
 import { Single } from '@/util/rxjs/Single';
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap, take, tap } from 'rxjs';

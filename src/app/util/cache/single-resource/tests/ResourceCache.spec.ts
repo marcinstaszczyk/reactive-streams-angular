@@ -1,6 +1,6 @@
 import { Observable, of, Subject } from 'rxjs';
-import { Selector } from '../../rxjs/selector/Selector';
-import { Single } from '../../rxjs/Single';
+import { Selector } from '../../../rxjs/selector/Selector';
+import { Single } from '../../../rxjs/Single';
 import { ResourceCache } from '../ResourceCache';
 
 describe('Resource Cache', () => {
