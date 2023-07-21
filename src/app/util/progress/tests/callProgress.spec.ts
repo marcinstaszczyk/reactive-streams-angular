@@ -58,34 +58,34 @@ describe('callProgress', () => {
         });
 
         it('"in progress" === false before selecting for data', () => {
-            expect(lastInProgressState).toBeFalse();
+            expect(lastInProgressState).toBe(false);
         });
 
         it('"in progress" === false before subscribing for selected data', () => {
             resourceCallWithProgress$();
-            expect(lastInProgressState).toBeFalse();
+            expect(lastInProgressState).toBe(false);
         });
 
         it('"in progress" === true after subscribing for selected data and before resource returns value', () => {
             resourceCallWithProgress$().subscribe();
-            expect(lastInProgressState).toBeTrue();
+            expect(lastInProgressState).toBe(true);
         });
 
         it('"in progress" === false after resource returns value', () => {
             resourceCallWithProgress$().subscribe();
             resourceResponseSubject.next(VALUE);
             resourceResponseSubject.complete();
-            expect(lastInProgressState).toBeFalse();
+            expect(lastInProgressState).toBe(false);
         });
 
         it('after resource returns value, the value signal should go before "no longer in progress" signal', () => {
             resourceCallWithProgress$().subscribe((returnedValue) => {
                 expect(returnedValue).toBe(VALUE);
-                expect(lastInProgressState).toBeTrue();
+                expect(lastInProgressState).toBe(true);
             });
             resourceResponseSubject.next(VALUE);
             resourceResponseSubject.complete();
-            expect(lastInProgressState).toBeFalse();
+            expect(lastInProgressState).toBe(false);
         });
     });
 
