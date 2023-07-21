@@ -1,0 +1,12 @@
+<div *ngIf="showNavigation()"
+     style="display: flex; justify-content: center; gap: 2px">
+    <button (click)="reset()">RESET</button>
+    <button [disabled]="!hasPrevious()"
+            (click)="previous()">
+        PREVIOUS
+    </button>
+    <button [disabled]="!hasNext()"
+            (click)="next()">
+        NEXT
+    </button>
+</div>
