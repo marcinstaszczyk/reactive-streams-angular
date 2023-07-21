@@ -1,3 +1,4 @@
+import { isDevMode } from '@angular/core';
 import {
     combineLatest,
     distinctUntilChanged,
@@ -12,7 +13,6 @@ import {
     tap,
     timeout,
 } from 'rxjs';
-import { environment } from '../../../../environments/environment';
 import { callProgress, DeferredCallWithProgress } from '../../progress/callProgress';
 import { Single } from '../Single';
 
@@ -141,7 +141,7 @@ export class Selector<T> extends Observable<T> {
     }
 
     getValue(): Promise<T> {
-        return firstValueFrom(environment.production ? this : this.pipe(
+        return firstValueFrom(!isDevMode() ? this : this.pipe(
             // If waiting over 10s then it's most likely the value will never arrive and action will be stuck forever. Developer should correct this.
             timeout(10000)
         ));
