@@ -9,6 +9,7 @@ import { FilterDTO } from './types/FilterDTO';
 export class MockHttpFiltersResource implements FiltersResource {
 
     selectBoardFilters(boardId: BoardId): Single<FilterDTO[]> {
+        console.log('selectBoardFilters', boardId);
         const filterDTOs: FilterDTO[] = [1,2,3,4,5].map((index: number) => generateMockFilterDTO(boardId.toString(), index));
 
         return Single.from(
@@ -19,6 +20,7 @@ export class MockHttpFiltersResource implements FiltersResource {
     }
 
     selectActiveFilterIds(boardId: BoardId): Single<string[]> {
+        console.log('selectActiveFilterIds', boardId);
         const string: string | null = localStorage.getItem(this.getLocalStorageKey(boardId));
         const filters: string[] = string ? JSON.parse(string) : [];
 

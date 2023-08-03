@@ -9,6 +9,7 @@ import { TaskDTO } from './types/TaskDTO';
 export class MockHttpTaskResource implements TaskResource {
 
     selectTaskIds(boardId: BoardId): Single<number[]> {
+        console.log('selectTaskIds', boardId);
         const taskIds: number[] = Array.from({ length: 100 }, (_, i) => i+1);
 
         return Single.from(
@@ -19,6 +20,7 @@ export class MockHttpTaskResource implements TaskResource {
     }
 
     selectTasks(taskIds: number[]): Single<TaskDTO[]> {
+        console.log('selectTasks', taskIds.length);
         const filterDTOs: TaskDTO[] = taskIds.map((taskId: number) => generateMockTaskDTO(taskId));
 
         return Single.from(

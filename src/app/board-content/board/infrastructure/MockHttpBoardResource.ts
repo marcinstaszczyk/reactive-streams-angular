@@ -9,6 +9,7 @@ import { BoardDTO } from './types/BoardDTO';
 export class MockHttpBoardResource implements BoardResource {
 
     selectBoardData(boardId: BoardId): Single<BoardDTO> {
+        console.log('selectBoardData', boardId);
         const boardDTO: BoardDTO = generateMockBoardDTO(boardId.boardId);
         return Single.from(
             of(boardDTO).pipe(
@@ -18,6 +19,7 @@ export class MockHttpBoardResource implements BoardResource {
     }
 
     selectAllBoards(): Single<BoardDTO[]> {
+        console.log('selectAllBoards');
         const boardDTOs: BoardDTO[] = [1,2,3,4,5,6,7,8,9,10].map((boardId: number) => generateMockBoardDTO('BOARD-' + boardId));
 
         return Single.from(
