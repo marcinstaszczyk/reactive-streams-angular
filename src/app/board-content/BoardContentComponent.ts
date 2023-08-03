@@ -3,7 +3,7 @@ import { FiltersSelectionComponent, FiltersService } from '@/board-content/filte
 import { TaskService, TasksTableComponent } from '@/board-content/task';
 import { Base, CircleLoaderComponent, combineProgress, observeSelectorsPassingValues, Selector } from '@/util';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RxPush } from '@rx-angular/template/push';
 
 @Component({
@@ -26,6 +26,8 @@ import { RxPush } from '@rx-angular/template/push';
     ],
 })
 export class BoardContentComponent extends Base {
+
+    readonly boardActive = signal(false);
 
     readonly loadingInProgress$: Selector<boolean> = combineProgress(
         this.boardService.loadingInProgress$,
