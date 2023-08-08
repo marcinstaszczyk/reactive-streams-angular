@@ -19,6 +19,14 @@ type UnwrapSignals<SA extends Tuple<Signal<any>>> =
         ? [Exclude<P, undefined | false>, ...UnwrapSignals<Tail>]
         : never;
 
+export function signalResource<R>(asyncCall: () => Single<R>, options: SignalResourceOptions<R> & { initialValue: R }): SignalResource<R>;
+export function signalResource<R>(asyncCall: () => Single<R>, options: SignalResourceOptions<R>): SignalResource<R | undefined>;
+export function signalResource<R>(asyncCall: () => Single<R>): SignalResource<R | undefined>;
+
+export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>, options: SignalResourceOptions<R> & { initialValue: R }): SignalResource<R>;
+export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>, options: SignalResourceOptions<R>): SignalResource<R | undefined>;
+export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>): SignalResource<R | undefined>;
+
 export function signalResource<SA extends Tuple<Signal<any>>, R>(
     ...params: [...SA, (...values: UnwrapSignals<SA>) => Single<R>, SignalResourceOptions<R> & { initialValue: R }]
 ): SignalResource<R>;
