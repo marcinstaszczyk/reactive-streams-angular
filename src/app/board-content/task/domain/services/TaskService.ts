@@ -1,7 +1,7 @@
 import { BoardId, BoardService } from '@/board-content/board';
 import { Task } from '@/board-content/task/domain/types/Task';
 import { TaskId } from '@/board-content/task/domain/types/TaskId';
-import { Selector, SelectorWithProgress, Single } from '@/util';
+import { Selector, SelectorWithProgress, Single, State } from '@/util';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { TaskRepository } from '../repositories/TaskRepository';
@@ -9,7 +9,7 @@ import { TaskRepository } from '../repositories/TaskRepository';
 @Injectable()
 export class TaskService {
 
-    readonly currentBoardId$: Selector<BoardId> = this.boardService.currentBoardId$;
+    readonly currentBoardId$: Selector<BoardId> = new State();//this.boardService.currentBoardId$;
     readonly taskIds$: SelectorWithProgress<TaskId[]> = this.currentBoardId$
         .asyncMapWithProgress((boardId: BoardId) => {
             return this.taskRepository.selectTaskIds(boardId);

@@ -1,42 +1,40 @@
-import { Base, combineProgress, observeSelectorsPassingValues, ResourceCache, SelectorWithProgress, State } from '@/util';
-import { Injectable } from '@angular/core';
+import { State } from '@/util';
+import { signalResource, SignalResource } from '@/util/signals/signalResource';
+import { computed, Injectable, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { filter, interval, map, mergeWith } from 'rxjs';
 import { BoardRepository } from '../repositories/BoardRepository';
 import { Board } from '../types/Board';
 import { BoardId } from '../types/BoardId';
 
 @Injectable() // provided in root is not getting boardId route param right
-export class BoardService extends Base {
+export class BoardService {
 
-    readonly currentBoardId$ = new State<BoardId>();
-    readonly allBoards$ = new ResourceCache<Board[]>(() => this.boardRepository.selectAllBoards());
-
-    // TODO reuse data between allBoards and currentBoard
-    readonly currentBoard$: SelectorWithProgress<Board> = this.currentBoardId$
-        .asyncMapWithProgress((boardId: BoardId) => this.boardRepository.selectBoardData(boardId));
-
-    readonly loadingInProgress$ = combineProgress(
-        this.allBoards$.inProgress$,
-        this.currentBoard$.inProgress$
+    readonly currentBoardId: Signal<BoardId | undefined> = toSignal(
+        this.route.params.pipe(
+            map((params: Params) => params['boardId']),
+            filter((boardId: string | undefined): boardId is string => Boolean(boardId)),
+            map((boardId: string) => BoardId.create(boardId)),
+            mergeWith(interval(1000).pipe(map((index) => BoardId.create('BOARD-' + (1 + index % 10)))))
+        )
     );
+    readonly allBoards: SignalResource<Board[] | undefined> = signalResource(() => this.boardRepository.selectAllBoards());
+    // TODO reuse data between allBoards and currentBoard
+    readonly currentBoard: SignalResource<Board | undefined> = signalResource(
+        this.currentBoardId,
+        (boardId: BoardId) => this.boardRepository.selectBoardData(boardId)
+    );
+
+    // TODO use
+    readonly loadingInProgress: Signal<boolean> = computed(() => this.allBoards.loading() || this.currentBoard.loading());
+    readonly loadingInProgress$ = new State(false);
 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         private boardRepository: BoardRepository
     ) {
-        super();
-        observeSelectorsPassingValues(this);
-
-        this.currentBoardId$.connect(
-            this.route.params.pipe(
-                map((params: Params) => params['boardId']),
-                filter((boardId: string | undefined): boardId is string => Boolean(boardId)),
-                map((boardId: string) => BoardId.create(boardId))
-            )
-        );
-
     }
 
     userActionChangeBoard(targetBoard: BoardId): void {

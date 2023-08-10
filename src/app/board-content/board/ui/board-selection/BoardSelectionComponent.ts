@@ -1,6 +1,6 @@
-import { Base, observeSelectorsPassingValues, Selector, State } from '@/util';
+import { safeComputed } from '@/util/signals/safeComputed';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, Signal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RxLet } from '@rx-angular/template/let';
 import { RxPush } from '@rx-angular/template/push';
@@ -20,26 +20,24 @@ import { BoardId } from '../../domain/types/BoardId';
         FormsModule,
     ],
 })
-export class BoardSelectionComponent extends Base {
+export class BoardSelectionComponent {
 
-    readonly selectNeverOpened$ = new State(true);
+    readonly selectNeverOpened = signal(true);
 
-    readonly currentBoardId$: Selector<BoardId> = this.boardService.currentBoardId$;
-    readonly currentBoardAsArray$: Selector<Board[]> = this.boardService.currentBoard$.map((board: Board) => [board]);
+    readonly currentBoardId: Signal<BoardId | undefined> = this.boardService.currentBoardId;
+    readonly currentBoardAsArray: Signal<Board[] | undefined> = safeComputed(this.boardService.currentBoard, (board) => [board]);
 
-    readonly boards$: Selector<Board[]> = this.selectNeverOpened$.asyncMap((selectNeverOpened: boolean) => {
-        return selectNeverOpened ? this.currentBoardAsArray$ : this.boardService.allBoards$;
+    readonly boards: Signal<Board[] | undefined> = computed(() => {
+        return this.selectNeverOpened() ? this.currentBoardAsArray() : this.boardService.allBoards();
     });
 
     constructor(
         readonly boardService: BoardService,
     ) {
-        super();
-        observeSelectorsPassingValues(this);
     }
 
     userActionBoardSelectionClicked(): void {
-        this.selectNeverOpened$.set(false);
+        this.selectNeverOpened.set(false);
     }
 
     userActionChangeBoard(boardId: BoardId): void {

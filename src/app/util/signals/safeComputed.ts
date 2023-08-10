@@ -10,7 +10,7 @@ export function safeComputed<A, B, C, D, R>(
     s4: Signal<D | undefined>,
     map: (a: A, b: B, c: C, d: D) => R
 ): Signal<R | undefined>;
-export function safeComputed(...params: unknown[]): Signal<any> {
+export function safeComputed(...params: unknown[]): Signal<any | undefined> {
     const map = params.pop() as Function;
     const signals = params as Array<Signal<any>>;
 
