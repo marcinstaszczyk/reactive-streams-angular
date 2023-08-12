@@ -1,5 +1,7 @@
 import { Single } from '@/util';
 import { AsyncSignal } from '@/util/signals/AsyncSignal';
+import { splitParams } from '@/util/signals/internal/splitParams';
+import { Tuple } from '@/util/types/Tuple';
 import { computed, inject, Injector, signal, Signal, untracked, WritableSignal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { mergeWith, ReplaySubject, startWith, Subject, switchMap, tap } from 'rxjs';
@@ -9,9 +11,7 @@ export type SignalResource<T> = Exclude<WritableSignal<T>, 'mutate'>
     & {
         loading: Signal<boolean>; // call will NOT activate request
         error: Signal<undefined | unknown>; // call will NOT activate request (TODO confirm)
-    }
-
-type Tuple<T> = readonly T[];
+    };
 
 type SignalResourceOptions<T> = { initialValue?: T };
 
@@ -36,24 +36,13 @@ export function signalResource<SA extends Tuple<Signal<any>>, R>(
              | [...SA, (...values: UnwrapSignals<SA>) => Single<R>, SignalResourceOptions<R>]
 ): SignalResource<R> {
     const injector = inject(Injector);
-    const lastParam = params.pop() as SignalResourceOptions<any> | Function;
 
-    let options: SignalResourceOptions<any>;
-    let asyncCall: (...values: UnwrapSignals<SA>) => Single<R>;
-    if (isSignalResourceOptions(lastParam)) {
-        options = lastParam;
-        asyncCall = params.pop() as (...values: UnwrapSignals<SA>) => Single<R>;
-    } else {
-        options = {};
-        asyncCall = lastParam as (...values: UnwrapSignals<SA>) => Single<R>;
-    }
-
-    const signals: SA = params as unknown as SA;
+    const { source, call, options} = splitParams<SA, (...values: UnwrapSignals<SA>) => Single<R>, SignalResourceOptions<R>>(params);
 
     // TODO almost like safeComputed. How to use it
     const sourceValues = computed(() => {
         const sourceValues = [];
-        for (const signal of signals) {
+        for (const signal of source) {
             if (isSignalResource(signal) && !signal.ready()) {
                 return undefined;
             }
@@ -101,7 +90,7 @@ export function signalResource<SA extends Tuple<Signal<any>>, R>(
                     sourceValuesSubject$.pipe(
                         switchMap((values: UnwrapSignals<SA>) => {
                             untracked(() => loading.set(true));
-                            return asyncCall(...values)
+                            return call(...values)
                         }),
                         tap({
                             next: () => untracked(() => loading.set(false)),
@@ -120,7 +109,7 @@ export function signalResource<SA extends Tuple<Signal<any>>, R>(
     const result: Signal<R> = computed(() => {
         const result = baseResult();
         if (result === NOT_LOADED) {
-            if (options.initialValue) {
+            if (options?.initialValue) {
                 return options.initialValue;
             }
             throw new Error('Value not yet loaded. Check ready() before getting value, or provide initialValue option.');
@@ -147,10 +136,6 @@ export function signalResource<SA extends Tuple<Signal<any>>, R>(
         loading,
         error,
     })
-}
-
-function isSignalResourceOptions<T>(value: SignalResourceOptions<T> | Function): value is SignalResourceOptions<T> {
-    return !(value instanceof Function);
 }
 
 function isSignalResource<T>(signal: Signal<T> | SignalResource<T>): signal is SignalResource<T> {
