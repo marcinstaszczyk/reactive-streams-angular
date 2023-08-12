@@ -1,7 +1,7 @@
 <div style="position: relative; max-width: 1000px;">
 
     <div style="position: absolute; top: 0; right: 0; ">
-        <app-circle-loader *ngIf="loadingInProgress$ | push"></app-circle-loader>
+        <app-circle-loader *ngIf="loadingInProgress()"></app-circle-loader>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
@@ -10,11 +10,11 @@
 
             <app-board-selection *ngIf="boardActive()"></app-board-selection>
         </div>
-<!--        <div *ngIf="boardActive()" style="border: 1px solid black; padding: 4px;">-->
-<!--            <div>Filters:</div>-->
+        <div *ngIf="boardActive()" style="border: 1px solid black; padding: 4px;">
+            <div>Filters:</div>
 
-<!--            <app-filters-selection></app-filters-selection>-->
-<!--        </div>-->
+            <app-filters-selection></app-filters-selection>
+        </div>
     </div>
 
 <!--    <div *ngIf="boardActive()" style="border: 1px solid black; padding: 4px;">-->

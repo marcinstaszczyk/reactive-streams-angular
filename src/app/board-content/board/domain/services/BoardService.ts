@@ -1,4 +1,3 @@
-import { State } from '@/util';
 import { signalResource, SignalResource } from '@/util/signals/signalResource';
 import { computed, Injectable, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -19,16 +18,14 @@ export class BoardService {
             mergeWith(interval(1000).pipe(map((index) => BoardId.create('BOARD-' + (1 + index % 10)))))
         )
     );
-    readonly allBoards: SignalResource<Board[] | undefined> = signalResource(() => this.boardRepository.selectAllBoards());
+    readonly allBoards: SignalResource<Board[]> = signalResource(() => this.boardRepository.selectAllBoards());
     // TODO reuse data between allBoards and currentBoard
-    readonly currentBoard: SignalResource<Board | undefined> = signalResource(
+    readonly currentBoard: SignalResource<Board> = signalResource(
         this.currentBoardId,
         (boardId: BoardId) => this.boardRepository.selectBoardData(boardId)
     );
 
-    // TODO use
     readonly loadingInProgress: Signal<boolean> = computed(() => this.allBoards.loading() || this.currentBoard.loading());
-    readonly loadingInProgress$ = new State(false);
 
     constructor(
         private route: ActivatedRoute,

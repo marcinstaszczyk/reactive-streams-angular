@@ -1,6 +1,6 @@
-import { Base, observeSelectorsPassingValues, Selector, State } from '@/util';
+import { Base, observeSelectorsPassingValues } from '@/util';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, Input, OnChanges, Signal, signal, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RxLet } from '@rx-angular/template/let';
 import { RxPush } from '@rx-angular/template/push';
@@ -22,15 +22,12 @@ import { FilterId } from '../../domain/types/FilterId';
 })
 export class FilterSelectionComponent extends Base implements OnChanges {
 
-    @Input()
-    filter!: Filter;
+    @Input('filter')
+    filterInput!: Filter;
+    readonly filter = signal<Filter>(undefined as unknown as Filter);
 
-    readonly filter$ = new State<Filter>();
-    readonly filterId$ = this.filter$.map((filter: Filter) => filter.id);
-    readonly isActive$: Selector<boolean> = this.filterId$.combineWith(
-        this.filtersService.activeFiltersIds$,
-        (filterId: FilterId, activeFilters: Set<FilterId>) => activeFilters.has(filterId)
-    );
+    readonly filterId: Signal<FilterId> = computed(() => this.filter().id);
+    readonly isActive: Signal<boolean> = computed(() => this.filtersService.activeFiltersIds().has(this.filterId()));
 
     constructor(
         readonly filtersService: FiltersService,
@@ -40,13 +37,13 @@ export class FilterSelectionComponent extends Base implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['filter']) {
-            this.filter$.set(this.filter);
+        if (changes['filterInput']) {
+            this.filter.set(this.filterInput);
         }
     }
 
     setFilterActivity(setAsActive: boolean): void {
-        this.filtersService.setFilterActivity(this.filter.id, setAsActive);
+        this.filtersService.setFilterActivity(this.filterId(), setAsActive);
     }
 
 }

@@ -1,5 +1,5 @@
-<ng-container *rxLet="filters$; let filters; suspense: loading">
-    <div *ngFor="let filter of filters; trackBy: trackByBoardId">
+<ng-container *ngIf="filters.ready(); else loading">
+    <div *ngFor="let filter of filters(); trackBy: trackByBoardId">
         <app-filter-selection [filter]="filter"></app-filter-selection>
     </div>
 </ng-container>

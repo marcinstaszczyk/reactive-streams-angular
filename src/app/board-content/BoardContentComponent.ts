@@ -1,9 +1,10 @@
 import { BoardSelectionComponent, BoardService } from '@/board-content/board';
 import { FiltersSelectionComponent, FiltersService } from '@/board-content/filters';
 import { TaskService, TasksTableComponent } from '@/board-content/task';
-import { Base, CircleLoaderComponent, combineProgress, observeSelectorsPassingValues, Selector } from '@/util';
+import { CircleLoaderComponent } from '@/util';
+import { combineProgress } from '@/util/signals/combineProgress';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Signal, signal } from '@angular/core';
 import { RxPush } from '@rx-angular/template/push';
 
 @Component({
@@ -25,21 +26,19 @@ import { RxPush } from '@rx-angular/template/push';
         TaskService, // uses BoardService
     ],
 })
-export class BoardContentComponent extends Base {
+export class BoardContentComponent {
 
     readonly boardActive = signal(false);
 
-    readonly loadingInProgress$: Selector<boolean> = combineProgress(
-        this.boardService.loadingInProgress$,
-        this.filtersService.loadingInProgress$
+    readonly loadingInProgress: Signal<boolean> = combineProgress(
+        this.boardService.loadingInProgress,
+        this.filtersService.loadingInProgress
     );
 
     constructor(
         readonly boardService: BoardService,
         readonly filtersService: FiltersService,
     ) {
-        super();
-        observeSelectorsPassingValues(this);
     }
 
 }

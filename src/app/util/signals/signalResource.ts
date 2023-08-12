@@ -1,13 +1,15 @@
 import { Single } from '@/util';
+import { AsyncSignal } from '@/util/signals/AsyncSignal';
 import { computed, inject, Injector, signal, Signal, untracked, WritableSignal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { mergeWith, ReplaySubject, Subject, switchMap, tap } from 'rxjs';
+import { mergeWith, ReplaySubject, startWith, Subject, switchMap, tap } from 'rxjs';
 
-export interface SignalResource<T> extends WritableSignal<T> {
-    // TOOD do we need this? ready: Signal<boolean>; // call will activate request
-    loading: Signal<boolean>; // call will NOT activate request
-    error: Signal<undefined | unknown>; // call will NOT activate request (TODO confirm)
-}
+export type SignalResource<T> = Exclude<WritableSignal<T>, 'mutate'>
+    & AsyncSignal<T>
+    & {
+        loading: Signal<boolean>; // call will NOT activate request
+        error: Signal<undefined | unknown>; // call will NOT activate request (TODO confirm)
+    }
 
 type Tuple<T> = readonly T[];
 
@@ -19,25 +21,20 @@ type UnwrapSignals<SA extends Tuple<Signal<any>>> =
         ? [Exclude<P, undefined>, ...UnwrapSignals<Tail>] // TODO do we need undefined | false | null? Then we cannot use safeComputed()
         : never;
 
-export function signalResource<R>(asyncCall: () => Single<R>, options: SignalResourceOptions<R> & { initialValue: R }): SignalResource<R>;
-export function signalResource<R>(asyncCall: () => Single<R>, options: SignalResourceOptions<R>): SignalResource<R | undefined>;
-export function signalResource<R>(asyncCall: () => Single<R>): SignalResource<R | undefined>;
+const NOT_LOADED = Symbol('NOT_LOADED');
 
-export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>, options: SignalResourceOptions<R> & { initialValue: R }): SignalResource<R>;
-export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>, options: SignalResourceOptions<R>): SignalResource<R | undefined>;
-export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>): SignalResource<R | undefined>;
-
+export function signalResource<R>(asyncCall: () => Single<R>, options: SignalResourceOptions<R>): SignalResource<R>;
+export function signalResource<R>(asyncCall: () => Single<R>): SignalResource<R>;
+export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>, options: SignalResourceOptions<R>): SignalResource<R>;
+export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>): SignalResource<R>;
 export function signalResource<SA extends Tuple<Signal<any>>, R>(
-    ...params: [...SA, (...values: UnwrapSignals<SA>) => Single<R>, SignalResourceOptions<R> & { initialValue: R }]
+    ...params: [...SA, (...values: UnwrapSignals<SA>) => Single<R>]
+             | [...SA, (...values: UnwrapSignals<SA>) => Single<R>, SignalResourceOptions<R>]
 ): SignalResource<R>;
 export function signalResource<SA extends Tuple<Signal<any>>, R>(
     ...params: [...SA, (...values: UnwrapSignals<SA>) => Single<R>]
              | [...SA, (...values: UnwrapSignals<SA>) => Single<R>, SignalResourceOptions<R>]
-): SignalResource<R | undefined>;
-export function signalResource<SA extends Tuple<Signal<any>>, R>(
-    ...params: [...SA, (...values: UnwrapSignals<SA>) => Single<R>]
-             | [...SA, (...values: UnwrapSignals<SA>) => Single<R>, SignalResourceOptions<R>]
-): SignalResource<R | undefined> {
+): SignalResource<R> {
     const injector = inject(Injector);
     const lastParam = params.pop() as SignalResourceOptions<any> | Function;
 
@@ -53,15 +50,14 @@ export function signalResource<SA extends Tuple<Signal<any>>, R>(
 
     const signals: SA = params as unknown as SA;
 
-    let sourceValues$ = new ReplaySubject<UnwrapSignals<SA>>(1);
-    let resultSignal: Signal<R | undefined> | undefined;
-    const loading = signal(false);
-    const error = signal<undefined | unknown>(undefined);
-
     // TODO almost like safeComputed. How to use it
     const sourceValues = computed(() => {
         const sourceValues = [];
         for (const signal of signals) {
+            if (isSignalResource(signal) && !signal.ready()) {
+                return undefined;
+            }
+
             const sourceValue = signal();
             if (sourceValue === false || sourceValue === undefined) {
                 return undefined;
@@ -82,22 +78,27 @@ export function signalResource<SA extends Tuple<Signal<any>>, R>(
         }
     });
 
+    let sourceValuesSubject$ = new ReplaySubject<UnwrapSignals<SA>>(1);
+    let signalFromObservable: Signal<R | typeof NOT_LOADED> | undefined;
+    const loading = signal(false);
+    const error = signal<undefined | unknown>(undefined);
+
     let lastValues: UnwrapSignals<SA> | undefined;
     const resultSubject$ = new Subject<R>();
 
-    const result = computed(
+    const baseResult = computed(
         () => {
             const values: UnwrapSignals<SA> | undefined = sourceValues();
             if (!values || values === lastValues) {
-                return resultSignal?.();
+                return signalFromObservable?.();
             }
 
             lastValues = values;
-            sourceValues$.next(values);
+            sourceValuesSubject$.next(values);
 
-            if (!resultSignal) {
-                resultSignal = toSignal(
-                    sourceValues$.pipe(
+            if (!signalFromObservable) {
+                signalFromObservable = toSignal(
+                    sourceValuesSubject$.pipe(
                         switchMap((values: UnwrapSignals<SA>) => {
                             untracked(() => loading.set(true));
                             return asyncCall(...values)
@@ -106,28 +107,52 @@ export function signalResource<SA extends Tuple<Signal<any>>, R>(
                             next: () => untracked(() => loading.set(false)),
                             error: (e) => untracked(() => error.set(e))
                         }),
-                        mergeWith(resultSubject$)
+                        mergeWith(resultSubject$),
+                        startWith(NOT_LOADED)
                     ),
-                    { initialValue: options.initialValue, injector }
+                    { initialValue: NOT_LOADED, injector }
                 );
             }
-            return resultSignal();
+            return signalFromObservable();
         }
-    ) as SignalResource<R>;
+    ) as SignalResource<R | typeof NOT_LOADED>;
+
+    const result: Signal<R> = computed(() => {
+        const result = baseResult();
+        if (result === NOT_LOADED) {
+            if (options.initialValue) {
+                return options.initialValue;
+            }
+            throw new Error('Value not yet loaded. Check ready() before getting value, or provide initialValue option.');
+        } else {
+            return result;
+        }
+    })
+
+    const ready: Signal<boolean> = computed(() => {
+        const result = baseResult();
+        return result !== NOT_LOADED;
+    })
 
     return Object.assign(result, {
         set: (value: R) => resultSubject$.next(value),
         update: (updateFn: (value: R) => R) => resultSubject$.next(updateFn(result())),
-        mutate: (mutateFn: (value: R) => void) => {
-            mutateFn(result());
-            resultSubject$.next(result());
+        mutate: (_mutateFn: (value: R) => void) => {
+            throw new Error('Mutate is not working on SignalResource');
+            // mutateFn(baseResult());
+            // resultSubject$.next(baseResult());
         },
         asReadonly: () => result,
+        ready,
         loading,
-        error
+        error,
     })
 }
 
 function isSignalResourceOptions<T>(value: SignalResourceOptions<T> | Function): value is SignalResourceOptions<T> {
     return !(value instanceof Function);
+}
+
+function isSignalResource<T>(signal: Signal<T> | SignalResource<T>): signal is SignalResource<T> {
+    return !!(signal as SignalResource<T>).ready;
 }
