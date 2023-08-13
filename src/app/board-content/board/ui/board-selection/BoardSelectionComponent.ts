@@ -1,4 +1,5 @@
 import { safeComputed } from '@/util/signals/safeComputed';
+import { SignalResource } from '@/util/signals/signalResource';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, Signal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -27,8 +28,10 @@ export class BoardSelectionComponent {
     readonly currentBoardId: Signal<BoardId | undefined> = this.boardService.currentBoardId;
     readonly currentBoardAsArray: Signal<Board[] | undefined> = safeComputed(this.boardService.currentBoard, (board) => [board]);
 
+    readonly allBoards: SignalResource<Board[]> = this.boardService.allBoards;
+
     readonly boards: Signal<Board[] | undefined> = computed(() => {
-        return this.selectNeverOpened() ? this.currentBoardAsArray() : this.boardService.allBoards();
+        return this.selectNeverOpened() ? this.currentBoardAsArray() : (this.allBoards.ready() ? this.allBoards() : undefined);
     });
 
     constructor(

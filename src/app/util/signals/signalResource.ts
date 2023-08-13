@@ -5,9 +5,8 @@ import { SafeUnwrapSignals } from '@/util/signals/internal/SafeUnwrapSignals';
 import { splitParams } from '@/util/signals/internal/splitParams';
 import { safeComputed } from '@/util/signals/safeComputed';
 import { Tuple } from '@/util/types/Tuple';
-import { computed, inject, Injector, signal, Signal, untracked, WritableSignal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { mergeWith, ReplaySubject, startWith, Subject, switchMap, tap } from 'rxjs';
+import { computed, DestroyRef, inject, signal, Signal, untracked, WritableSignal } from '@angular/core';
+import { ReplaySubject, Subscription, switchMap } from 'rxjs';
 
 export type SignalResource<T> = Exclude<WritableSignal<T>, 'mutate'>
     & AsyncSignal<T>
@@ -34,8 +33,6 @@ export function signalResource<ST extends Tuple<Signal<any>>, R>(
     ...params: [...ST, (...values: SafeUnwrapSignals<ST>) => Single<R>]
              | [...ST, (...values: SafeUnwrapSignals<ST>) => Single<R>, SignalResourceOptions<R>]
 ): SignalResource<R> {
-    const injector = inject(Injector);
-
     const { source, call, options} = splitParams<ST, (...values: SafeUnwrapSignals<ST>) => Single<R>, SignalResourceOptions<R>>(...params);
 
     const sourceValues: Signal<SafeUnwrapSignals<ST> | undefined> = safeComputed(
@@ -44,54 +41,55 @@ export function signalResource<ST extends Tuple<Signal<any>>, R>(
         { equal: equalArrayReferences }
     );
 
-    let sourceValuesSubject$ = new ReplaySubject<SafeUnwrapSignals<ST>>(1);
-    let signalFromObservable: Signal<R | typeof NOT_LOADED> | undefined;
+    const destroyRef: DestroyRef = inject(DestroyRef);
+
+    const writableSignal = signal<R | typeof NOT_LOADED>(NOT_LOADED);
+    const error = signal<unknown | undefined>(undefined);
     const loading = signal(false);
-    const error = signal<undefined | unknown>(undefined);
 
     let lastValues: SafeUnwrapSignals<ST> | undefined;
-    const resultSubject$ = new Subject<R>();
+    let sourceValuesSubject$ = new ReplaySubject<SafeUnwrapSignals<ST>>(1);
+    let subscription: Subscription | undefined;
 
     const baseResult = computed(
         () => {
             const values: SafeUnwrapSignals<ST> | undefined = sourceValues();
             if (!values || values === lastValues) {
-                return signalFromObservable?.();
+                return writableSignal();
             }
 
             lastValues = values;
             sourceValuesSubject$.next(values);
 
-            if (!signalFromObservable) {
-                signalFromObservable = toSignal(
-                    sourceValuesSubject$.pipe(
-                        switchMap((values: SafeUnwrapSignals<ST>) => {
-                            untracked(() => loading.set(true));
-                            return call(...values)
-                        }),
-                        tap({
-                            next: () => untracked(() => loading.set(false)),
-                            error: (e) => untracked(() => error.set(e))
-                        }),
-                        mergeWith(resultSubject$),
-                        startWith(NOT_LOADED)
-                    ),
-                    { initialValue: NOT_LOADED, injector }
-                );
+            if (!subscription) {
+                subscription = sourceValuesSubject$.pipe(
+                    switchMap((values: SafeUnwrapSignals<ST>) => {
+                        untracked(() => loading.set(true));
+                        return call(...values)
+                    })
+                ).subscribe({
+                    next: (value: R) => untracked(() => {
+                        writableSignal.set(value);
+                        loading.set(false);
+                    }),
+                    error: error => untracked(() => error.set(error))
+                });
+                destroyRef.onDestroy(subscription.unsubscribe.bind(subscription))
             }
-            return signalFromObservable();
+
+            return writableSignal();
         }
-    ) as SignalResource<R | typeof NOT_LOADED>;
+    );
 
     const result: Signal<R> = computed(() => {
-        const result = baseResult();
-        if (result === NOT_LOADED) {
+        const value = baseResult();
+        if (value === NOT_LOADED) {
             if (options?.initialValue) {
                 return options.initialValue;
             }
             throw new Error('Value not yet loaded. Check ready() before getting value, or provide initialValue option.');
         } else {
-            return result;
+            return value;
         }
     })
 
@@ -101,12 +99,16 @@ export function signalResource<ST extends Tuple<Signal<any>>, R>(
     })
 
     return Object.assign(result, {
-        set: (value: R) => resultSubject$.next(value),
-        update: (updateFn: (value: R) => R) => resultSubject$.next(updateFn(result())),
+        set: (value: R) => writableSignal.set(value),
+        update: (updateFn: (value: R) => R) => writableSignal.update((value: R | typeof NOT_LOADED) => {
+            if (value === NOT_LOADED) {
+                throw new Error('Value not yet loaded. Check ready() before setting value, or provide initialValue option.');
+            } else {
+                return updateFn(value);
+            }
+        }),
         mutate: (_mutateFn: (value: R) => void) => {
             throw new Error('Mutate is not working on SignalResource');
-            // mutateFn(baseResult());
-            // resultSubject$.next(baseResult());
         },
         asReadonly: () => result,
         ready,
