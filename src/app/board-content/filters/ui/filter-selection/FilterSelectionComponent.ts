@@ -42,8 +42,8 @@ export class FilterSelectionComponent extends Base implements OnChanges {
         }
     }
 
-    setFilterActivity(setAsActive: boolean): void {
-        this.filtersService.setFilterActivity(this.filterId(), setAsActive);
+    setFilterActivity(setAsActive: boolean): Promise<void> {
+        return this.filtersService.setFilterActivity(this.filterId(), setAsActive);
     }
 
 }

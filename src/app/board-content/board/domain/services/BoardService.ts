@@ -2,7 +2,7 @@ import { signalResource, SignalResource } from '@/util/signals/signalResource';
 import { computed, Injectable, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { filter, interval, map, mergeWith } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { BoardRepository } from '../repositories/BoardRepository';
 import { Board } from '../types/Board';
 import { BoardId } from '../types/BoardId';
@@ -15,7 +15,7 @@ export class BoardService {
             map((params: Params) => params['boardId']),
             filter((boardId: string | undefined): boardId is string => Boolean(boardId)),
             map((boardId: string) => BoardId.create(boardId)),
-            mergeWith(interval(1000).pipe(map((index) => BoardId.create('BOARD-' + (1 + index % 10)))))
+            // mergeWith(interval(1000).pipe(map((index) => BoardId.create('BOARD-' + (1 + index % 10)))))
         )
     );
     readonly allBoards: SignalResource<Board[]> = signalResource(() => this.boardRepository.selectAllBoards());
