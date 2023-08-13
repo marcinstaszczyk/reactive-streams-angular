@@ -1,6 +1,9 @@
 import { Single } from '@/util';
 import { AsyncSignal } from '@/util/signals/AsyncSignal';
+import { equalArrayReferences } from '@/util/signals/internal/equalArrayReferences';
+import { SafeUnwrapSignals } from '@/util/signals/internal/SafeUnwrapSignals';
 import { splitParams } from '@/util/signals/internal/splitParams';
+import { safeComputed } from '@/util/signals/safeComputed';
 import { Tuple } from '@/util/types/Tuple';
 import { computed, inject, Injector, signal, Signal, untracked, WritableSignal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -15,69 +18,43 @@ export type SignalResource<T> = Exclude<WritableSignal<T>, 'mutate'>
 
 type SignalResourceOptions<T> = { initialValue?: T };
 
-type UnwrapSignals<SA extends Tuple<Signal<any>>> =
-    SA extends never[] ? never[] :
-    SA extends [Signal<infer P>, ...infer Tail extends Tuple<Signal<unknown>>]
-        ? [Exclude<P, undefined>, ...UnwrapSignals<Tail>] // TODO do we need undefined | false | null? Then we cannot use safeComputed()
-        : never;
-
 const NOT_LOADED = Symbol('NOT_LOADED');
 
 export function signalResource<R>(asyncCall: () => Single<R>, options: SignalResourceOptions<R>): SignalResource<R>;
 export function signalResource<R>(asyncCall: () => Single<R>): SignalResource<R>;
 export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>, options: SignalResourceOptions<R>): SignalResource<R>;
 export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>): SignalResource<R>;
-export function signalResource<SA extends Tuple<Signal<any>>, R>(
-    ...params: [...SA, (...values: UnwrapSignals<SA>) => Single<R>]
-             | [...SA, (...values: UnwrapSignals<SA>) => Single<R>, SignalResourceOptions<R>]
+export function signalResource<ST extends Tuple<Signal<any>>, R>(
+    ...params: [...ST, (...values: SafeUnwrapSignals<ST>) => Single<R>]
+             | [...ST, (...values: SafeUnwrapSignals<ST>) => Single<R>, SignalResourceOptions<R>]
 ): SignalResource<R>;
-export function signalResource<SA extends Tuple<Signal<any>>, R>(
-    ...params: [...SA, (...values: UnwrapSignals<SA>) => Single<R>]
-             | [...SA, (...values: UnwrapSignals<SA>) => Single<R>, SignalResourceOptions<R>]
+
+
+export function signalResource<ST extends Tuple<Signal<any>>, R>(
+    ...params: [...ST, (...values: SafeUnwrapSignals<ST>) => Single<R>]
+             | [...ST, (...values: SafeUnwrapSignals<ST>) => Single<R>, SignalResourceOptions<R>]
 ): SignalResource<R> {
     const injector = inject(Injector);
 
-    const { source, call, options} = splitParams<SA, (...values: UnwrapSignals<SA>) => Single<R>, SignalResourceOptions<R>>(params);
+    const { source, call, options} = splitParams<ST, (...values: SafeUnwrapSignals<ST>) => Single<R>, SignalResourceOptions<R>>(...params);
 
-    // TODO almost like safeComputed. How to use it
-    const sourceValues = computed(() => {
-        const sourceValues = [];
-        for (const signal of source) {
-            if (isSignalResource(signal) && !signal.ready()) {
-                return undefined;
-            }
+    const sourceValues: Signal<SafeUnwrapSignals<ST> | undefined> = safeComputed(
+        ...source,
+        (...sourceValues: any[]) => sourceValues as SafeUnwrapSignals<ST>,
+        { equal: equalArrayReferences }
+    );
 
-            const sourceValue = signal();
-            if (sourceValue === false || sourceValue === undefined) {
-                return undefined;
-            }
-            sourceValues.push(sourceValue as any);
-        }
-        return sourceValues as UnwrapSignals<SA>;
-    }, {
-        equal: (a: any[] | undefined, b: any[] | undefined): boolean => {
-            a = a ?? [];
-            b = b ?? [];
-            for(let i = 0; i < a.length; ++i) {
-                if (a[i] !== b[i]) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    });
-
-    let sourceValuesSubject$ = new ReplaySubject<UnwrapSignals<SA>>(1);
+    let sourceValuesSubject$ = new ReplaySubject<SafeUnwrapSignals<ST>>(1);
     let signalFromObservable: Signal<R | typeof NOT_LOADED> | undefined;
     const loading = signal(false);
     const error = signal<undefined | unknown>(undefined);
 
-    let lastValues: UnwrapSignals<SA> | undefined;
+    let lastValues: SafeUnwrapSignals<ST> | undefined;
     const resultSubject$ = new Subject<R>();
 
     const baseResult = computed(
         () => {
-            const values: UnwrapSignals<SA> | undefined = sourceValues();
+            const values: SafeUnwrapSignals<ST> | undefined = sourceValues();
             if (!values || values === lastValues) {
                 return signalFromObservable?.();
             }
@@ -88,7 +65,7 @@ export function signalResource<SA extends Tuple<Signal<any>>, R>(
             if (!signalFromObservable) {
                 signalFromObservable = toSignal(
                     sourceValuesSubject$.pipe(
-                        switchMap((values: UnwrapSignals<SA>) => {
+                        switchMap((values: SafeUnwrapSignals<ST>) => {
                             untracked(() => loading.set(true));
                             return call(...values)
                         }),
@@ -136,8 +113,4 @@ export function signalResource<SA extends Tuple<Signal<any>>, R>(
         loading,
         error,
     })
-}
-
-function isSignalResource<T>(signal: Signal<T> | SignalResource<T>): signal is SignalResource<T> {
-    return !!(signal as SignalResource<T>).ready;
 }
