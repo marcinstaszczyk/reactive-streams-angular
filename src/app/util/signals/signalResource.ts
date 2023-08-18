@@ -55,6 +55,7 @@ export function signalResource<ST extends Tuple<Signal<any>>, R>(
             tap(() => untracked(() => loading.set(false)))
         ),
         {
+            ...options,
             injector,
             runInComputedContext: () => {
                 const values: SafeUnwrapSignals<ST> | undefined = sourceValues();
