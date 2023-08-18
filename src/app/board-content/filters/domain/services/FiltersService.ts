@@ -44,8 +44,8 @@ export class FiltersService {
         } else {
             changedIds.delete(filterId);
         }
-
         this.activeFiltersIds.set(changedIds);
+
         await this.filtersRepository.setActiveFilterIds(this.currentBoardId()!, changedIds);
     }
 

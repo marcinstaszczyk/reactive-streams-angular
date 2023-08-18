@@ -1,7 +1,7 @@
 import { AsyncSignal } from '@/util/signals/AsyncSignal';
 import { assertInInjectionContext, computed, DestroyRef, inject, Signal, signal, untracked, WritableSignal } from '@angular/core';
 import { ToSignalOptions } from '@angular/core/rxjs-interop';
-import { Observable, Subscribable, Unsubscribable } from 'rxjs';
+import { Falsy, Observable, Subscribable, Unsubscribable } from 'rxjs';
 
 export type FullAsyncSignal<T> =
     AsyncSignal<T>
@@ -12,18 +12,18 @@ export type FullAsyncSignal<T> =
 
 const NOT_LOADED = Symbol('NOT_LOADED');
 
-export type ToAsyncSignalOptions<T> = Pick<ToSignalOptions<T>, 'initialValue' | 'injector'> & {
+export type ToAsyncSignalOptions<T> = Pick<ToSignalOptions<T>, 'injector' | 'initialValue'> & {
     runInComputedContext?: () => void
 };
 
-export function toAsyncSignal<T, U = undefined>(
+export function toAsyncSignal<T, U extends T | undefined = undefined>(
     source: Observable<T>|Subscribable<T>,
-    options?: Omit<ToAsyncSignalOptions<U>, 'requireSync' | 'manualCleanup'>
-): FullAsyncSignal<T | U> {
+    options?: ToAsyncSignalOptions<U>
+): FullAsyncSignal<T | Exclude<U, undefined>> {
     !options?.injector && assertInInjectionContext(toAsyncSignal);
     const destroyRef: DestroyRef = options?.injector?.get(DestroyRef) ?? inject(DestroyRef);
 
-    const writableSignal = signal<T | U | typeof NOT_LOADED>(options?.initialValue ?? NOT_LOADED);
+    const writableSignal = signal<T | typeof NOT_LOADED>(NOT_LOADED);
     const error = signal<unknown | undefined>(undefined);
 
     let subscription: Unsubscribable | undefined;
@@ -46,7 +46,7 @@ export function toAsyncSignal<T, U = undefined>(
         }
     );
 
-    const result: Signal<T | U> = computed(() => {
+    const result: Signal<T | Exclude<U, Falsy>> = computed(() => {
         const value = baseResult();
         if (value === NOT_LOADED) {
             if (options?.initialValue) {
@@ -65,7 +65,7 @@ export function toAsyncSignal<T, U = undefined>(
 
     return Object.assign(result, {
         set: (value: T) => writableSignal.set(value),
-        update: (updateFn: (value: T | U) => T) => writableSignal.update((value: T | U | typeof NOT_LOADED) => {
+        update: (updateFn: (value: T) => T) => writableSignal.update((value: T | typeof NOT_LOADED) => {
             if (value === NOT_LOADED) {
                 throw new Error('Value not yet loaded. Check ready() before setting value, or provide initialValue option.');
             } else {
