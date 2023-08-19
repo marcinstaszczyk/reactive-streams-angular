@@ -1,19 +1,20 @@
 import { BoardId, BoardService } from '@/board-content/board';
 import { Task } from '@/board-content/task/domain/types/Task';
 import { TaskId } from '@/board-content/task/domain/types/TaskId';
-import { Selector, SelectorWithProgress, Single, State } from '@/util';
-import { Injectable } from '@angular/core';
+import { Single } from '@/util';
+import { SignalResource, signalResource } from '@/util/signals/signalResource';
+import { Injectable, Signal } from '@angular/core';
 import { map } from 'rxjs';
 import { TaskRepository } from '../repositories/TaskRepository';
 
 @Injectable()
 export class TaskService {
 
-    readonly currentBoardId$: Selector<BoardId> = new State();//this.boardService.currentBoardId$;
-    readonly taskIds$: SelectorWithProgress<TaskId[]> = this.currentBoardId$
-        .asyncMapWithProgress((boardId: BoardId) => {
-            return this.taskRepository.selectTaskIds(boardId);
-        })
+    readonly currentBoardId: Signal<BoardId | undefined> = this.boardService.currentBoardId;
+    readonly taskIds: SignalResource<TaskId[]> = signalResource(
+        this.currentBoardId,
+        (boardId: BoardId) => this.taskRepository.selectTaskIds(boardId)
+    );
 
     constructor(
         private readonly boardService: BoardService,

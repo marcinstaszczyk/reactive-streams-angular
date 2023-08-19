@@ -1,9 +1,8 @@
-import { Base, Selector, State } from '@/util';
+import { Base } from '@/util';
+import { SignalResource, signalResource } from '@/util/signals/signalResource';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { RxLet } from '@rx-angular/template/let';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, signal, SimpleChanges } from '@angular/core';
 import { TaskService } from '../../domain/services/TaskService';
-import { Task } from '../../domain/types/Task';
 import { TaskId } from '../../domain/types/TaskId';
 
 @Component({
@@ -13,18 +12,18 @@ import { TaskId } from '../../domain/types/TaskId';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        RxLet,
     ],
 })
 export class TasksTableRowComponent extends Base implements OnChanges {
 
-    @Input()
-    taskId!: TaskId;
+    @Input('taskId')
+    taskIdInput!: TaskId;
+    readonly taskId = signal<TaskId>(undefined as unknown as TaskId);
 
-    readonly taskId$ = new State<TaskId>();
-    readonly task$: Selector<Task> = this.taskId$.asyncMap((taskId: TaskId) => {
-        return this.taskService.selectTask(taskId);
-    })
+    readonly task: SignalResource<any> = signalResource(
+        this.taskId,
+        (taskId: TaskId) => this.taskService.selectTask(taskId)
+    );
 
     constructor(
         readonly taskService: TaskService,
@@ -33,8 +32,8 @@ export class TasksTableRowComponent extends Base implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['taskId']) {
-            this.taskId$.set(this.taskId);
+        if (changes['taskIdInput']) {
+            this.taskId.set(this.taskIdInput);
         }
     }
 

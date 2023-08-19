@@ -1,8 +1,8 @@
-import { Base, observeSelectorsPassingValues, SelectorWithProgress } from '@/util';
+import { Base, observeSelectorsPassingValues } from '@/util';
+import { SignalResource } from '@/util/signals/signalResource';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RxLet } from '@rx-angular/template/let';
 import { TaskService } from '../../domain/services/TaskService';
 import { TaskId } from '../../domain/types/TaskId';
 import { TasksTableRowComponent } from '../tasks-table-row/TasksTableRowComponent';
@@ -14,14 +14,13 @@ import { TasksTableRowComponent } from '../tasks-table-row/TasksTableRowComponen
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        RxLet,
         TasksTableRowComponent,
         ScrollingModule,
     ],
 })
 export class TasksTableComponent extends Base {
 
-    readonly taskIds$: SelectorWithProgress<TaskId[]> = this.taskService.taskIds$;
+    readonly taskIds: SignalResource<TaskId[]> = this.taskService.taskIds;
 
     constructor(
         readonly taskService: TaskService,

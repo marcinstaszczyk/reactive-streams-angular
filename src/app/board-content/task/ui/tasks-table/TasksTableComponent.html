@@ -1,4 +1,4 @@
-<ng-container *rxLet="taskIds$; let taskIds; suspense: loading">
+<ng-container *ngIf="taskIds(); let taskIds; else: loading">
     <cdk-virtual-scroll-viewport itemSize="20" [maxBufferPx]="0" [minBufferPx]="0" style="height: 60vh">
         <app-tasks-table-row *cdkVirtualFor="let taskId of taskIds"
                              [taskId]="taskId"
