@@ -1,5 +1,5 @@
 {{ filter().name }}
-<ng-container *ngIf="filtersService.activeFiltersIds.ready()">
+<ng-container *ngIf="filtersService.activeFiltersIds">
     <input type="checkbox"
            [ngModel]="isActive()"
            (ngModelChange)="setFilterActivity($event)">

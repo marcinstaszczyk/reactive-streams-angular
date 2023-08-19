@@ -1,16 +1,16 @@
 import { Single } from '@/util';
-import { AsyncSignal } from '@/util/signals/AsyncSignal';
 import { equalArrayReferences } from '@/util/signals/internal/equalArrayReferences';
 import { SafeUnwrapSignals } from '@/util/signals/internal/SafeUnwrapSignals';
 import { splitParams } from '@/util/signals/internal/splitParams';
 import { safeComputed } from '@/util/signals/safeComputed';
 import { FullAsyncSignal, toAsyncSignal } from '@/util/signals/toAsyncSignal';
+import { WritableAsyncSignal } from '@/util/signals/WritableAsyncSignal';
 import { Tuple } from '@/util/types/Tuple';
-import { inject, Injector, signal, Signal, untracked, WritableSignal } from '@angular/core';
+import { inject, Injector, signal, Signal, untracked } from '@angular/core';
 import { ReplaySubject, switchMap, tap } from 'rxjs';
 
-export type SignalResource<T> = Omit<WritableSignal<T>, 'mutate'>
-    & AsyncSignal<T>
+export type SignalResource<T> =
+    WritableAsyncSignal<T>
     & {
         loading: Signal<boolean>; // call will NOT activate request
     };

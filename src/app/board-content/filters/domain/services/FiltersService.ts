@@ -37,7 +37,7 @@ export class FiltersService {
     }
 
     async setFilterActivity(filterId: FilterId, setAsActive: boolean): Promise<void> {
-        const filterIds: Set<FilterId> = this.activeFiltersIds();
+        const filterIds: Set<FilterId> = this.activeFiltersIds()!;
         const changedIds = new Set(filterIds);
         if (setAsActive) {
             changedIds.add(filterId);

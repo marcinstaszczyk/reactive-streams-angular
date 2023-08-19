@@ -1,4 +1,3 @@
-import { AsyncSignal } from '@/util/signals/AsyncSignal';
 import { SafeUnwrapSignals } from '@/util/signals/internal/SafeUnwrapSignals';
 import { splitParams } from '@/util/signals/internal/splitParams';
 import { Tuple } from '@/util/types/Tuple';
@@ -52,10 +51,6 @@ export function safeComputed<ST extends Tuple<Signal<any>>, R>(
     return computed(() => {
         const values = [];
         for (const signal of source) {
-            if (isAsyncSignal(signal) && !signal.ready()) {
-                return undefined;
-            }
-
             const value = signal();
             if (value === undefined) {
                 return undefined;
@@ -64,8 +59,4 @@ export function safeComputed<ST extends Tuple<Signal<any>>, R>(
         }
         return call(...values);
     }, options);
-}
-
-function isAsyncSignal<T>(signal: Signal<T> | AsyncSignal<T>): signal is AsyncSignal<T> {
-    return !!(signal as AsyncSignal<T>).ready;
 }

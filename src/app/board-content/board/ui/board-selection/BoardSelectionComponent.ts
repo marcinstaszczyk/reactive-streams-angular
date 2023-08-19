@@ -31,7 +31,7 @@ export class BoardSelectionComponent {
     readonly allBoards: SignalResource<Board[]> = this.boardService.allBoards;
 
     readonly boards: Signal<Board[] | undefined> = computed(() => {
-        return this.selectNeverOpened() ? this.currentBoardAsArray() : (this.allBoards.ready() ? this.allBoards() : undefined);
+        return this.selectNeverOpened() ? this.currentBoardAsArray() : (this.allBoards());
     });
 
     constructor(

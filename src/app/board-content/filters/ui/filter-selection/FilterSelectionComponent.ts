@@ -1,4 +1,5 @@
 import { Base, observeSelectorsPassingValues } from '@/util';
+import { safeComputed } from '@/util/signals/safeComputed';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, Input, OnChanges, Signal, signal, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -22,12 +23,15 @@ import { FilterId } from '../../domain/types/FilterId';
 })
 export class FilterSelectionComponent extends Base implements OnChanges {
 
-    @Input('filter')
+    @Input({ alias: 'filter', required: true })
     filterInput!: Filter;
     readonly filter = signal<Filter>(undefined as unknown as Filter);
 
     readonly filterId: Signal<FilterId> = computed(() => this.filter().id);
-    readonly isActive: Signal<boolean> = computed(() => this.filtersService.activeFiltersIds().has(this.filterId()));
+    readonly isActive: Signal<boolean | undefined> = safeComputed(
+        this.filtersService.activeFiltersIds,
+        (activeFilterIds: Set<FilterId>) => activeFilterIds.has(this.filterId())
+    );
 
     constructor(
         readonly filtersService: FiltersService,

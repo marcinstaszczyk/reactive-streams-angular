@@ -1,25 +1,24 @@
-import { AsyncSignal } from '@/util/signals/AsyncSignal';
-import { assertInInjectionContext, computed, DestroyRef, inject, Signal, signal, untracked, WritableSignal } from '@angular/core';
+import { WritableAsyncSignal } from '@/util/signals/WritableAsyncSignal';
+import { assertInInjectionContext, computed, DestroyRef, inject, Signal, signal, untracked } from '@angular/core';
 import { ToSignalOptions } from '@angular/core/rxjs-interop';
-import { Falsy, Observable, Subscribable, Unsubscribable } from 'rxjs';
+import { Observable, Subscribable, Unsubscribable } from 'rxjs';
 
-export type FullAsyncSignal<T> =
-    AsyncSignal<T>
-    & Omit<WritableSignal<T>, 'mutate'>
+export type FullAsyncSignal<T, U = undefined> =
+    WritableAsyncSignal<T, U>
     & {
         error: Signal<unknown | undefined>; // call will NOT activate request (TODO confirm)
     };
 
 const NOT_LOADED = Symbol('NOT_LOADED');
 
-export type ToAsyncSignalOptions<T> = Pick<ToSignalOptions<T>, 'injector' | 'initialValue'> & {
+export type ToAsyncSignalOptions<U> = Pick<ToSignalOptions<U>, 'injector' | 'initialValue'> & {
     runInComputedContext?: () => void
 };
 
-export function toAsyncSignal<T, U extends T | undefined = undefined>(
+export function toAsyncSignal<T, U = undefined>(
     source: Observable<T>|Subscribable<T>,
     options?: ToAsyncSignalOptions<U>
-): FullAsyncSignal<T | Exclude<U, undefined>> {
+): FullAsyncSignal<T, U> {
     !options?.injector && assertInInjectionContext(toAsyncSignal);
     const destroyRef: DestroyRef = options?.injector?.get(DestroyRef) ?? inject(DestroyRef);
 
@@ -46,21 +45,13 @@ export function toAsyncSignal<T, U extends T | undefined = undefined>(
         }
     );
 
-    const result: Signal<T | Exclude<U, Falsy>> = computed(() => {
+    const result: Signal<T | U> = computed(() => {
         const value = baseResult();
         if (value === NOT_LOADED) {
-            if (options?.initialValue) {
-                return options.initialValue;
-            }
-            throw new Error('Value not yet loaded. Check ready() before getting value, or provide initialValue option.');
+            return options?.initialValue as U;
         } else {
             return value;
         }
-    })
-
-    const ready: Signal<boolean> = computed(() => {
-        const result = baseResult();
-        return result !== NOT_LOADED;
     })
 
     return Object.assign(result, {
@@ -72,11 +63,6 @@ export function toAsyncSignal<T, U extends T | undefined = undefined>(
                 return updateFn(value);
             }
         }),
-        // mutate: (_mutateFn: (value: R) => void) => {
-        //     throw new Error('Mutate is not working on FullAsyncSignal');
-        // },
-        asReadonly: () => result,
-        ready,
         error,
     })
 }
