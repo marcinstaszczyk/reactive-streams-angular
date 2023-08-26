@@ -3,6 +3,7 @@ import { SignalResource, signalResource } from '@/util/signals/signalResource';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, signal, SimpleChanges } from '@angular/core';
 import { TaskService } from '../../domain/services/TaskService';
+import { Task } from '../../domain/types/Task';
 import { TaskId } from '../../domain/types/TaskId';
 
 @Component({
@@ -20,7 +21,7 @@ export class TasksTableRowComponent extends Base implements OnChanges {
     taskIdInput!: TaskId;
     readonly taskId = signal<TaskId>(undefined as unknown as TaskId);
 
-    readonly task: SignalResource<any> = signalResource(
+    readonly task: SignalResource<Task> = signalResource(
         this.taskId,
         (taskId: TaskId) => this.taskService.selectTask(taskId)
     );
