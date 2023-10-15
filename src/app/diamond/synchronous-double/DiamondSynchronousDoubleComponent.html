@@ -1,0 +1,26 @@
+Set value:
+<button (click)="service.setValue(1)">1</button>
+<button (click)="service.setValue(2)">2</button>
+<button (click)="service.setValue(3)">3</button>
+<br/>
+
+<div style="position: relative">
+	<span style="position: absolute; top: 80px; left: 40px">*2</span>
+	<span style="position: absolute; top: 80px; left: 150px">*3</span>
+	<span style="position: absolute; top: 160px; width: 200px; text-align: center">{{service.combiningFunctionName}}</span>
+	<span style="position: absolute; top: 180px; width: 200px; text-align: center">+</span>
+	<span style="position: absolute; top: 180px; left: 190px">*5</span>
+	<span style="position: absolute; top: 280px; width: 300px; text-align: center">===</span>
+
+	<app-diamond-value-point [value]="service.value$ | push" style="margin-left: 50px"/>
+	<div style="display: flex">
+		<app-diamond-value-point [value]="service.doubleValue$ | push"/>
+		<app-diamond-value-point [value]="service.tripleValue$ | push"/>
+		<button style="align-self: center" (click)="service.resendTripleValue()">Resend</button>
+	</div>
+	<div style="margin-left: 50px; display: flex">
+		<app-diamond-value-point [value]="service.additionValue$ | push"/>
+		<app-diamond-value-point [value]="service.quintupleValue$ | push"/>
+	</div>
+	<app-diamond-value-point [value]="service.equalityValue$ | push" style="margin-left: 100px"/>
+</div>
