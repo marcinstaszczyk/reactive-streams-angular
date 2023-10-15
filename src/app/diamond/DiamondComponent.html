@@ -1,0 +1,14 @@
+<nav>
+	<ul style="display: flex; gap: 30px;">
+		<li><a routerLink="synchronous" routerLinkActive="active" ariaCurrentWhenActive="page">Synchronous (basic)</a></li>
+		<li><a routerLink="synchronous-double" routerLinkActive="active" ariaCurrentWhenActive="page">Double synchronous</a></li>
+		<li><a routerLink="asynchronous" routerLinkActive="active" ariaCurrentWhenActive="page">Asynchronous</a></li>
+		<li><a routerLink="asynchronous-with-source" routerLinkActive="active" ariaCurrentWhenActive="page">Asynchronous with Source</a></li>
+	</ul>
+	<ul style="display: flex; gap: 30px;">
+		<li><a routerLink="synchronous-double-signals" routerLinkActive="active" ariaCurrentWhenActive="page">Double synchronous on Signals</a></li>
+		<li><a routerLink="asynchronous-signals" routerLinkActive="active" ariaCurrentWhenActive="page">Asynchronous on Signals</a></li>
+	</ul>
+</nav>
+
+<router-outlet></router-outlet>

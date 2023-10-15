@@ -1,0 +1,13 @@
+<div style="width: 60px;
+			height: 60px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border: 2px solid;
+			border-radius: 50%;
+			font-size: 1.5rem;
+			margin: 20px;
+			box-sizing: border-box"
+	 [ngStyle]="{ 'border-color': value === undefined ? '#ddd' : 'black' }">
+	{{ value }}
+</div>
