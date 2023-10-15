@@ -1,7 +1,7 @@
 import { DiamondValuePointComponent } from '@/diamond/common/value-point/DiamondValuePointComponent';
 import { DiamondSynchronousDoubleService } from '@/diamond/synchronous-double/DiamondSynchronousDoubleService';
+import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RxPush } from '@rx-angular/template/push';
 
 @Component({
 	selector: 'app-diamond-synchronous-double',
@@ -10,7 +10,7 @@ import { RxPush } from '@rx-angular/template/push';
 	standalone: true,
 	imports: [
 		DiamondValuePointComponent,
-		RxPush,
+		AsyncPipe,
 	],
 	providers: [
 		DiamondSynchronousDoubleService,

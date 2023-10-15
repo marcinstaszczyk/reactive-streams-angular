@@ -16,6 +16,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export class DiamondValuePointComponent {
 
 	@Input()
-	value?: string | number | boolean;
+	value?: string | number | boolean | null;
 
 }

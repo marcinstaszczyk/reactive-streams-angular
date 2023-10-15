@@ -8,6 +8,6 @@
 			font-size: 1.5rem;
 			margin: 20px;
 			box-sizing: border-box"
-	 [ngStyle]="{ 'border-color': value === undefined ? '#ddd' : 'black' }">
+	 [ngStyle]="{ 'border-color': value === undefined || value === null ? '#ddd' : 'black' }">
 	{{ value }}
 </div>

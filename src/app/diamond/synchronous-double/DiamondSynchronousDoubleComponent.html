@@ -11,17 +11,18 @@ Open the console!
 	<span style="position: absolute; top: 160px; width: 200px; text-align: center">{{service.combiningFunctionName}}</span>
 	<span style="position: absolute; top: 180px; width: 200px; text-align: center">+</span>
 	<span style="position: absolute; top: 180px; left: 190px">*5</span>
+	<span style="position: absolute; top: 260px; width: 300px; text-align: center">{{service.combiningFunctionName}}</span>
 	<span style="position: absolute; top: 280px; width: 300px; text-align: center">===</span>
 
-	<app-diamond-value-point [value]="service.value$ | push" style="margin-left: 50px"/>
+	<app-diamond-value-point [value]="service.value$ | async" style="margin-left: 50px"/>
 	<div style="display: flex">
-		<app-diamond-value-point [value]="service.doubleValue$ | push"/>
-		<app-diamond-value-point [value]="service.tripleValue$ | push"/>
+		<app-diamond-value-point [value]="service.doubleValue$ | async"/>
+		<app-diamond-value-point [value]="service.tripleValue$ | async"/>
 		<button style="align-self: center" (click)="service.resendTripleValue()">Resend</button>
 	</div>
 	<div style="margin-left: 50px; display: flex">
-		<app-diamond-value-point [value]="service.additionValue$ | push"/>
-		<app-diamond-value-point [value]="service.quintupleValue$ | push"/>
+		<app-diamond-value-point [value]="service.additionValue$ | async"/>
+		<app-diamond-value-point [value]="service.quintupleValue$ | async"/>
 	</div>
-	<app-diamond-value-point [value]="service.equalityValue$ | push" style="margin-left: 100px"/>
+	<app-diamond-value-point [value]="service.equalityValue$ | async" style="margin-left: 100px"/>
 </div>
