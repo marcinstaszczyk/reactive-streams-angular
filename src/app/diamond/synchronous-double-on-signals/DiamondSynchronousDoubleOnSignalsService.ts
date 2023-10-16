@@ -3,7 +3,7 @@ import { computed, Injectable, signal } from '@angular/core';
 @Injectable()
 export class DiamondSynchronousDoubleOnSignalsService {
 
-	readonly value = signal(1);
+	readonly value = signal(0);
 
 	readonly doubleValue = computed(() => this.value() * 2);
 

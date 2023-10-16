@@ -1,13 +1,4 @@
-<div style="width: 60px;
-			height: 60px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			border: 2px solid;
-			border-radius: 50%;
-			font-size: 1.5rem;
-			margin: 20px;
-			box-sizing: border-box"
+<div class="diamond-value-point"
 	 [ngStyle]="customStyle ?? { 'border-color': value === undefined || value === null ? '#ddd' : 'black' }">
 	{{ value }}
 </div>

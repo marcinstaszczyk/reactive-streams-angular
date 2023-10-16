@@ -6,10 +6,12 @@ Open the console!
 <br/>
 
 <div style="position: relative">
-	<span style="position: absolute; top: 70px; left: 50px">*2</span>
-	<span style="position: absolute; top: 70px; left: 140px">*3</span>
+	<span style="position: absolute; top: 70px; left: 53px">*2</span>
+	<span style="position: absolute; top: 70px; left: 130px">*3</span>
 	<span style="position: absolute; top: 160px; width: 200px; text-align: center">{{service.combiningFunctionName}}</span>
 	<span style="position: absolute; top: 180px; width: 200px; text-align: center">+</span>
+
+	<img src="../../../assets/diamond-synchronous-arrows.svg" height="160" width="200" style="position: absolute; top: 50px; left: 0; z-index: -1">
 
 	<app-diamond-value-point [value]="service.value$ | async" style="margin-left: 50px"/>
 	<div style="display: flex">

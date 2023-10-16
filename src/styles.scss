@@ -1,1 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
+.diamond-value-point {
+	width: 60px;
+	height: 60px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-width: 2px;
+	border-style: solid;
+	border-radius: 50%;
+	font-size: 1.5rem;
+	margin: 20px;
+	box-sizing: border-box
+}
