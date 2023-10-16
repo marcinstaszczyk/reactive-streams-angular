@@ -7,7 +7,7 @@ import { FullAsyncSignal, toAsyncSignal } from '@/util/signals/toAsyncSignal';
 import { WritableAsyncSignal } from '@/util/signals/WritableAsyncSignal';
 import { Tuple } from '@/util/types/Tuple';
 import { inject, Injector, signal, Signal, untracked } from '@angular/core';
-import { ReplaySubject, switchMap, tap } from 'rxjs';
+import { of, ReplaySubject, startWith, switchMap, tap } from 'rxjs';
 
 export type SignalResource<T> =
     WritableAsyncSignal<T>
@@ -44,13 +44,18 @@ export function signalResource<ST extends Tuple<Signal<any>>, R>(
     const loading = signal(false);
 
     let lastValues: SafeUnwrapSignals<ST> | undefined;
-    let sourceValuesSubject$ = new ReplaySubject<SafeUnwrapSignals<ST>>(1);
+    let sourceValuesSubject$ = new ReplaySubject<SafeUnwrapSignals<ST> | undefined>(1);
 
     const asyncSignal: FullAsyncSignal<R> = toAsyncSignal(
         sourceValuesSubject$.pipe(
-            switchMap((values: SafeUnwrapSignals<ST>) => {
+            switchMap((values: SafeUnwrapSignals<ST> | undefined) => {
+				if (!values) {
+					return of(undefined) as Single<R>;
+				}
                 untracked(() => loading.set(true));
-                return call(...values)
+                return call(...values).pipe(
+					startWith(undefined as R)
+				)
             }),
             tap(() => untracked(() => loading.set(false)))
         ),
