@@ -1,3 +1,4 @@
+import { DiamondAsynchronousOnSignalsComponent } from '@/diamond/asynchronous-on-signals/DiamondAsynchronousOnSignalsComponent';
 import { DiamondAsynchronousComponent } from '@/diamond/asynchronous/DiamondAsynchronousComponent';
 import { DiamondComponent } from '@/diamond/DiamondComponent';
 import { DiamondSynchronousDoubleOnSignalsComponent } from '@/diamond/synchronous-double-on-signals/DiamondSynchronousDoubleOnSignalsComponent';
@@ -15,6 +16,7 @@ const routes: Routes = [
 			{ path: 'synchronous-double', component: DiamondSynchronousDoubleComponent },
 			{ path: 'synchronous-double-on-signals', component: DiamondSynchronousDoubleOnSignalsComponent },
 			{ path: 'asynchronous', component: DiamondAsynchronousComponent },
+			{ path: 'asynchronous-on-signals', component: DiamondAsynchronousOnSignalsComponent },
 		]
 	},
 ];

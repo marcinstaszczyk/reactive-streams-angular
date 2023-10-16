@@ -64,8 +64,8 @@ export class TrafficLightsResource {
 	private getBorderStyle(state: TrafficLightsState): string {
 		switch (state) {
 			case 'stop': return 'solid';
-			case 'warning': return 'dotted';
-			case 'ride': return 'dashed';
+			case 'warning': return 'dashed';
+			case 'ride': return 'dotted';
 		}
 	}
 

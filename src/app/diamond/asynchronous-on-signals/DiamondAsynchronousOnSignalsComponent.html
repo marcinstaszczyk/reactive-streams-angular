@@ -1,0 +1,18 @@
+Set value:<br/>
+<button (click)="service.setState('stop')">Stop</button><br/>
+<button (click)="service.setState('warning')">Warning</button><br/>
+<button (click)="service.setState('ride')">Ride</button><br/>
+
+<div style="position: relative">
+	<div style="position: absolute; top: 190px; left: 160px; width: 80px; height: 220px;
+			border-radius: 40px; background-color: black; z-index: -1"></div>
+
+	<app-diamond-value-point [value]="service.state()" style="margin-left: 150px"/>
+	<div style="display: flex">
+		<app-diamond-value-point [value]="service.position()"/>
+		<app-diamond-value-point [customStyle]="service.borderStyle()"/>
+		<app-diamond-value-point [customStyle]="service.borderColor()"/>
+		<app-diamond-value-point [customStyle]="service.colorStyle()"/>
+	</div>
+	<app-diamond-value-point [customStyle]="service.styles()" style="margin-left: 150px"/>
+</div>
