@@ -10,29 +10,12 @@ export class DiamondAsynchronousOnSignalsService {
 
 	readonly state = signal<TrafficLightsState | undefined>(undefined);
 
-	readonly color = signalResource(
-		this.state,
-		(value: TrafficLightsState) => this.trafficLightsResource.selectColor(value)
-	);
-	readonly colorStyle: Signal<StyleDef | undefined> = safeComputed(this.color, color => ({
-		'background-color': color
-	}));
-
 	readonly position = signalResource(
 		this.state,
 		(value: TrafficLightsState) => this.trafficLightsResource.selectPosition(value)
 	);
 	readonly positionStyle: Signal<StyleDef | undefined> = safeComputed(this.position, position => ({
 		'margin-top': (20+70*position) + 'px'
-	}));
-
-	readonly border = signalResource(
-		this.state,
-		(value: TrafficLightsState) => this.trafficLightsResource.selectBorderColor(value)
-	);
-	readonly borderColor: Signal<StyleDef | undefined> = safeComputed(this.border, borderColor => ({
-		'border-color': borderColor,
-		'border-width': '5px'
 	}));
 
 	readonly borderStyle: Signal<StyleDef | undefined> = safeComputed(
@@ -46,10 +29,27 @@ export class DiamondAsynchronousOnSignalsService {
 		})
 	);
 
+	readonly border = signalResource(
+		this.state,
+		(value: TrafficLightsState) => this.trafficLightsResource.selectBorderColor(value)
+	);
+	readonly borderColor: Signal<StyleDef | undefined> = safeComputed(this.border, borderColor => ({
+		'border-color': borderColor,
+		'border-width': '5px'
+	}));
+
+	readonly color = signalResource(
+		this.state,
+		(value: TrafficLightsState) => this.trafficLightsResource.selectColor(value)
+	);
+	readonly colorStyle: Signal<StyleDef | undefined> = safeComputed(this.color, color => ({
+		'background-color': color
+	}));
+
 	readonly styles: Signal<StyleDef | undefined> =
 		safeComputed(
-			this.colorStyle, this.positionStyle, this.borderColor, this.borderStyle,
-			(color, position, borderColor, borderStyle) => {
+			this.positionStyle, this.borderStyle, this.borderColor, this.colorStyle,
+			(position, borderStyle, borderColor, color) => {
 				return {
 					...color,
 					...position,

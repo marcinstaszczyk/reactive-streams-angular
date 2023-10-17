@@ -11,14 +11,6 @@ export class DiamondAsynchronousService {
 
 	readonly state$: Observable<TrafficLightsState> = this.stateSubject$.asObservable();
 
-	readonly colorStyle$: Observable<StyleDef> = this.state$.pipe(
-		switchMap((value: TrafficLightsState) => this.trafficLightsResource.selectColor(value)),
-		map(color => ({
-			'background-color': color
-		})),
-		shareReplay({ refCount: true, bufferSize: 1 }),
-	);
-
 	readonly position$: Observable<number> = this.state$.pipe(
 		switchMap((value: TrafficLightsState) => this.trafficLightsResource.selectPosition(value)),
 		shareReplay({ refCount: true, bufferSize: 1 }),
@@ -27,15 +19,6 @@ export class DiamondAsynchronousService {
 	readonly positionStyle$: Observable<StyleDef> = this.position$.pipe(
 		map(position => ({
 			'margin-top': (20+70*position) + 'px'
-		})),
-		shareReplay({ refCount: true, bufferSize: 1 }),
-	);
-
-	readonly borderColor$: Observable<StyleDef> = this.state$.pipe(
-		switchMap((value: TrafficLightsState) => this.trafficLightsResource.selectBorderColor(value)),
-		map(borderColor => ({
-			'border-color': borderColor,
-			'border-width': '5px'
 		})),
 		shareReplay({ refCount: true, bufferSize: 1 }),
 	);
@@ -49,19 +32,36 @@ export class DiamondAsynchronousService {
 		shareReplay({ refCount: true, bufferSize: 1 }),
 	);
 
+	readonly borderColor$: Observable<StyleDef> = this.state$.pipe(
+		switchMap((value: TrafficLightsState) => this.trafficLightsResource.selectBorderColor(value)),
+		map(borderColor => ({
+			'border-color': borderColor,
+			'border-width': '5px'
+		})),
+		shareReplay({ refCount: true, bufferSize: 1 }),
+	);
+
+	readonly colorStyle$: Observable<StyleDef> = this.state$.pipe(
+		switchMap((value: TrafficLightsState) => this.trafficLightsResource.selectColor(value)),
+		map(color => ({
+			'background-color': color
+		})),
+		shareReplay({ refCount: true, bufferSize: 1 }),
+	);
+
 	readonly styles$: Observable<any> =
 		combineLatest([
-			this.colorStyle$,
 			this.positionStyle$,
-			this.borderColor$,
 			this.borderStyle$,
+			this.borderColor$,
+			this.colorStyle$,
 		]).pipe(
-			map(([color, position, borderColor, borderStyle]) => {
+			map(([position, borderStyle, borderColor, color]) => {
 				return {
-					...color,
 					...position,
-					...borderColor,
 					...borderStyle,
+					...borderColor,
+					...color,
 				};
 			}),
 			tap((value) => console.log('Styles computed. Result: ' + value)),

@@ -37,19 +37,19 @@ export class TrafficLightsResource {
 	}
 
 
-	private getColor(state: TrafficLightsState): string {
-		switch (state) {
-			case 'stop': return 'red';
-			case 'warning': return 'orange';
-			case 'ride': return 'green';
-		}
-	}
-
 	private getPosition(state: TrafficLightsState): number {
 		switch (state) {
 			case 'stop': return 0;
 			case 'warning': return 1;
 			case 'ride': return 2;
+		}
+	}
+
+	private getBorderStyle(state: TrafficLightsState): string {
+		switch (state) {
+			case 'stop': return 'solid';
+			case 'warning': return 'dashed';
+			case 'ride': return 'dotted';
 		}
 	}
 
@@ -61,11 +61,11 @@ export class TrafficLightsResource {
 		}
 	}
 
-	private getBorderStyle(state: TrafficLightsState): string {
+	private getColor(state: TrafficLightsState): string {
 		switch (state) {
-			case 'stop': return 'solid';
-			case 'warning': return 'dashed';
-			case 'ride': return 'dotted';
+			case 'stop': return 'red';
+			case 'warning': return 'orange';
+			case 'ride': return 'green';
 		}
 	}
 
