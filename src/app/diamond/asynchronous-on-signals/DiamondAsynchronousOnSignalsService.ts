@@ -1,6 +1,7 @@
 import { StyleDef } from '@/diamond/common/traffic-lights/StyleDef';
 import { TrafficLightsResource } from '@/diamond/common/traffic-lights/TrafficLightsResource';
 import { TrafficLightsState } from '@/diamond/common/traffic-lights/TrafficLightsState';
+import { keepLastValue } from '@/util/signals/keepLastValue';
 import { safeComputed } from '@/util/signals/safeComputed';
 import { signalResource } from '@/util/signals/signalResource';
 import { Injectable, Signal, signal } from '@angular/core';
@@ -46,7 +47,7 @@ export class DiamondAsynchronousOnSignalsService {
 		'background-color': color
 	}));
 
-	readonly styles: Signal<StyleDef | undefined> =
+	readonly resettableStyles: Signal<StyleDef | undefined> =
 		safeComputed(
 			this.positionStyle, this.borderStyle, this.borderColor, this.colorStyle,
 			(position, borderStyle, borderColor, color) => {
@@ -58,6 +59,8 @@ export class DiamondAsynchronousOnSignalsService {
 				};
 			}
 		);
+
+	readonly styles: Signal<StyleDef | undefined> = keepLastValue(this.resettableStyles);
 
 	constructor(
 		private readonly trafficLightsResource: TrafficLightsResource

@@ -12,7 +12,7 @@ Set value:<br/>
 
 	<img src="../../../assets/diamond-asynchronous-arrows.svg" height="170" width="400" style="position: absolute; top: 43px; left: 0; z-index: -1">
 
-	<div style="position: absolute; top: 190px; left: 160px; width: 80px; height: 220px;
+	<div style="position: absolute; top: 190px; left: 260px; width: 80px; height: 220px;
 			border-radius: 40px; background-color: black; z-index: -1"></div>
 
 	<app-diamond-value-point [value]="service.state()" style="margin-left: 150px"/>
@@ -22,5 +22,8 @@ Set value:<br/>
 		<app-diamond-value-point [customStyle]="service.borderColor()"/>
 		<app-diamond-value-point [customStyle]="service.colorStyle()"/>
 	</div>
-	<app-diamond-value-point [customStyle]="service.styles()" style="margin-left: 150px"/>
+	<div style="margin-left: 150px; display: flex">
+		<app-diamond-value-point [customStyle]="service.resettableStyles()"/>
+		<app-diamond-value-point [customStyle]="service.styles()"/>
+	</div>
 </div>
