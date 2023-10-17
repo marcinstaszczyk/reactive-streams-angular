@@ -49,7 +49,7 @@ export class DiamondAsynchronousService {
 		shareReplay({ refCount: true, bufferSize: 1 }),
 	);
 
-	readonly styles$: Observable<any> =
+	readonly styles$: Observable<StyleDef> =
 		combineLatest([
 			this.positionStyle$,
 			this.borderStyle$,
@@ -64,7 +64,7 @@ export class DiamondAsynchronousService {
 					...color,
 				};
 			}),
-			tap((value) => console.log('Styles computed. Result: ' + value)),
+			tap((value) => console.log('Styles computed')),
 			shareReplay({ refCount: true, bufferSize: 1 }),
 		);
 

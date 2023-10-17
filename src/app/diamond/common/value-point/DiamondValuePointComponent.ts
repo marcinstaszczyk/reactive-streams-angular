@@ -22,4 +22,7 @@ export class DiamondValuePointComponent {
 	@Input()
 	customStyle?: StyleDef | null;
 
+	@Input()
+	sideValue?: string | number | boolean | null;
+
 }
