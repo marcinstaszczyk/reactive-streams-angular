@@ -5,7 +5,7 @@ import { Single } from '@/util';
 import { SignalResource, signalResource } from '@/util/signals/signalResource';
 import { Injectable, Signal } from '@angular/core';
 import { map } from 'rxjs';
-import { TaskRepository } from '../repositories/TaskRepository';
+import { TaskRepository } from './repositories/TaskRepository';
 
 @Injectable()
 export class TaskService {

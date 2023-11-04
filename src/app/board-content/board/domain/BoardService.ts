@@ -3,9 +3,9 @@ import { computed, Injectable, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
-import { BoardRepository } from '../repositories/BoardRepository';
-import { Board } from '../types/Board';
-import { BoardId } from '../types/BoardId';
+import { BoardRepository } from './repositories/BoardRepository';
+import { Board } from './types/Board';
+import { BoardId } from './types/BoardId';
 
 @Injectable() // provided in root is not getting boardId route param right
 export class BoardService {

@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, computed, Input, OnChanges, Signal,
 import { FormsModule } from '@angular/forms';
 import { RxLet } from '@rx-angular/template/let';
 import { RxPush } from '@rx-angular/template/push';
-import { FiltersService } from '../../domain/services/FiltersService';
+import { FiltersService } from '../../domain/FiltersService';
 import { Filter } from '../../domain/types/Filter';
 import { FilterId } from '../../domain/types/FilterId';
 

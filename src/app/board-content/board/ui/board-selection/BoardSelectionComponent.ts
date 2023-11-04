@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component, computed, Signal, signal } from '@a
 import { FormsModule } from '@angular/forms';
 import { RxLet } from '@rx-angular/template/let';
 import { RxPush } from '@rx-angular/template/push';
-import { BoardService } from '../../domain/services/BoardService';
+import { BoardService } from '../../domain/BoardService';
 import { Board } from '../../domain/types/Board';
 import { BoardId } from '../../domain/types/BoardId';
 

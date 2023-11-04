@@ -3,7 +3,7 @@ import { SignalResource } from '@/util/signals/signalResource';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { TaskService } from '../../domain/services/TaskService';
+import { TaskService } from '../../domain/TaskService';
 import { TaskId } from '../../domain/types/TaskId';
 import { TasksTableRowComponent } from '../tasks-table-row/TasksTableRowComponent';
 

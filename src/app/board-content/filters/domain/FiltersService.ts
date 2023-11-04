@@ -2,9 +2,9 @@ import { BoardId, BoardService } from '@/board-content/board';
 import { combineProgress } from '@/util/signals/combineProgress';
 import { SignalResource, signalResource } from '@/util/signals/signalResource';
 import { Injectable, Signal } from '@angular/core';
-import { FiltersRepository } from '../repositories/FiltersRepository';
-import { Filter } from '../types/Filter';
-import { FilterId } from '../types/FilterId';
+import { FiltersRepository } from './repositories/FiltersRepository';
+import { Filter } from './types/Filter';
+import { FilterId } from './types/FilterId';
 
 @Injectable()
 export class FiltersService {

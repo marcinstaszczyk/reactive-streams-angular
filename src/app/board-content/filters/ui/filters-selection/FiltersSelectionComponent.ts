@@ -5,7 +5,7 @@ import { keepLastValue } from '@/util/signals/keepLastValue';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RxLet } from '@rx-angular/template/let';
-import { FiltersService } from '../../domain/services/FiltersService';
+import { FiltersService } from '../../domain/FiltersService';
 import { Filter } from '../../domain/types/Filter';
 
 @Component({
