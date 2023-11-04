@@ -20,7 +20,7 @@ import { TasksTableRowComponent } from '../tasks-table-row/TasksTableRowComponen
 })
 export class TasksTableComponent extends Base {
 
-    readonly taskIds: SignalResource<TaskId[]> = this.taskService.taskIds;
+    readonly taskIds$: SignalResource<TaskId[]> = this.taskService.taskIds$;
 
     constructor(
         readonly taskService: TaskService,

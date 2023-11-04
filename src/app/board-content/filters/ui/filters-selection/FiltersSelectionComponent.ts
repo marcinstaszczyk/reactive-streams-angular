@@ -1,5 +1,4 @@
 import { FilterSelectionComponent } from '@/board-content/filters/ui/filter-selection/FilterSelectionComponent';
-import { Base, observeSelectorsPassingValues } from '@/util';
 import { AsyncSignal } from '@/util/signals/AsyncSignal';
 import { keepLastValue } from '@/util/signals/keepLastValue';
 import { CommonModule } from '@angular/common';
@@ -19,15 +18,13 @@ import { Filter } from '../../domain/types/Filter';
         FilterSelectionComponent,
     ],
 })
-export class FiltersSelectionComponent extends Base {
+export class FiltersSelectionComponent {
 
-    readonly filters: AsyncSignal<Filter[]> = keepLastValue(this.filtersService.filters);
+    readonly filters$: AsyncSignal<Filter[]> = keepLastValue(this.filtersService.filters$);
 
     constructor(
         readonly filtersService: FiltersService,
     ) {
-        super();
-        observeSelectorsPassingValues(this);
     }
 
     trackByBoardId(_: number, filter: Filter) {

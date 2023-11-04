@@ -1,3 +1,4 @@
+import { AsyncSignal } from '@/util/signals/AsyncSignal';
 import { safeComputed } from '@/util/signals/safeComputed';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, Input, OnChanges, Signal, signal, SimpleChanges } from '@angular/core';
@@ -24,12 +25,13 @@ export class FilterSelectionComponent implements OnChanges {
 
     @Input({ alias: 'filter', required: true })
     filterInput!: Filter;
-    readonly filter = signal<Filter>(undefined as unknown as Filter);
+    readonly filter$ = signal<Filter>(undefined as unknown as Filter);
 
-    readonly filterId: Signal<FilterId> = computed(() => this.filter().id);
-    readonly isActive: Signal<boolean | undefined> = safeComputed(
-        this.filtersService.activeFiltersIds,
-        (activeFilterIds: Set<FilterId>) => activeFilterIds.has(this.filterId())
+    readonly filterId$: Signal<FilterId> = computed(() => this.filter$().id);
+
+    readonly isActive$: AsyncSignal<boolean> = safeComputed(
+        this.filtersService.activeFiltersIds$,
+        (activeFilterIds: Set<FilterId>) => activeFilterIds.has(this.filterId$())
     );
 
     constructor(
@@ -39,12 +41,12 @@ export class FilterSelectionComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['filterInput']) {
-            this.filter.set(this.filterInput);
+            this.filter$.set(this.filterInput);
         }
     }
 
     setFilterActivity(setAsActive: boolean): Promise<void> {
-        return this.filtersService.setFilterActivity(this.filterId(), setAsActive);
+        return this.filtersService.setFilterActivity(this.filterId$(), setAsActive);
     }
 
 }

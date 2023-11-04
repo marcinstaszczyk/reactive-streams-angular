@@ -28,11 +28,11 @@ import { RxPush } from '@rx-angular/template/push';
 })
 export class BoardContentComponent {
 
-    readonly boardActive = signal(false);
+    readonly boardActive$ = signal(false);
 
-    readonly loadingInProgress: Signal<boolean> = combineProgress(
-        this.boardService.loadingInProgress,
-        this.filtersService.loadingInProgress
+    readonly loadingInProgress$: Signal<boolean> = combineProgress(
+        this.boardService.loadingInProgress$,
+        this.filtersService.loadingInProgress$
     );
 
     constructor(

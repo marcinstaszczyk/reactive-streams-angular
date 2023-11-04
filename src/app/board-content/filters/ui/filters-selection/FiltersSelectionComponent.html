@@ -1,4 +1,4 @@
-<ng-container *ngIf="filters(); let filters; else loading">
+<ng-container *ngIf="filters$(); let filters; else loading">
     <div *ngFor="let filter of filters; trackBy: trackByBoardId">
         <app-filter-selection [filter]="filter"></app-filter-selection>
     </div>

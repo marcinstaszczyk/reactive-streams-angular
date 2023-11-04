@@ -19,10 +19,10 @@ export class TasksTableRowComponent extends Base implements OnChanges {
 
     @Input('taskId')
     taskIdInput!: TaskId;
-    readonly taskId = signal<TaskId>(undefined as unknown as TaskId);
+    readonly taskId$ = signal<TaskId>(undefined as unknown as TaskId);
 
-    readonly task: SignalResource<Task> = signalResource(
-        this.taskId,
+    readonly task$: SignalResource<Task> = signalResource(
+        this.taskId$,
         (taskId: TaskId) => this.taskService.selectTask(taskId)
     );
 
@@ -34,7 +34,7 @@ export class TasksTableRowComponent extends Base implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['taskIdInput']) {
-            this.taskId.set(this.taskIdInput);
+            this.taskId$.set(this.taskIdInput);
         }
     }
 

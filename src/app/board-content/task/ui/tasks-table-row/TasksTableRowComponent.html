@@ -1,4 +1,4 @@
-<ng-container *ngIf="task(); let task; else: loading">
+<ng-container *ngIf="task$(); let task; else: loading">
     {{ task.id }} {{ task.name }} {{ task.assignee }} {{ task.completed }} {{ task.description }}
 </ng-container>
 

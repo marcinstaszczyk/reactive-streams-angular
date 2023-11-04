@@ -23,15 +23,15 @@ import { BoardId } from '../../domain/types/BoardId';
 })
 export class BoardSelectionComponent {
 
-    readonly selectNeverOpened = signal(true);
+    readonly selectNeverOpened$ = signal(true);
 
-    readonly currentBoardId: Signal<BoardId | undefined> = this.boardService.currentBoardId;
-    readonly currentBoardAsArray: Signal<Board[] | undefined> = safeComputed(this.boardService.currentBoard, (board) => [board]);
+    readonly currentBoardId$: Signal<BoardId | undefined> = this.boardService.currentBoardId$;
+    readonly currentBoardAsArray$: Signal<Board[] | undefined> = safeComputed(this.boardService.currentBoard$, (board) => [board]);
 
-    readonly allBoards: SignalResource<Board[]> = this.boardService.allBoards;
+    readonly allBoards$: SignalResource<Board[]> = this.boardService.allBoards$;
 
-    readonly boards: Signal<Board[] | undefined> = computed(() => {
-        return this.selectNeverOpened() ? this.currentBoardAsArray() : (this.allBoards());
+    readonly boards$: Signal<Board[] | undefined> = computed(() => {
+        return this.selectNeverOpened$() ? this.currentBoardAsArray$() : this.allBoards$();
     });
 
     constructor(
@@ -40,7 +40,7 @@ export class BoardSelectionComponent {
     }
 
     userActionBoardSelectionClicked(): void {
-        this.selectNeverOpened.set(false);
+        this.selectNeverOpened$.set(false);
     }
 
     userActionChangeBoard(boardId: BoardId): void {

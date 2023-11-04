@@ -10,9 +10,9 @@ import { TaskRepository } from './repositories/TaskRepository';
 @Injectable()
 export class TaskService {
 
-    readonly currentBoardId: Signal<BoardId | undefined> = this.boardService.currentBoardId;
-    readonly taskIds: SignalResource<TaskId[]> = signalResource(
-        this.currentBoardId,
+    readonly currentBoardId$: Signal<BoardId | undefined> = this.boardService.currentBoardId$;
+    readonly taskIds$: SignalResource<TaskId[]> = signalResource(
+        this.currentBoardId$,
         (boardId: BoardId) => this.taskRepository.selectTaskIds(boardId)
     );
 

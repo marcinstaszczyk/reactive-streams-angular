@@ -1,15 +1,15 @@
-<select *ngIf="currentBoardId(); let currentBoardId"
+<select *ngIf="currentBoardId$(); let currentBoardId"
         [ngModel]="currentBoardId"
         (ngModelChange)="userActionChangeBoard($event)"
         (click)="userActionBoardSelectionClicked()"
         name="board">
-    <ng-container *ngIf="boards(); let allBoards; else loading">
+    <ng-container *ngIf="boards$(); let allBoards; else loading">
         <option *ngFor="let board of allBoards; trackBy: trackByBoardId"
                 [ngValue]="board.id"
                 [selected]="board.id === currentBoardId">
             {{board.id}} - {{board.name}}
         </option>
-        <option disabled *ngIf="this.boardService.allBoards.loading()">Loading...</option>
+        <option disabled *ngIf="this.boardService.allBoards$.loading()">Loading...</option>
     </ng-container>
 
     <ng-template #loading>
