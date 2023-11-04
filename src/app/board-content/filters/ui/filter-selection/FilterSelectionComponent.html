@@ -3,5 +3,5 @@
     <input type="checkbox"
            [ngModel]="isActive()"
            (ngModelChange)="setFilterActivity($event)">
-    {{ isActive() }}
+	<span style="display: inline-block; width: 30px">{{ isActive() }}</span>
 </ng-container>

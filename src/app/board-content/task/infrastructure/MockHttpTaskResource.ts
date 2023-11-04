@@ -20,7 +20,7 @@ export class MockHttpTaskResource implements TaskResource {
     }
 
     selectTasks(taskIds: number[]): Single<TaskDTO[]> {
-        console.log('selectTasks', taskIds.length);
+        console.log('selectTasks', taskIds);
         const filterDTOs: TaskDTO[] = taskIds.map((taskId: number) => generateMockTaskDTO(taskId));
 
         return Single.from(

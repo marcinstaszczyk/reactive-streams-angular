@@ -1,6 +1,7 @@
 import { FilterSelectionComponent } from '@/board-content/filters/ui/filter-selection/FilterSelectionComponent';
 import { Base, observeSelectorsPassingValues } from '@/util';
-import { SignalResource } from '@/util/signals/signalResource';
+import { AsyncSignal } from '@/util/signals/AsyncSignal';
+import { keepLastValue } from '@/util/signals/keepLastValue';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RxLet } from '@rx-angular/template/let';
@@ -20,7 +21,7 @@ import { Filter } from '../../domain/types/Filter';
 })
 export class FiltersSelectionComponent extends Base {
 
-    readonly filters: SignalResource<Filter[]> = this.filtersService.filters;
+    readonly filters: AsyncSignal<Filter[]> = keepLastValue(this.filtersService.filters);
 
     constructor(
         readonly filtersService: FiltersService,

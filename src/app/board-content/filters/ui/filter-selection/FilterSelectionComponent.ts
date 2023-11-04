@@ -1,4 +1,3 @@
-import { Base, observeSelectorsPassingValues } from '@/util';
 import { safeComputed } from '@/util/signals/safeComputed';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, Input, OnChanges, Signal, signal, SimpleChanges } from '@angular/core';
@@ -21,7 +20,7 @@ import { FilterId } from '../../domain/types/FilterId';
         FormsModule,
     ],
 })
-export class FilterSelectionComponent extends Base implements OnChanges {
+export class FilterSelectionComponent implements OnChanges {
 
     @Input({ alias: 'filter', required: true })
     filterInput!: Filter;
@@ -36,8 +35,6 @@ export class FilterSelectionComponent extends Base implements OnChanges {
     constructor(
         readonly filtersService: FiltersService,
     ) {
-        super();
-        observeSelectorsPassingValues(this);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
