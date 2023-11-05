@@ -26,8 +26,8 @@ export class FiltersService {
     );
 
     readonly loadingInProgress$: Signal<boolean> = combineProgress(
-        this.filters$.loading,
-        this.activeFiltersIds$.loading
+        this.filters$.loading$,
+        this.activeFiltersIds$.loading$
     );
 
     constructor(

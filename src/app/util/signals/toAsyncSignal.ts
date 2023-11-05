@@ -6,7 +6,7 @@ import { Observable, Subscribable, Unsubscribable } from 'rxjs';
 export type FullAsyncSignal<T, U = undefined> =
     WritableAsyncSignal<T, U>
     & {
-        error: Signal<unknown | undefined>; // call will NOT activate request (TODO confirm)
+        error$: Signal<unknown | undefined>; // call will NOT activate request (TODO confirm)
     };
 
 const NOT_LOADED = Symbol('NOT_LOADED');
@@ -23,11 +23,12 @@ export function toAsyncSignal<T, U = undefined>(
     const destroyRef: DestroyRef = options?.injector?.get(DestroyRef) ?? inject(DestroyRef);
 
     const writableSignal = signal<T | typeof NOT_LOADED>(NOT_LOADED);
-    const error = signal<unknown | undefined>(undefined);
+    const error$ = signal<unknown | undefined>(undefined);
+	const setError = (error: unknown) => setTimeout(() => error$.set(error)); // computed have no allowSignalWrites option & untracked is not working
 
     let subscription: Unsubscribable | undefined;
 
-    const baseResult = computed(
+    const baseResult: Signal<T | typeof NOT_LOADED> = computed(
         () => {
             options?.runInComputedContext?.()
 
@@ -36,7 +37,7 @@ export function toAsyncSignal<T, U = undefined>(
                     next: (value: T) => untracked(() => {
                         writableSignal.set(value);
                     }),
-                    error: error => untracked(() => error.set(error))
+                    error: error => setError(error)
                 });
                 destroyRef.onDestroy(subscription.unsubscribe.bind(subscription))
             }
@@ -46,7 +47,7 @@ export function toAsyncSignal<T, U = undefined>(
     );
 
     const result: Signal<T | U> = computed(() => {
-        const value = baseResult();
+        const value: T | typeof NOT_LOADED = baseResult();
         if (value === NOT_LOADED) {
             return options?.initialValue as U;
         } else {
@@ -63,6 +64,6 @@ export function toAsyncSignal<T, U = undefined>(
                 return updateFn(value);
             }
         }),
-        error,
+        error$,
     })
 }

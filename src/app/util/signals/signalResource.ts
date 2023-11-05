@@ -6,13 +6,13 @@ import { safeComputed } from '@/util/signals/safeComputed';
 import { FullAsyncSignal, toAsyncSignal } from '@/util/signals/toAsyncSignal';
 import { WritableAsyncSignal } from '@/util/signals/WritableAsyncSignal';
 import { Tuple } from '@/util/types/Tuple';
-import { inject, Injector, signal, Signal, untracked } from '@angular/core';
+import { inject, Injector, signal, Signal } from '@angular/core';
 import { of, ReplaySubject, startWith, switchMap, tap } from 'rxjs';
 
 export type SignalResource<T> =
     WritableAsyncSignal<T>
     & {
-        loading: Signal<boolean>; // call will NOT activate request
+        loading$: Signal<boolean>; // call will NOT activate request
     };
 
 type SignalResourceOptions<T> = { initialValue?: T };
@@ -41,7 +41,8 @@ export function signalResource<ST extends Tuple<Signal<any>>, R>(
 
     const injector: Injector = inject(Injector);
 
-    const loading = signal(false);
+    const loading$ = signal(false);
+	const setLoading = (loading: boolean) => setTimeout(() => loading$.set(loading)); // computed have no allowSignalWrites option & untracked is not working
 
     let lastValues: SafeUnwrapSignals<ST> | undefined;
     let sourceValuesSubject$ = new ReplaySubject<SafeUnwrapSignals<ST> | undefined>(1);
@@ -52,12 +53,12 @@ export function signalResource<ST extends Tuple<Signal<any>>, R>(
 				if (!values) {
 					return of(undefined) as Single<R>;
 				}
-                untracked(() => loading.set(true));
+				setLoading(true);
                 return call(...values).pipe(
+					tap(() => setLoading(false)),
 					startWith(undefined as R)
 				)
-            }),
-            tap(() => untracked(() => loading.set(false)))
+            })
         ),
         {
             ...options,
@@ -75,6 +76,6 @@ export function signalResource<ST extends Tuple<Signal<any>>, R>(
     );
 
     return Object.assign(asyncSignal, {
-        loading
+        loading$
     })
 }

@@ -27,8 +27,8 @@ export class BoardService {
     );
 
 	readonly loadingInProgress$: Signal<boolean> = combineProgress(
-		this.allBoards$.loading,
-		this.currentBoard$.loading
+		this.allBoards$.loading$,
+		this.currentBoard$.loading$
 	);
 
 
