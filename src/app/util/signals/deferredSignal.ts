@@ -16,7 +16,6 @@ export function deferredSignal<T>(
     return Object.assign(lazySignal, {
         set: (value: T) => innerSignal.set(value),
         update: (updateFn: (value: T) => T) => innerSignal.update(updateFn),
-        mutate: (mutateFn: (value: T) => void) => innerSignal.mutate(mutateFn),
         asReadonly: () => lazySignal
     })
 }
