@@ -16,7 +16,9 @@ export type SignalResource<T> =
         loading$: Signal<boolean>; // call will NOT activate request
     };
 
-export type SignalResourceOptions<U> = Pick<ToSignalOptions<U>, 'injector' | 'initialValue'>;
+export type SignalResourceOptions<U> = Pick<ToSignalOptions, 'injector' | 'initialValue'> & {
+	initialValue?: U;
+};
 
 export function signalResource<R>(asyncCall: () => Single<R>, options: SignalResourceOptions<R>): SignalResource<R>;
 export function signalResource<R>(asyncCall: () => Single<R>): SignalResource<R>;

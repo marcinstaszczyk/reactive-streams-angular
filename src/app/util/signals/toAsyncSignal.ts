@@ -11,7 +11,8 @@ export type FullAsyncSignal<T, U = undefined> =
 
 const NOT_LOADED = Symbol('NOT_LOADED');
 
-export type ToAsyncSignalOptions<U> = Pick<ToSignalOptions<U>, 'injector' | 'initialValue'> & {
+export type ToAsyncSignalOptions<U> = Pick<ToSignalOptions, 'injector' | 'initialValue'> & {
+	initialValue?: U;
     runInComputedContext?: () => void
 };
 

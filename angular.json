@@ -73,10 +73,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "reactive-streams-angular:build:production"
+              "buildTarget": "reactive-streams-angular:build:production"
             },
             "development": {
-              "browserTarget": "reactive-streams-angular:build:development"
+              "buildTarget": "reactive-streams-angular:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -84,7 +84,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "reactive-streams-angular:build"
+            "buildTarget": "reactive-streams-angular:build"
           }
         },
         "test": {
