@@ -3,6 +3,6 @@ import { WritableSignal } from '@angular/core';
 
 export type WritableAsyncSignal<T, U = undefined> =
     AsyncSignal<T, U>
-    & Omit<WritableSignal<T>, 'mutate' | 'asReadonly'>;
+    & Pick<WritableSignal<T>, 'set' | 'update'>
+	& Pick<WritableSignal<T | U>, 'asReadonly'>;
 // Mutate is not working on computed(signal());
-// asReadonly is it needed?

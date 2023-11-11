@@ -9,12 +9,10 @@
                 [selected]="board.id === currentBoardId">
             {{board.id}} - {{board.name}}
         </option>
-        <option disabled *ngIf="this.boardService.allBoards$.loading$()">Loading...</option>
+        <option disabled *ngIf="this.boardService.allBoardsLoading$()">Loading...</option>
     </ng-container>
 
     <ng-template #loading>
         <option disabled [ngValue]="currentBoardId">Loading...</option>
     </ng-template>
 </select>
-
-<!--{{this.boardService.allBoards()?.length}}-->

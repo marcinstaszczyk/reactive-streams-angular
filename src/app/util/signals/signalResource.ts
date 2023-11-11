@@ -6,7 +6,8 @@ import { safeComputed } from '@/util/signals/safeComputed';
 import { FullAsyncSignal, toAsyncSignal } from '@/util/signals/toAsyncSignal';
 import { WritableAsyncSignal } from '@/util/signals/WritableAsyncSignal';
 import { Tuple } from '@/util/types/Tuple';
-import { inject, Injector, signal, Signal } from '@angular/core';
+import { signal, Signal } from '@angular/core';
+import { ToSignalOptions } from '@angular/core/rxjs-interop';
 import { of, ReplaySubject, startWith, switchMap, tap } from 'rxjs';
 
 export type SignalResource<T> =
@@ -15,7 +16,7 @@ export type SignalResource<T> =
         loading$: Signal<boolean>; // call will NOT activate request
     };
 
-type SignalResourceOptions<T> = { initialValue?: T };
+export type SignalResourceOptions<U> = Pick<ToSignalOptions<U>, 'injector' | 'initialValue'>;
 
 export function signalResource<R>(asyncCall: () => Single<R>, options: SignalResourceOptions<R>): SignalResource<R>;
 export function signalResource<R>(asyncCall: () => Single<R>): SignalResource<R>;
@@ -39,8 +40,6 @@ export function signalResource<ST extends Tuple<Signal<any>>, R>(
         { equal: equalArrayReferences }
     );
 
-    const injector: Injector = inject(Injector);
-
     const loading$ = signal(false);
 	const setLoading = (loading: boolean) => setTimeout(() => loading$.set(loading)); // computed have no allowSignalWrites option & untracked is not working
 
@@ -62,7 +61,6 @@ export function signalResource<ST extends Tuple<Signal<any>>, R>(
         ),
         {
             ...options,
-            injector,
             runInComputedContext: () => {
                 const values: SafeUnwrapSignals<ST> | undefined = sourceValues();
                 if (!values || values === lastValues) {

@@ -64,6 +64,7 @@ export function toAsyncSignal<T, U = undefined>(
                 return updateFn(value);
             }
         }),
+		asReadonly: () => result,
         error$,
     })
 }

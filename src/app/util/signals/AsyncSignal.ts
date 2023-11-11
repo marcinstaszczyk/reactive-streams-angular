@@ -5,3 +5,4 @@ import { Signal } from '@angular/core';
  * asyncSignal() returns initial value (usually undefined) until async operation is completed.
  */
 export type AsyncSignal<T, U = undefined> = Signal<T | U>;
+// TODO should AsyncSignal have loading$
