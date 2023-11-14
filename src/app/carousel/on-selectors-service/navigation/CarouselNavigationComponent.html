@@ -1,12 +1,13 @@
-<div *ngIf="showNavigation$ | push"
-     style="display: flex; justify-content: center; gap: 2px">
-    <button (click)="reset()">RESET</button>
-    <button [disabled]="!(hasPrevious$ | push)"
-            (click)="previous()">
-        PREVIOUS
-    </button>
-    <button [disabled]="!(hasNext$ | push)"
-            (click)="next()">
-        NEXT
-    </button>
-</div>
+@if (showNavigation$ | push) {
+	<div style="display: flex; justify-content: center; gap: 2px">
+		<button (click)="reset()">RESET</button>
+		<button [disabled]="!(hasPrevious$ | push)"
+				(click)="previous()">
+			PREVIOUS
+		</button>
+		<button [disabled]="!(hasNext$ | push)"
+				(click)="next()">
+			NEXT
+		</button>
+	</div>
+}

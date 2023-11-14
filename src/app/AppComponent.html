@@ -1,11 +1,11 @@
 <nav>
-    <ul style="display: flex; gap: 30px;">
-        <li><a routerLink="" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">Home</a></li>
-        <li><a [routerLink]="['/board', 'BOARD-1']" routerLinkActive="active" ariaCurrentWhenActive="page">Board</a></li>
-        <li><a routerLink="performance" routerLinkActive="active" ariaCurrentWhenActive="page">Performance</a></li>
+	<ul style="display: flex; gap: 30px;">
+		<li><a routerLink="" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">Home</a></li>
+		<li><a [routerLink]="['/board', 'BOARD-1']" routerLinkActive="active" ariaCurrentWhenActive="page">Board</a></li>
+		<li><a routerLink="performance" routerLinkActive="active" ariaCurrentWhenActive="page">Performance</a></li>
 		<li><a routerLink="carousel" routerLinkActive="active" ariaCurrentWhenActive="page">Carousel</a></li>
 		<li><a routerLink="diamond" routerLinkActive="active" ariaCurrentWhenActive="page">Diamond</a></li>
-    </ul>
+	</ul>
 </nav>
 
 <router-outlet></router-outlet>

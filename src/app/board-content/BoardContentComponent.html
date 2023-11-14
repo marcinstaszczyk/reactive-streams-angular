@@ -1,27 +1,31 @@
 <div style="position: relative; max-width: 700px; display: flex; flex-direction: column; gap: 8px">
 
-    <div style="position: absolute; top: -30px; right: 0; ">
-        <app-circle-loader *ngIf="loadingInProgress$()"></app-circle-loader>
-    </div>
+	<div style="position: absolute; top: -30px; right: 0; ">
+		@if (loadingInProgress$()) { <app-circle-loader/> }
+	</div>
 
-    <div style="display: flex; gap: 8px; align-items: flex-start; justify-content: space-between">
-        <div style="border: 1px solid black; padding: 4px;">
-            <div>Board <button (click)="boardActive$.set(!boardActive$())">{{boardActive$() ? 'Off' : 'On'}}</button></div>
+	<div style="display: flex; gap: 8px; align-items: flex-start; justify-content: space-between">
+		<div style="border: 1px solid black; padding: 4px;">
+			<div>Board <button (click)="boardActive$.set(!boardActive$())">{{boardActive$() ? 'Off' : 'On'}}</button></div>
 
-            <app-board-selection *ngIf="boardActive$()"></app-board-selection>
-        </div>
-        <div *ngIf="boardActive$()" style="border: 1px solid black; padding: 4px;">
-            <div>Filters:</div>
+			@if (boardActive$()) { <app-board-selection/> }
+		</div>
+		@if (boardActive$()) {
+			<div style="border: 1px solid black; padding: 4px;">
+				<div>Filters:</div>
 
-            <app-filters-selection></app-filters-selection>
-        </div>
-    </div>
+				<app-filters-selection></app-filters-selection>
+			</div>
+		}
+	</div>
 
-    <div *ngIf="boardActive$()" style="border: 1px solid black; padding: 4px;">
-        <div>Tasks:</div>
+	@if (boardActive$()) {
+		<div style="border: 1px solid black; padding: 4px;">
+			<div>Tasks:</div>
 
-        <app-tasks-table></app-tasks-table>
-    </div>
+			<app-tasks-table></app-tasks-table>
+		</div>
+	}
 
 </div>
 

@@ -1,12 +1,10 @@
-<ng-container *ngIf="taskIds$(); let taskIds; else: loading">
-    <cdk-virtual-scroll-viewport itemSize="20" [maxBufferPx]="0" [minBufferPx]="0" style="height: 60vh">
-        <app-tasks-table-row *cdkVirtualFor="let taskId of taskIds"
-                             [taskId]="taskId"
-                             style="height: 20px; display: block; ">
-        </app-tasks-table-row>
-    </cdk-virtual-scroll-viewport>
-</ng-container>
-
-<ng-template #loading>
-    Loading tasks...
-</ng-template>
+@if (taskIds$(); as taskIds) {
+	<cdk-virtual-scroll-viewport itemSize="20" [maxBufferPx]="0" [minBufferPx]="0" style="height: 60vh">
+		<app-tasks-table-row
+				*cdkVirtualFor="let taskId of taskIds"
+				[taskId]="taskId"
+				style="height: 20px; display: block; "/>
+	</cdk-virtual-scroll-viewport>
+} @else {
+	Loading tasks...
+}

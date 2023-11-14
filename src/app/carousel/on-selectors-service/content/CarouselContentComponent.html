@@ -1,1 +1,3 @@
-<img *ngIf="cat$ | push as cat" [src]="cat.url">
+@if (cat$ | push; as cat) {
+	<img [src]="cat.url">
+}

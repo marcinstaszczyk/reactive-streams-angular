@@ -1,18 +1,18 @@
-<select *ngIf="currentBoardId$(); let currentBoardId"
-        [ngModel]="currentBoardId"
-        (ngModelChange)="userActionChangeBoard($event)"
-        (click)="userActionBoardSelectionClicked()"
-        name="board">
-    <ng-container *ngIf="boards$(); let allBoards; else loading">
-        <option *ngFor="let board of allBoards; trackBy: trackByBoardId"
-                [ngValue]="board.id"
-                [selected]="board.id === currentBoardId">
-            {{board.id}} - {{board.name}}
-        </option>
-        <option disabled *ngIf="this.boardService.allBoardsLoading$()">Loading...</option>
-    </ng-container>
-
-    <ng-template #loading>
-        <option disabled [ngValue]="currentBoardId">Loading...</option>
-    </ng-template>
-</select>
+@if (currentBoardId$(); as currentBoardId) {
+	<select [ngModel]="currentBoardId"
+			(ngModelChange)="userActionChangeBoard($event)"
+			(click)="userActionBoardSelectionClicked()"
+			name="board">
+		@if (boards$(); as allBoards) {
+			@for (board of allBoards; track trackByBoardId($index, board)) {
+  				<option [ngValue]="board.id"
+						[selected]="board.id === currentBoardId">
+					{{board.id}} - {{board.name}}
+				</option>
+			}
+			@if (this.boardService.allBoardsLoading$()) { <option disabled>Loading...</option> }
+		} @else {
+			<option disabled [ngValue]="currentBoardId">Loading...</option>
+		}
+	</select>
+}

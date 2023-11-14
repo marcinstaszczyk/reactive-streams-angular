@@ -1,23 +1,23 @@
 <div>
-    Single value by Input:
+	Single value by Input:
 
-    <div style="display: block; gap: 4px">
-        <button (click)="changeValue()">Change value</button>
-        <button (click)="resetValue()">Reset value</button>
-        <button (click)="scrollToTop()">Scroll to top</button>
-        <button (click)="scrollToBottom()">Scroll to bottom</button>
-    </div>
+	<div style="display: block; gap: 4px">
+		<button (click)="changeValue()">Change value</button>
+		<button (click)="resetValue()">Reset value</button>
+		<button (click)="scrollToTop()">Scroll to top</button>
+		<button (click)="scrollToBottom()">Scroll to bottom</button>
+	</div>
 
-    <cdk-virtual-scroll-viewport #scrollViewport
-                                 itemSize="18"
-                                 [maxBufferPx]="0"
-                                 [minBufferPx]="0"
-                                 [ngStyle]="{ height: tableHeight + 'px', width: tableWidth + 'px' }">
-        <app-value-by-input-row *cdkVirtualFor="let item of table"
-                                [columnsCount]="columnsCount"
-                                [value]="value"
-                                style="display: block">
-        </app-value-by-input-row>
-    </cdk-virtual-scroll-viewport>
+	<cdk-virtual-scroll-viewport #scrollViewport
+								 itemSize="18"
+								 [maxBufferPx]="0"
+								 [minBufferPx]="0"
+								 [ngStyle]="{ height: tableHeight + 'px', width: tableWidth + 'px' }">
+		<app-value-by-input-row *cdkVirtualFor="let item of table"
+								[columnsCount]="columnsCount"
+								[value]="value"
+								style="display: block">
+		</app-value-by-input-row>
+	</cdk-virtual-scroll-viewport>
 
 </div>

@@ -1,26 +1,28 @@
 <div style="display: flex; flex-direction: column; align-items: center; gap: 10px">
-    <!-- Top navigation buttons. -->
-    <ng-container *ngTemplateOutlet="navigation"></ng-container>
+	<!-- Top navigation buttons. -->
+	<ng-container *ngTemplateOutlet="navigation"></ng-container>
 
-    <img *ngIf="selectCat$() | push as cat" [src]="cat.url">
+	@if (selectCat$() | push; as cat) { <img [src]="cat.url"> }
 
-    <!-- Bottom navigation buttons. -->
-    <ng-container *ngTemplateOutlet="navigation"></ng-container>
+	<!-- Bottom navigation buttons. -->
+	<ng-container *ngTemplateOutlet="navigation"></ng-container>
 
 </div>
 
 <!-- Navigation actions template. -->
 <ng-template #navigation>
-    <div *ngIf="cats$.select$() | push"
-         style="display: flex; justify-content: center; gap: 2px">
-        <button (click)="actionReset()">RESET</button>
-        <button [disabled]="!(selectHasPrevious$() | push)"
-                (click)="actionPrevious()">
-            PREVIOUS
-        </button>
-        <button [disabled]="!(selectHasNext$() | push)"
-                (click)="actionNext()">
-            NEXT
-        </button>
-    </div>
+	@if (cats$.select$() | push) {
+		<div
+			 style="display: flex; justify-content: center; gap: 2px">
+			<button (click)="actionReset()">RESET</button>
+			<button [disabled]="!(selectHasPrevious$() | push)"
+					(click)="actionPrevious()">
+				PREVIOUS
+			</button>
+			<button [disabled]="!(selectHasNext$() | push)"
+					(click)="actionNext()">
+				NEXT
+			</button>
+		</div>
+	}
 </ng-template>

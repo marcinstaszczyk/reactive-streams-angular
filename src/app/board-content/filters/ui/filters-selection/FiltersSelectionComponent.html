@@ -1,9 +1,11 @@
-<ng-container *ngIf="filters$(); let filters; else loading">
-    <div *ngFor="let filter of filters; trackBy: trackByBoardId">
-        <app-filter-selection [filter]="filter"></app-filter-selection>
-    </div>
-</ng-container>
+@if (filters$(); as filters) {
+	@for (filter of filters; track trackByBoardId($index, filter)) {
+		<div>
+			<app-filter-selection [filter]="filter"></app-filter-selection>
+		</div>
+	}
+} @else {
+	Loading filters...
+}
 
-<ng-template #loading>
-    Loading filters...
-</ng-template>
+

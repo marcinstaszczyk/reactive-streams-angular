@@ -1,7 +1,5 @@
-<ng-container *ngIf="task$(); let task; else: loading">
-    {{ task.id }} {{ task.name }} {{ task.assignee }} {{ task.completed }} {{ task.description }}
-</ng-container>
-
-<ng-template #loading>
-    Loading task...
-</ng-template>
+@if (task$(); as task) {
+	{{ task.id }} {{ task.name }} {{ task.assignee }} {{ task.completed }} {{ task.description }}
+} @else {
+	Loading task...
+}
