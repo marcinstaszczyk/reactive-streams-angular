@@ -1,5 +1,5 @@
 <div>
-	Value by Service with Subject/Observable:
+	Single value by Service with Signal:
 
 	<div style="display: block; gap: 4px">
 		<button (click)="changeValue()">Change value</button>
@@ -13,11 +13,10 @@
 								 [maxBufferPx]="0"
 								 [minBufferPx]="0"
 								 [ngStyle]="{ height: tableHeight + 'px', width: tableWidth + 'px' }">
-		<app-value-by-service-observable-row *cdkVirtualFor="let value of table"
-											 [columnsCount]="columnsCount"
-											 [value]="value"
-											 style="display: block">
-		</app-value-by-service-observable-row>
+		<app-single-value-by-service-signal-row *cdkVirtualFor="let item of table"
+								[columnsCount]="columnsCount"
+								style="display: block">
+		</app-single-value-by-service-signal-row>
 	</cdk-virtual-scroll-viewport>
 
 </div>

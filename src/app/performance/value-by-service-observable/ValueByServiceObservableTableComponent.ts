@@ -1,12 +1,12 @@
 import { WrappedValue } from '@/performance/core/WrappedValue';
-import { ValueService } from '@/performance/value-by-service-observable/ValueService';
-import { ValueServiceImpl } from '@/performance/value-by-service-observable/ValueServiceImpl';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { RxPush } from '@rx-angular/template/push';
 import { BehaviorSubject } from 'rxjs';
 import { ValueByServiceObservableRowComponent } from './ValueByServiceObservableRowComponent';
+import { ValueService } from './ValueService';
+import { ValueServiceImpl } from './ValueServiceImpl';
 
 @Component({
     selector: 'app-value-by-service-observable-table',
@@ -85,7 +85,9 @@ export class ValueByServiceObservableTableComponent implements OnChanges, AfterV
         this.generateTable();
         const startTime = performance.now();
         this.changeDetectorRef.detectChanges();
-        console.log('changeValue', performance.now() - startTime);
+		requestIdleCallback(() => {
+			console.log('changeValue', performance.now() - startTime);
+		})
     }
 
     resetValue(): void {
@@ -93,7 +95,9 @@ export class ValueByServiceObservableTableComponent implements OnChanges, AfterV
         this.generateTable();
         const startTime = performance.now();
         this.changeDetectorRef.detectChanges();
-        console.log('changeValue', performance.now() - startTime);
+		requestIdleCallback(() => {
+			console.log('resetValue', performance.now() - startTime);
+		})
     }
 
     private generateTable(): void {

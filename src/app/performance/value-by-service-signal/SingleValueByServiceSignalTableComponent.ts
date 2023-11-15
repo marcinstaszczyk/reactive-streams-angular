@@ -1,23 +1,27 @@
 import { WrappedValue } from '@/performance/core/WrappedValue';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { RxPush } from '@rx-angular/template/push';
-import { ValueByInputRowComponent } from './ValueByInputRowComponent';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, signal, SimpleChanges, ViewChild } from '@angular/core';
+import { SingleValueByServiceSignalRowComponent } from './SingleValueByServiceSignalRowComponent';
+import { ValueService } from './ValueService';
+import { ValueServiceImpl } from './ValueServiceImpl';
 
 @Component({
-    selector: 'app-value-by-input-table',
+    selector: 'app-single-value-by-service-signal-table',
     standalone: true,
-    templateUrl: './ValueByInputTableComponent.html',
+    templateUrl: './SingleValueByServiceSignalTableComponent.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        RxPush,
-        ValueByInputRowComponent,
         ScrollingModule,
+        SingleValueByServiceSignalRowComponent,
+    ],
+    providers: [
+        ValueServiceImpl,
+        { provide: ValueService, useExisting: ValueServiceImpl },
     ],
 })
-export class ValueByInputTableComponent implements OnChanges, AfterViewInit {
+export class SingleValueByServiceSignalTableComponent implements OnChanges, AfterViewInit {
 
     @Input()
     rowsCount?: number;
@@ -34,18 +38,19 @@ export class ValueByInputTableComponent implements OnChanges, AfterViewInit {
     @ViewChild('scrollViewport', { read: ElementRef, static: true })
     scrollViewport?: ElementRef;
 
-    baseValue?: number = 1;
+    value$ = signal<WrappedValue | undefined>(new WrappedValue('1'));
 
-    table?: Array<WrappedValue | undefined>;
+    table?: number[];
 
     constructor(
-        private readonly changeDetectorRef: ChangeDetectorRef
+        private readonly valueServiceImpl: ValueServiceImpl,
     ) {
+        valueServiceImpl.value$ = this.value$;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['rowsCount']) {
-            this.generateTable();
+            this.table = Array.from({ length: this.rowsCount ?? 0 }, (_, i) => i);
         }
     }
 
@@ -70,29 +75,19 @@ export class ValueByInputTableComponent implements OnChanges, AfterViewInit {
     }
 
     changeValue(): void {
-        this.baseValue = (this.baseValue ?? 0) + 1;
-        this.generateTable();
         const startTime = performance.now();
-        this.changeDetectorRef.detectChanges();
+        this.value$.set(new WrappedValue('' + (+(this.value$()?.value ?? 0) + 1)));
 		requestIdleCallback(() => {
 			console.log('changeValue', performance.now() - startTime);
 		})
     }
 
     resetValue(): void {
-        this.baseValue = undefined;
-        this.generateTable();
         const startTime = performance.now();
-        this.changeDetectorRef.detectChanges();
+        this.value$.set(undefined);
 		requestIdleCallback(() => {
 			console.log('resetValue', performance.now() - startTime);
 		})
-    }
-
-    private generateTable(): void {
-        this.table = Array.from({ length: this.rowsCount ?? 0 }, (_, i) => {
-            return this.baseValue ? new WrappedValue('' + (this.baseValue + i)) : undefined;
-        });
     }
 
 }

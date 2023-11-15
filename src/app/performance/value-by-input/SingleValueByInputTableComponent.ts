@@ -73,14 +73,18 @@ export class SingleValueByInputTableComponent implements OnChanges, AfterViewIni
         this.value = new WrappedValue('' + (+(this.value?.value ?? 0) + 1));
         const startTime = performance.now();
         this.changeDetectorRef.detectChanges();
-        console.log('changeValue', performance.now() - startTime);
+		requestIdleCallback(() => {
+			console.log('changeValue', performance.now() - startTime);
+		})
     }
 
     resetValue(): void {
         this.value = undefined;
         const startTime = performance.now();
         this.changeDetectorRef.detectChanges();
-        console.log('changeValue', performance.now() - startTime);
+		requestIdleCallback(() => {
+			console.log('resetValue', performance.now() - startTime);
+		})
     }
 
 }

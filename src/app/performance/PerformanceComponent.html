@@ -2,29 +2,42 @@
 
 	Performance
 
-	<app-value-by-input-table [rowsCount]="configuration.rowsCount"
-							  [columnsCount]="configuration.columnsCount"
-							  [tableWidth]="configuration.tableWidth"
-							  [tableHeight]="configuration.tableHeight">
-	</app-value-by-input-table>
+	<app-value-by-input-table
+			[rowsCount]="configuration.rowsCount"
+			[columnsCount]="configuration.columnsCount"
+			[tableWidth]="configuration.tableWidth"
+			[tableHeight]="configuration.tableHeight"/>
 
-	<app-value-by-service-observable-table [rowsCount]="configuration.rowsCount"
-										   [columnsCount]="configuration.columnsCount"
-										   [tableWidth]="configuration.tableWidth"
-										   [tableHeight]="configuration.tableHeight">
-	</app-value-by-service-observable-table>
+	<app-value-by-service-observable-table
+			[rowsCount]="configuration.rowsCount"
+			[columnsCount]="configuration.columnsCount"
+			[tableWidth]="configuration.tableWidth"
+			[tableHeight]="configuration.tableHeight"/>
 
-	<app-single-value-by-input-table [rowsCount]="configuration.rowsCount"
-									 [columnsCount]="configuration.columnsCount"
-									 [tableWidth]="configuration.tableWidth"
-									 [tableHeight]="configuration.tableHeight">
-	</app-single-value-by-input-table>
+	<app-value-by-service-signal-table
+			[rowsCount]="configuration.rowsCount"
+			[columnsCount]="configuration.columnsCount"
+			[tableWidth]="configuration.tableWidth"
+			[tableHeight]="configuration.tableHeight"/>
 
-	<app-single-value-by-service-observable-table [rowsCount]="configuration.rowsCount"
-												  [columnsCount]="configuration.columnsCount"
-												  [tableWidth]="configuration.tableWidth"
-												  [tableHeight]="configuration.tableHeight">
-	</app-single-value-by-service-observable-table>
+
+	<app-single-value-by-input-table
+			[rowsCount]="configuration.rowsCount"
+			[columnsCount]="configuration.columnsCount"
+			[tableWidth]="configuration.tableWidth"
+			[tableHeight]="configuration.tableHeight"/>
+
+	<app-single-value-by-service-observable-table
+			[rowsCount]="configuration.rowsCount"
+			[columnsCount]="configuration.columnsCount"
+			[tableWidth]="configuration.tableWidth"
+			[tableHeight]="configuration.tableHeight"/>
+
+	<app-single-value-by-service-signal-table
+			[rowsCount]="configuration.rowsCount"
+			[columnsCount]="configuration.columnsCount"
+			[tableWidth]="configuration.tableWidth"
+			[tableHeight]="configuration.tableHeight"/>
 
 </div>
 

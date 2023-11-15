@@ -1,9 +1,9 @@
+import { WrappedValue } from '@/performance/core/WrappedValue';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { RxPush } from '@rx-angular/template/push';
 import { BehaviorSubject } from 'rxjs';
-import { WrappedValue } from '../core/WrappedValue';
 import { SingleValueByServiceObservableRowComponent } from './SingleValueByServiceObservableRowComponent';
 import { ValueService } from './ValueService';
 import { ValueServiceImpl } from './ValueServiceImpl';
@@ -80,13 +80,17 @@ export class SingleValueByServiceObservableTableComponent implements OnChanges, 
     changeValue(): void {
         const startTime = performance.now();
         this.value$.next(new WrappedValue('' + (+(this.value$.value?.value ?? 0) + 1)));
-        console.log('changeValue', performance.now() - startTime);
+		requestIdleCallback(() => {
+			console.log('changeValue', performance.now() - startTime);
+		})
     }
 
     resetValue(): void {
         const startTime = performance.now();
         this.value$.next(undefined);
-        console.log('changeValue', performance.now() - startTime);
+		requestIdleCallback(() => {
+			console.log('resetValue', performance.now() - startTime);
+		})
     }
 
 }

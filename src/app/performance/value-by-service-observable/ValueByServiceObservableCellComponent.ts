@@ -1,9 +1,9 @@
+import { WrappedValue } from '@/performance/core/WrappedValue';
 import { Base } from '@/util';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RxPush } from '@rx-angular/template/push';
 import { Observable, takeUntil } from 'rxjs';
-import { WrappedValue } from '../core/WrappedValue';
 import { ValueService } from './ValueService';
 
 @Component({

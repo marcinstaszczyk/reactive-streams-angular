@@ -2,22 +2,20 @@ import { WrappedValue } from '@/performance/core/WrappedValue';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { RxPush } from '@rx-angular/template/push';
-import { ValueByInputRowComponent } from './ValueByInputRowComponent';
+import { ValueByServiceSignalRowComponent } from './ValueByServiceSignalRowComponent';
 
 @Component({
-    selector: 'app-value-by-input-table',
+    selector: 'app-value-by-service-signal-table',
     standalone: true,
-    templateUrl: './ValueByInputTableComponent.html',
+    templateUrl: './ValueByServiceSignalTableComponent.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        RxPush,
-        ValueByInputRowComponent,
         ScrollingModule,
+        ValueByServiceSignalRowComponent,
     ],
 })
-export class ValueByInputTableComponent implements OnChanges, AfterViewInit {
+export class ValueByServiceSignalTableComponent implements OnChanges, AfterViewInit {
 
     @Input()
     rowsCount?: number;
@@ -39,7 +37,7 @@ export class ValueByInputTableComponent implements OnChanges, AfterViewInit {
     table?: Array<WrappedValue | undefined>;
 
     constructor(
-        private readonly changeDetectorRef: ChangeDetectorRef
+        private readonly changeDetectorRef: ChangeDetectorRef,
     ) {
     }
 
