@@ -1,7 +1,9 @@
+import { CommonButtonsComponent } from '@/performance/core/CommonButtonsComponent';
+import { CommonTableComponent } from '@/performance/core/CommonTableComponent';
 import { WrappedValue } from '@/performance/core/WrappedValue';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, forwardRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { RxPush } from '@rx-angular/template/push';
 import { BehaviorSubject } from 'rxjs';
 import { SingleValueByServiceObservableRowComponent } from './SingleValueByServiceObservableRowComponent';
@@ -13,18 +15,20 @@ import { ValueServiceImpl } from './ValueServiceImpl';
     standalone: true,
     templateUrl: './SingleValueByServiceObservableTableComponent.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        CommonModule,
-        RxPush,
-        ScrollingModule,
-        SingleValueByServiceObservableRowComponent,
-    ],
+	imports: [
+		CommonModule,
+		RxPush,
+		ScrollingModule,
+		SingleValueByServiceObservableRowComponent,
+		CommonButtonsComponent,
+	],
     providers: [
         ValueServiceImpl,
         { provide: ValueService, useExisting: ValueServiceImpl },
+		{ provide: CommonTableComponent, useExisting: forwardRef(() => SingleValueByServiceObservableTableComponent)}
     ],
 })
-export class SingleValueByServiceObservableTableComponent implements OnChanges, AfterViewInit {
+export class SingleValueByServiceObservableTableComponent extends CommonTableComponent implements OnChanges, AfterViewInit {
 
     @Input()
     rowsCount?: number;
@@ -39,7 +43,7 @@ export class SingleValueByServiceObservableTableComponent implements OnChanges, 
     tableHeight?: number;
 
     @ViewChild('scrollViewport', { read: ElementRef, static: true })
-    scrollViewport?: ElementRef;
+	override scrollViewport?: ElementRef;
 
     value$ = new BehaviorSubject<WrappedValue | undefined>(new WrappedValue('1'));
 
@@ -48,7 +52,8 @@ export class SingleValueByServiceObservableTableComponent implements OnChanges, 
     constructor(
         private readonly valueServiceImpl: ValueServiceImpl,
     ) {
-        valueServiceImpl.value$ = this.value$;
+		super();
+		valueServiceImpl.value$ = this.value$;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -61,36 +66,12 @@ export class SingleValueByServiceObservableTableComponent implements OnChanges, 
         console.log('table.ngAfterViewInit');
     }
 
-    scrollToTop(): void {
-        const startTime = performance.now();
-        this.scrollViewport?.nativeElement.scrollTo(0, 0);
-        setTimeout(() => {
-            console.log('scrollToTop', performance.now() - startTime);
-        })
-    }
+	protected override handleChangeValue(): void {
+		this.value$.next(new WrappedValue('' + (+(this.value$.value?.value ?? 0) + 1)));
+	}
 
-    scrollToBottom(): void {
-        const startTime = performance.now();
-        this.scrollViewport?.nativeElement.scrollTo(0, 10000);
-        setTimeout(() => {
-            console.log('scrollToBottom', performance.now() - startTime);
-        })
-    }
-
-    changeValue(): void {
-        const startTime = performance.now();
-        this.value$.next(new WrappedValue('' + (+(this.value$.value?.value ?? 0) + 1)));
-		requestIdleCallback(() => {
-			console.log('changeValue', performance.now() - startTime);
-		})
-    }
-
-    resetValue(): void {
-        const startTime = performance.now();
-        this.value$.next(undefined);
-		requestIdleCallback(() => {
-			console.log('resetValue', performance.now() - startTime);
-		})
-    }
+	protected override handleResetValue(): void {
+		this.value$.next(undefined);
+	}
 
 }

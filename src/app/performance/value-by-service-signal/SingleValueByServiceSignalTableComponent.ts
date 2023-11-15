@@ -1,7 +1,9 @@
+import { CommonButtonsComponent } from '@/performance/core/CommonButtonsComponent';
+import { CommonTableComponent } from '@/performance/core/CommonTableComponent';
 import { WrappedValue } from '@/performance/core/WrappedValue';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, signal, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, forwardRef, Input, OnChanges, signal, SimpleChanges, ViewChild } from '@angular/core';
 import { SingleValueByServiceSignalRowComponent } from './SingleValueByServiceSignalRowComponent';
 import { ValueService } from './ValueService';
 import { ValueServiceImpl } from './ValueServiceImpl';
@@ -11,17 +13,19 @@ import { ValueServiceImpl } from './ValueServiceImpl';
     standalone: true,
     templateUrl: './SingleValueByServiceSignalTableComponent.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        CommonModule,
-        ScrollingModule,
-        SingleValueByServiceSignalRowComponent,
-    ],
+	imports: [
+		CommonModule,
+		ScrollingModule,
+		SingleValueByServiceSignalRowComponent,
+		CommonButtonsComponent,
+	],
     providers: [
         ValueServiceImpl,
         { provide: ValueService, useExisting: ValueServiceImpl },
+		{ provide: CommonTableComponent, useExisting: forwardRef(() => SingleValueByServiceSignalTableComponent)}
     ],
 })
-export class SingleValueByServiceSignalTableComponent implements OnChanges, AfterViewInit {
+export class SingleValueByServiceSignalTableComponent extends CommonTableComponent implements OnChanges, AfterViewInit {
 
     @Input()
     rowsCount?: number;
@@ -36,7 +40,7 @@ export class SingleValueByServiceSignalTableComponent implements OnChanges, Afte
     tableHeight?: number;
 
     @ViewChild('scrollViewport', { read: ElementRef, static: true })
-    scrollViewport?: ElementRef;
+	override scrollViewport?: ElementRef;
 
     value$ = signal<WrappedValue | undefined>(new WrappedValue('1'));
 
@@ -45,6 +49,7 @@ export class SingleValueByServiceSignalTableComponent implements OnChanges, Afte
     constructor(
         private readonly valueServiceImpl: ValueServiceImpl,
     ) {
+		super();
         valueServiceImpl.value$ = this.value$;
     }
 
@@ -58,36 +63,12 @@ export class SingleValueByServiceSignalTableComponent implements OnChanges, Afte
         console.log('table.ngAfterViewInit');
     }
 
-    scrollToTop(): void {
-        const startTime = performance.now();
-        this.scrollViewport?.nativeElement.scrollTo(0, 0);
-        setTimeout(() => {
-            console.log('scrollToTop', performance.now() - startTime);
-        })
-    }
+	protected override handleChangeValue(): void {
+		this.value$.set(new WrappedValue('' + (+(this.value$()?.value ?? 0) + 1)));
+	}
 
-    scrollToBottom(): void {
-        const startTime = performance.now();
-        this.scrollViewport?.nativeElement.scrollTo(0, 10000);
-        setTimeout(() => {
-            console.log('scrollToBottom', performance.now() - startTime);
-        })
-    }
-
-    changeValue(): void {
-        const startTime = performance.now();
-        this.value$.set(new WrappedValue('' + (+(this.value$()?.value ?? 0) + 1)));
-		requestIdleCallback(() => {
-			console.log('changeValue', performance.now() - startTime);
-		})
-    }
-
-    resetValue(): void {
-        const startTime = performance.now();
-        this.value$.set(undefined);
-		requestIdleCallback(() => {
-			console.log('resetValue', performance.now() - startTime);
-		})
-    }
+	protected override handleResetValue(): void {
+		this.value$.set(undefined);
+	}
 
 }

@@ -1,7 +1,20 @@
+import { CommonButtonsComponent } from '@/performance/core/CommonButtonsComponent';
+import { CommonTableComponent } from '@/performance/core/CommonTableComponent';
 import { WrappedValue } from '@/performance/core/WrappedValue';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import {
+	AfterViewInit,
+	ChangeDetectionStrategy,
+	ChangeDetectorRef,
+	Component,
+	ElementRef,
+	forwardRef,
+	Input,
+	OnChanges,
+	SimpleChanges,
+	ViewChild,
+} from '@angular/core';
 import { ValueByServiceSignalRowComponent } from './ValueByServiceSignalRowComponent';
 
 @Component({
@@ -9,13 +22,17 @@ import { ValueByServiceSignalRowComponent } from './ValueByServiceSignalRowCompo
     standalone: true,
     templateUrl: './ValueByServiceSignalTableComponent.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        CommonModule,
-        ScrollingModule,
-        ValueByServiceSignalRowComponent,
-    ],
+	imports: [
+		CommonModule,
+		ScrollingModule,
+		ValueByServiceSignalRowComponent,
+		CommonButtonsComponent,
+	],
+	providers: [
+		{ provide: CommonTableComponent, useExisting: forwardRef(() => ValueByServiceSignalTableComponent)}
+	],
 })
-export class ValueByServiceSignalTableComponent implements OnChanges, AfterViewInit {
+export class ValueByServiceSignalTableComponent extends CommonTableComponent implements OnChanges, AfterViewInit {
 
     @Input()
     rowsCount?: number;
@@ -30,7 +47,7 @@ export class ValueByServiceSignalTableComponent implements OnChanges, AfterViewI
     tableHeight?: number;
 
     @ViewChild('scrollViewport', { read: ElementRef, static: true })
-    scrollViewport?: ElementRef;
+    override scrollViewport?: ElementRef;
 
     baseValue?: number = 1;
 
@@ -39,6 +56,7 @@ export class ValueByServiceSignalTableComponent implements OnChanges, AfterViewI
     constructor(
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {
+		super()
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -51,43 +69,19 @@ export class ValueByServiceSignalTableComponent implements OnChanges, AfterViewI
         console.log('table.ngAfterViewInit');
     }
 
-    scrollToTop(): void {
-        const startTime = performance.now();
-        this.scrollViewport?.nativeElement.scrollTo(0, 0);
-        setTimeout(() => {
-            console.log('scrollToTop', performance.now() - startTime);
-        })
-    }
+	protected override handleChangeValue(): void {
+		this.baseValue = (this.baseValue ?? 0) + 1;
+		this.generateTable();
+		this.changeDetectorRef.detectChanges();
+	}
 
-    scrollToBottom(): void {
-        const startTime = performance.now();
-        this.scrollViewport?.nativeElement.scrollTo(0, 10000);
-        setTimeout(() => {
-            console.log('scrollToBottom', performance.now() - startTime);
-        })
-    }
+	protected override handleResetValue(): void {
+		this.baseValue = undefined;
+		this.generateTable();
+		this.changeDetectorRef.detectChanges();
+	}
 
-    changeValue(): void {
-        this.baseValue = (this.baseValue ?? 0) + 1;
-        this.generateTable();
-        const startTime = performance.now();
-        this.changeDetectorRef.detectChanges();
-		requestIdleCallback(() => {
-			console.log('changeValue', performance.now() - startTime);
-		})
-    }
-
-    resetValue(): void {
-        this.baseValue = undefined;
-        this.generateTable();
-        const startTime = performance.now();
-        this.changeDetectorRef.detectChanges();
-		requestIdleCallback(() => {
-			console.log('resetValue', performance.now() - startTime);
-		})
-    }
-
-    private generateTable(): void {
+	private generateTable(): void {
         this.table = Array.from({ length: this.rowsCount ?? 0 }, (_, i) => {
             return this.baseValue ? new WrappedValue('' + (this.baseValue + i)) : undefined;
         });

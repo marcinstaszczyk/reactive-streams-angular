@@ -1,12 +1,7 @@
 <div>
 	Single value by Input:
 
-	<div style="display: block; gap: 4px">
-		<button (click)="changeValue()">Change value</button>
-		<button (click)="resetValue()">Reset value</button>
-		<button (click)="scrollToTop()">Scroll to top</button>
-		<button (click)="scrollToBottom()">Scroll to bottom</button>
-	</div>
+	<app-common-buttons-component/>
 
 	<cdk-virtual-scroll-viewport #scrollViewport
 								 itemSize="18"
