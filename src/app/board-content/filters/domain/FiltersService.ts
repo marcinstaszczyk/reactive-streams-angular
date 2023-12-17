@@ -2,6 +2,7 @@ import { BoardId, BoardService } from '@/board-content/board';
 import { combineProgress } from '@/util/signals/combineProgress';
 import { SignalResource, signalResource } from '@/util/signals/signalResource';
 import { Injectable, Signal } from '@angular/core';
+import { mergeWith, Subject } from 'rxjs';
 import { FiltersRepository } from './repositories/FiltersRepository';
 import { Filter } from './types/Filter';
 import { FilterId } from './types/FilterId';
@@ -21,7 +22,9 @@ export class FiltersService {
     readonly activeFiltersIds$: SignalResource<Set<FilterId>> = signalResource(
         this.currentBoardId$,
         (boardId: BoardId) => {
-            return this.filtersRepository.selectActiveFilterIds(boardId);
+            return this.filtersRepository.selectActiveFilterIds(boardId).pipe(
+				mergeWith(this.updateFilterIds$)
+			);
         },
     );
 
@@ -29,6 +32,8 @@ export class FiltersService {
         this.filters$.loading$,
         this.activeFiltersIds$.loading$
     );
+
+	private updateFilterIds$ = new Subject<Set<FilterId>>();
 
     constructor(
         private readonly boardService: BoardService,
@@ -44,7 +49,7 @@ export class FiltersService {
         } else {
             changedIds.delete(filterId);
         }
-        this.activeFiltersIds$.set(changedIds);
+        this.updateFilterIds$.next(changedIds);
 
         await this.filtersRepository.setActiveFilterIds(this.currentBoardId$()!, changedIds);
     }

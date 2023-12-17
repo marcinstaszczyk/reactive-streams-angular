@@ -1,7 +1,6 @@
 import { AsyncSignal } from '@/util/signals/AsyncSignal';
 import { combineProgress } from '@/util/signals/combineProgress';
 import { signalResource, SignalResource } from '@/util/signals/signalResource';
-import { toAsyncSignal } from '@/util/signals/toAsyncSignal';
 import { Injectable, Signal } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
@@ -12,7 +11,7 @@ import { BoardId } from './types/BoardId';
 @Injectable() // provided in root is not getting boardId route param right
 export class BoardService {
 
-    readonly currentBoardId$: AsyncSignal<BoardId> = toAsyncSignal(
+    readonly currentBoardId$: AsyncSignal<BoardId> = signalResource(() =>
         this.route.params.pipe(
             map((params: Params) => params['boardId']),
             filter((boardId: string | undefined): boardId is string => Boolean(boardId)),
@@ -21,9 +20,7 @@ export class BoardService {
         )
     );
 
-    readonly #allBoards$: SignalResource<Board[]> = signalResource(() => this.boardRepository.selectAllBoards());
-	readonly allBoards$: AsyncSignal<Board[]> = this.#allBoards$.asReadonly();
-	readonly allBoardsLoading$: Signal<boolean> = this.#allBoards$.loading$;
+    readonly allBoards$: SignalResource<Board[]> = signalResource(() => this.boardRepository.selectAllBoards());
     // TODO reuse data between allBoards and currentBoard
     readonly currentBoard$: SignalResource<Board> = signalResource(
         this.currentBoardId$,
@@ -31,7 +28,7 @@ export class BoardService {
     );
 
 	readonly loadingInProgress$: Signal<boolean> = combineProgress(
-		this.#allBoards$.loading$,
+		this.allBoards$.loading$,
 		this.currentBoard$.loading$
 	);
 

@@ -1,17 +1,16 @@
-import { Single } from '@/util';
-import { equalArrayReferences } from '@/util/signals/internal/equalArrayReferences';
+import { AsyncSignal } from '@/util/signals/AsyncSignal';
 import { SafeUnwrapSignals } from '@/util/signals/internal/SafeUnwrapSignals';
 import { splitParams } from '@/util/signals/internal/splitParams';
 import { safeComputed } from '@/util/signals/safeComputed';
-import { FullAsyncSignal, toAsyncSignal } from '@/util/signals/toAsyncSignal';
-import { WritableAsyncSignal } from '@/util/signals/WritableAsyncSignal';
 import { Tuple } from '@/util/types/Tuple';
-import { signal, Signal } from '@angular/core';
-import { ToSignalOptions } from '@angular/core/rxjs-interop';
-import { of, ReplaySubject, startWith, switchMap, tap } from 'rxjs';
+import { assertInInjectionContext, assertNotInReactiveContext, inject, Injector, signal, Signal, untracked } from '@angular/core';
+import { toSignal, ToSignalOptions } from '@angular/core/rxjs-interop';
+import { Observable, Subject, takeUntil, tap } from 'rxjs';
+
+declare const ngDevMode: boolean;
 
 export type SignalResource<T> =
-    WritableAsyncSignal<T>
+	AsyncSignal<T>
     & {
         loading$: Signal<boolean>; // call will NOT activate request
     };
@@ -20,62 +19,48 @@ export type SignalResourceOptions<U> = Pick<ToSignalOptions, 'injector' | 'initi
 	initialValue?: U;
 };
 
-export function signalResource<R>(asyncCall: () => Single<R>, options: SignalResourceOptions<R>): SignalResource<R>;
-export function signalResource<R>(asyncCall: () => Single<R>): SignalResource<R>;
-export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>, options: SignalResourceOptions<R>): SignalResource<R>;
-export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Single<R>): SignalResource<R>;
+export function signalResource<R>(asyncCall: () => Observable<R>, options: SignalResourceOptions<R>): SignalResource<R>;
+export function signalResource<R>(asyncCall: () => Observable<R>): SignalResource<R>;
+export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Observable<R>, options: SignalResourceOptions<R>): SignalResource<R>;
+export function signalResource<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Observable<R>): SignalResource<R>;
 export function signalResource<ST extends Tuple<Signal<any>>, R>(
-    ...params: [...ST, (...values: SafeUnwrapSignals<ST>) => Single<R>]
-             | [...ST, (...values: SafeUnwrapSignals<ST>) => Single<R>, SignalResourceOptions<R>]
+    ...params: [...ST, (...values: SafeUnwrapSignals<ST>) => Observable<R>]
+             | [...ST, (...values: SafeUnwrapSignals<ST>) => Observable<R>, SignalResourceOptions<R>]
 ): SignalResource<R>;
 
 
 export function signalResource<ST extends Tuple<Signal<any>>, R>(
-    ...params: [...ST, (...values: SafeUnwrapSignals<ST>) => Single<R>]
-             | [...ST, (...values: SafeUnwrapSignals<ST>) => Single<R>, SignalResourceOptions<R>]
+    ...params: [...ST, (...values: SafeUnwrapSignals<ST>) => Observable<R>]
+             | [...ST, (...values: SafeUnwrapSignals<ST>) => Observable<R>, SignalResourceOptions<R>]
 ): SignalResource<R> {
-    const { source, call, options} = splitParams<ST, (...values: SafeUnwrapSignals<ST>) => Single<R>, SignalResourceOptions<R>>(...params);
+	ngDevMode && assertNotInReactiveContext(toSignal);
 
-    const sourceValues: Signal<SafeUnwrapSignals<ST> | undefined> = safeComputed(
-        ...source,
-        (...sourceValues: any[]) => sourceValues as SafeUnwrapSignals<ST>,
-        { equal: equalArrayReferences }
-    );
+    const { source, call, options} = splitParams<ST, (...values: SafeUnwrapSignals<ST>) => Observable<R>, SignalResourceOptions<R>>(...params);
+	!options?.injector && assertInInjectionContext(signalResource);
+	const injector: Injector = options?.injector ?? inject(Injector);
+	const destroy$ = new Subject<void>();
+	const loading$ = signal(false);
 
-    const loading$ = signal(false);
-	const setLoading = (loading: boolean) => setTimeout(() => loading$.set(loading)); // computed have no allowSignalWrites option & untracked is not working
-
-    let lastValues: SafeUnwrapSignals<ST> | undefined;
-    let sourceValuesSubject$ = new ReplaySubject<SafeUnwrapSignals<ST> | undefined>(1);
-
-    const asyncSignal: FullAsyncSignal<R> = toAsyncSignal(
-        sourceValuesSubject$.pipe(
-            switchMap((values: SafeUnwrapSignals<ST> | undefined) => {
-				if (!values) {
-					return of(undefined) as Single<R>;
-				}
-				setLoading(true);
-                return call(...values).pipe(
-					tap(() => setLoading(false)),
-					startWith(undefined as R)
+	const wrappedResponseSignal: Signal<Signal<R | undefined> | undefined> = safeComputed(
+		...source,
+		(...values: SafeUnwrapSignals<ST>): Signal<R | undefined> => {
+			destroy$.next();
+			return untracked(() => {
+				loading$.set(true);
+				return toSignal(
+					call(...values).pipe(
+						tap(() => loading$.set(false)),
+						takeUntil(destroy$)
+					),
+					{ initialValue: options?.initialValue as R, injector }
 				)
-            })
-        ),
-        {
-            ...options,
-            runInComputedContext: () => {
-                const values: SafeUnwrapSignals<ST> | undefined = sourceValues();
-                if (!values || values === lastValues) {
-                    return;
-                }
+			});
+		}
+	);
 
-                lastValues = values;
-                sourceValuesSubject$.next(values);
-            }
-        }
-    );
+	const responseSignal: Signal<R | undefined> = safeComputed(wrappedResponseSignal, (responseSignal: Signal<R | undefined>) => responseSignal());
 
-    return Object.assign(asyncSignal, {
-        loading$
-    })
+	return Object.assign(responseSignal, {
+		loading$
+	})
 }
