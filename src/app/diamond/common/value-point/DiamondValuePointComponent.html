@@ -1,5 +1,5 @@
 <div class="diamond-value-point"
-	 [ngStyle]="customStyle ?? { 'border-color': value === undefined || value === null ? '#ddd' : 'black' }">
+	 [ngStyle]="customStyleDef ?? { 'border-color': value === undefined || value === null ? '#ddd' : 'black' }">
 	{{ value }}
 	@if (sideValue !== undefined) {
 		<span style="position: absolute; bottom: 0; font-size: .8rem">{{sideValue}}</span>

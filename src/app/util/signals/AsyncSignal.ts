@@ -1,8 +1,10 @@
 import { Signal } from '@angular/core';
 
+export const NOT_LOADED = Symbol('NOT_LOADED');
+export type NOT_LOADED = typeof NOT_LOADED;
+
 /**
- * Signal representing result of some asynchronous operation.
- * asyncSignal() returns initial value (usually undefined) until async operation is completed.
+ * Signal representing result of some asynchronous (possibly lazy) operation.
+ * asyncSignal() initially returns NOT_LOADED value until async operation is completed.
  */
-export type AsyncSignal<T, U = undefined> = Signal<T | U>;
-// TODO should AsyncSignal have loading$
+export type AsyncSignal<T> = Signal<T | NOT_LOADED>;

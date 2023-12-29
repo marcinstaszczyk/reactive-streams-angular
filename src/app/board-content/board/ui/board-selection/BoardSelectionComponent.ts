@@ -1,5 +1,7 @@
 import { AsyncSignal } from '@/util/signals/AsyncSignal';
+import { keepLastValue } from '@/util/signals/keepLastValue';
 import { safeComputed } from '@/util/signals/safeComputed';
+import { toLoading } from '@/util/signals/toLoading';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, Signal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -25,14 +27,16 @@ export class BoardSelectionComponent {
 
     readonly selectNeverOpened$ = signal(true);
 
-    readonly currentBoardId$: Signal<BoardId | undefined> = this.boardService.currentBoardId$;
-    readonly currentBoardAsArray$: Signal<Board[] | undefined> = safeComputed(this.boardService.currentBoard$, (board) => [board]);
+    readonly currentBoardId$: AsyncSignal<BoardId> = this.boardService.currentBoardId$;
+    readonly currentBoardAsArray$: AsyncSignal<Board[]> = safeComputed(this.boardService.currentBoard$, (board) => [board]);
 
     readonly allBoards$: AsyncSignal<Board[]> = this.boardService.allBoards$;
 
-    readonly boards$: Signal<Board[] | undefined> = computed(() => {
+    readonly boards$: Signal<Board[] | undefined> = keepLastValue(computed(() => {
         return this.selectNeverOpened$() ? this.currentBoardAsArray$() : this.allBoards$();
-    });
+    }))
+
+	readonly allBoardsLoading$ = toLoading(this.allBoards$);
 
     constructor(
         readonly boardService: BoardService,

@@ -1,9 +1,8 @@
 import { Base } from '@/util';
-import { AsyncSignal } from '@/util/signals/AsyncSignal';
 import { keepLastValue } from '@/util/signals/keepLastValue';
-import { signalResource } from '@/util/signals/signalResource';
+import { toAsyncSignal } from '@/util/signals/toAsyncSignal';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnChanges, signal, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, Signal, signal, SimpleChanges } from '@angular/core';
 import { TaskService } from '../../domain/TaskService';
 import { Task } from '../../domain/types/Task';
 import { TaskId } from '../../domain/types/TaskId';
@@ -23,7 +22,7 @@ export class TasksTableRowComponent extends Base implements OnChanges {
     taskIdInput!: TaskId;
     readonly taskId$ = signal<TaskId>(undefined as unknown as TaskId);
 
-    readonly task$: AsyncSignal<Task> = keepLastValue(signalResource(
+    readonly task$: Signal<Task | undefined> = keepLastValue(toAsyncSignal(
         this.taskId$,
         (taskId: TaskId) => this.taskService.selectTask(taskId)
     ));

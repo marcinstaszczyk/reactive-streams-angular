@@ -1,4 +1,4 @@
-import { AsyncSignal } from '@/util/signals/AsyncSignal';
+import { keepLastValue } from '@/util/signals/keepLastValue';
 import { safeComputed } from '@/util/signals/safeComputed';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, Input, OnChanges, Signal, signal, SimpleChanges } from '@angular/core';
@@ -29,10 +29,10 @@ export class FilterSelectionComponent implements OnChanges {
 
     readonly filterId$: Signal<FilterId> = computed(() => this.filter$().id);
 
-    readonly isActive$: AsyncSignal<boolean> = safeComputed(
+    readonly isActive$: Signal<boolean | undefined> = keepLastValue(safeComputed(
         this.filtersService.activeFiltersIds$,
         (activeFilterIds: Set<FilterId>) => activeFilterIds.has(this.filterId$())
-    );
+    ));
 
     constructor(
         readonly filtersService: FiltersService,

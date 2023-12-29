@@ -1,6 +1,7 @@
 import { StyleDef } from '@/diamond/common/traffic-lights/StyleDef';
+import { NOT_LOADED } from '@/util/signals/AsyncSignal';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
 	selector: 'app-diamond-value-point',
@@ -14,15 +15,23 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 		'style': 'display: block'
 	}
 })
-export class DiamondValuePointComponent {
+export class DiamondValuePointComponent implements OnChanges {
 
 	@Input()
-	value?: string | number | boolean | null;
+	value?: string | number | boolean | null | NOT_LOADED;
 
 	@Input()
-	customStyle?: StyleDef | null;
+	customStyle?: StyleDef | null | NOT_LOADED;
 
 	@Input()
 	sideValue?: string | number | boolean | null;
+
+	customStyleDef?: StyleDef | null;
+
+	ngOnChanges(changes: SimpleChanges): void {
+		if (changes['customStyle']) {
+			this.customStyleDef = (this.customStyle === NOT_LOADED) ? undefined : this.customStyle;
+		}
+	}
 
 }

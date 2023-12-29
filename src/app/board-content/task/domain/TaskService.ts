@@ -2,16 +2,17 @@ import { BoardId, BoardService } from '@/board-content/board';
 import { Task } from '@/board-content/task/domain/types/Task';
 import { TaskId } from '@/board-content/task/domain/types/TaskId';
 import { Single } from '@/util';
-import { SignalResource, signalResource } from '@/util/signals/signalResource';
-import { Injectable, Signal } from '@angular/core';
+import { AsyncSignal } from '@/util/signals/AsyncSignal';
+import { toAsyncSignal } from '@/util/signals/toAsyncSignal';
+import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { TaskRepository } from './repositories/TaskRepository';
 
 @Injectable()
 export class TaskService {
 
-    readonly currentBoardId$: Signal<BoardId | undefined> = this.boardService.currentBoardId$;
-    readonly taskIds$: SignalResource<TaskId[]> = signalResource(
+    readonly currentBoardId$: AsyncSignal<BoardId> = this.boardService.currentBoardId$;
+    readonly taskIds$: AsyncSignal<TaskId[]> = toAsyncSignal(
         this.currentBoardId$,
         (boardId: BoardId) => this.taskRepository.selectTaskIds(boardId)
     );

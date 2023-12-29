@@ -10,7 +10,7 @@
 					{{board.id}} - {{board.name}}
 				</option>
 			}
-			@if (this.boardService.allBoards$.loading$()) { <option disabled>Loading...</option> }
+			@if (allBoardsLoading$()) { <option disabled>Loading...</option> }
 		} @else {
 			<option disabled [ngValue]="currentBoardId">Loading...</option>
 		}
