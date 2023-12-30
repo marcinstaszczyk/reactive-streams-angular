@@ -46,7 +46,11 @@ export class FilterSelectionComponent implements OnChanges {
     }
 
     setFilterActivity(setAsActive: boolean): Promise<void> {
-        return this.filtersService.setFilterActivity(this.filterId$(), setAsActive);
+        return this.filtersService.setFilterActivity(
+			this.filterId$(),
+			setAsActive,
+			this.filtersService.activeFiltersIds$.state$()
+		);
     }
 
 }

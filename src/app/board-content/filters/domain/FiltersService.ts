@@ -1,5 +1,5 @@
 import { BoardId, BoardService } from '@/board-content/board';
-import { AsyncSignal } from '@/util/signals/AsyncSignal';
+import { AsyncSignal, AsyncSignalState } from '@/util/signals/AsyncSignal';
 import { combineProgress } from '@/util/signals/combineProgress';
 import { toAsyncSignal } from '@/util/signals/toAsyncSignal';
 import { toLoading } from '@/util/signals/toLoading';
@@ -43,18 +43,17 @@ export class FiltersService {
     ) {
     }
 
-    async setFilterActivity(filterId: FilterId, setAsActive: boolean): Promise<void> {
-		// TODO
-        // const filterIds: Set<FilterId> = this.activeFiltersIds$()!;
-        // const changedIds = new Set(filterIds);
-        // if (setAsActive) {
-        //     changedIds.add(filterId);
-        // } else {
-        //     changedIds.delete(filterId);
-        // }
-        // this.updateFilterIds$.next(changedIds);
-		//
-        // await this.filtersRepository.setActiveFilterIds(this.currentBoardId$()!, changedIds);
+    async setFilterActivity(filterId: FilterId, setAsActive: boolean, state: AsyncSignalState): Promise<void> {
+        const filterIds: Set<FilterId> = this.activeFiltersIds$.valueForState(state);
+        const changedIds = new Set(filterIds);
+        if (setAsActive) {
+            changedIds.add(filterId);
+        } else {
+            changedIds.delete(filterId);
+        }
+        this.updateFilterIds$.next(changedIds);
+
+        await this.filtersRepository.setActiveFilterIds(this.currentBoardId$.valueForState(state), changedIds);
     }
 
 }

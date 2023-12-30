@@ -13,8 +13,8 @@ export type ToAsyncSignalOptions<U> = Pick<ToSignalOptions, 'injector'>;
 
 export function toAsyncSignal<R>(asyncCall: () => Observable<R>, options: ToAsyncSignalOptions<R>): AsyncSignal<R>;
 export function toAsyncSignal<R>(asyncCall: () => Observable<R>): AsyncSignal<R>;
-export function toAsyncSignal<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Observable<R>, options: ToAsyncSignalOptions<R>): AsyncSignal<R>;
-export function toAsyncSignal<S, R>(signal: Signal<S | undefined>, asyncCall: (value: S) => Observable<R>): AsyncSignal<R>;
+export function toAsyncSignal<S, R>(signal: Signal<S | NOT_LOADED>, asyncCall: (value: S) => Observable<R>, options: ToAsyncSignalOptions<R>): AsyncSignal<R>;
+export function toAsyncSignal<S, R>(signal: Signal<S | NOT_LOADED>, asyncCall: (value: S) => Observable<R>): AsyncSignal<R>;
 export function toAsyncSignal<ST extends Tuple<Signal<any>>, R>(
 	...params: [...ST, (...values: SafeUnwrapAsyncSignals<ST>) => Observable<R>]
 		| [...ST, (...values: SafeUnwrapAsyncSignals<ST>) => Observable<R>, ToAsyncSignalOptions<R>]
@@ -33,9 +33,9 @@ export function toAsyncSignal<ST extends Tuple<Signal<any>>, R>(
 	const destroy$ = new Subject<void>();
 	const loading$ = signal(false);
 
-	const wrappedResponseSignal: AsyncSignal<AsyncSignal<R>> = safeComputed(
+	const wrappedResponseSignal: AsyncSignal<Signal<R | NOT_LOADED>> = safeComputed(
 		...source,
-		(...values: SafeUnwrapAsyncSignals<ST>): AsyncSignal<R> => {
+		(...values: SafeUnwrapAsyncSignals<ST>): Signal<R | NOT_LOADED> => {
 			destroy$.next();
 			return untracked(() => {
 				loading$.set(true);
@@ -52,6 +52,6 @@ export function toAsyncSignal<ST extends Tuple<Signal<any>>, R>(
 
 	return safeComputed(
 		wrappedResponseSignal,
-		(responseSignal: AsyncSignal<R>) => responseSignal()
+		(responseSignal: Signal<R | NOT_LOADED>) => responseSignal()
 	) satisfies AsyncSignal<R>;
 }

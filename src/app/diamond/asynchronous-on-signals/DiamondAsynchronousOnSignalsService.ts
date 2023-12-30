@@ -1,19 +1,20 @@
 import { StyleDef } from '@/diamond/common/traffic-lights/StyleDef';
 import { TrafficLightsResource } from '@/diamond/common/traffic-lights/TrafficLightsResource';
 import { TrafficLightsState } from '@/diamond/common/traffic-lights/TrafficLightsState';
-import { AsyncSignal } from '@/util/signals/AsyncSignal';
+import { AsyncSignal, NOT_LOADED } from '@/util/signals/AsyncSignal';
 import { keepLastValue } from '@/util/signals/keepLastValue';
 import { safeComputed } from '@/util/signals/safeComputed';
 import { toAsyncSignal } from '@/util/signals/toAsyncSignal';
-import { Injectable, Signal, signal } from '@angular/core';
+import { computed, Injectable, Signal, signal } from '@angular/core';
 
 @Injectable()
 export class DiamondAsynchronousOnSignalsService {
 
 	readonly state = signal<TrafficLightsState | undefined>(undefined);
+	readonly state2: Signal<TrafficLightsState | NOT_LOADED> = computed(() => this.state() ?? NOT_LOADED);
 
 	readonly position: AsyncSignal<number> = toAsyncSignal(
-		this.state,
+		this.state2,
 		(value: TrafficLightsState) => this.trafficLightsResource.selectPosition(value)
 	);
 	readonly positionStyle: AsyncSignal<StyleDef> = safeComputed(this.position, position => ({
@@ -22,7 +23,7 @@ export class DiamondAsynchronousOnSignalsService {
 
 	readonly borderStyle: AsyncSignal<StyleDef> = safeComputed(
 		toAsyncSignal(
-			this.state,
+			this.state2,
 			(value: TrafficLightsState) => this.trafficLightsResource.selectBorderStyle(value)
 		),
 		(borderStyle: string) => ({
@@ -32,7 +33,7 @@ export class DiamondAsynchronousOnSignalsService {
 	);
 
 	readonly border: AsyncSignal<string> = toAsyncSignal(
-		this.state,
+		this.state2,
 		(value: TrafficLightsState) => this.trafficLightsResource.selectBorderColor(value)
 	);
 	readonly borderColor: AsyncSignal<StyleDef> = safeComputed(this.border, borderColor => ({
@@ -41,7 +42,7 @@ export class DiamondAsynchronousOnSignalsService {
 	}));
 
 	readonly color = toAsyncSignal(
-		this.state,
+		this.state2,
 		(value: TrafficLightsState) => this.trafficLightsResource.selectColor(value)
 	);
 	readonly colorStyle: AsyncSignal<StyleDef> = safeComputed(this.color, color => ({

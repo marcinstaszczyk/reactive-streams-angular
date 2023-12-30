@@ -29,6 +29,9 @@ export class DiamondValuePointComponent implements OnChanges {
 	customStyleDef?: StyleDef | null;
 
 	ngOnChanges(changes: SimpleChanges): void {
+		if (changes['value'] && this.value === NOT_LOADED) {
+			this.value = null;
+		}
 		if (changes['customStyle']) {
 			this.customStyleDef = (this.customStyle === NOT_LOADED) ? undefined : this.customStyle;
 		}

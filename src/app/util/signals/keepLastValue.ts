@@ -1,8 +1,8 @@
-import { AsyncSignal, NOT_LOADED } from '@/util/signals/AsyncSignal';
+import { NOT_LOADED } from '@/util/signals/AsyncSignal';
 import { computed, Signal } from '@angular/core';
 
 export function keepLastValue<T, I extends T | undefined = undefined>(
-	signal: AsyncSignal<T>,
+	signal: Signal<T | NOT_LOADED>,
 	initialValue?: I
 ): Signal<T | I> {
 	let lastValue: T | I = initialValue as T | I;
