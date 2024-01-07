@@ -1,5 +1,6 @@
 {{ filter$().name }}
 <input type="checkbox"
 	   [ngModel]="isActive$()"
-	   (ngModelChange)="setFilterActivity($event)">
+	   (ngModelChange)="setFilterActivity($event)"
+	   [disabled]="disabled$()">
 <span style="display: inline-block; width: 30px">{{ isActive$() }}</span>

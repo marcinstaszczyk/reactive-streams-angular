@@ -32,6 +32,8 @@ export class FilterSelectionComponent implements OnChanges {
 		return this.filtersUIService.activeFiltersIds$()?.has(this.filterId$())
 	});
 
+	readonly disabled$: Signal<boolean> = this.filtersUIService.filterActivityChangingDisabled$;
+
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['filterInput']) {
             this.filter$.set(this.filterInput);
