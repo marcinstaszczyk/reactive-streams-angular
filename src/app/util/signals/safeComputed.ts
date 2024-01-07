@@ -3,7 +3,7 @@ import { AsyncSignalContextImpl } from '@/util/signals/internal/AsyncSignalConte
 import { SafeUnwrapAsyncSignals } from '@/util/signals/internal/SafeUnwrapAsyncSignals';
 import { splitParams } from '@/util/signals/internal/splitParams';
 import { Tuple } from '@/util/types/Tuple';
-import { computed, CreateComputedOptions, Signal, untracked } from '@angular/core';
+import { computed, CreateComputedOptions, signal, Signal, untracked } from '@angular/core';
 
 export function safeComputed<A, R>(
     s1: Signal<A | NOT_LOADED>,
@@ -48,7 +48,9 @@ export function safeComputed<ST extends Tuple<Signal<any>>, R>(
     ...params: [...ST, (...values: SafeUnwrapAsyncSignals<ST>) => R]
              | [...ST, (...values: SafeUnwrapAsyncSignals<ST>) => R, CreateComputedOptions<R>]
 ): AsyncSignal<R> {
-    const { source, call, options} = splitParams<Tuple<AsyncSignal<any>>, Function, CreateComputedOptions<R>>(...params);
+    const { source, call, options} = splitParams<Tuple<Signal<any>>, Function, CreateComputedOptions<R>>(...params);
+
+	const context$ = signal<AsyncSignalContext>(EMPTY_AsyncSignalContext);
 
 	const result$: Signal<R | NOT_LOADED> = computed(() => {
 		const values = [];
@@ -59,25 +61,22 @@ export function safeComputed<ST extends Tuple<Signal<any>>, R>(
 			}
 			values.push(value);
 		}
-		return call(...values);
-	}, options);
+		const result = call(...values);
 
-	let lastState: AsyncSignalContext = { get: () => undefined };
-	const context$ = computed(() => {
-		const value = result$(); // triggers re-computation on value change
-		if (value !== NOT_LOADED) {
-			untracked(() => {
-				lastState = new AsyncSignalContextImpl(
-					value,
-					result$,
-					source.map((signal$) => signal$.context$())
-				);
-			});
-		}
-		return lastState;
-	})
+		untracked(() => {
+			context$.set(new AsyncSignalContextImpl(
+				result,
+				result$,
+				source.map((signal$) => (signal$ as AsyncSignal<any>).context$?.() ?? EMPTY_AsyncSignalContext)
+			));
+		});
+
+		return result;
+	}, options);
 
 	return Object.assign(result$, {
 		context$,
 	});
 }
+
+const EMPTY_AsyncSignalContext: AsyncSignalContext = { get: () => undefined };

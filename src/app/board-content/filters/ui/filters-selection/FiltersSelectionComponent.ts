@@ -26,8 +26,4 @@ export class FiltersSelectionComponent {
     ) {
     }
 
-    trackByBoardId(_: number, filter: Filter) {
-        return filter.id;
-    }
-
 }

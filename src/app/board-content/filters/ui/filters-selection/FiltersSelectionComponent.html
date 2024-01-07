@@ -1,5 +1,5 @@
 @if (filters$(); as filters) {
-	@for (filter of filters; track trackByBoardId($index, filter)) {
+	@for (filter of filters; track filter.id) {
 		<div>
 			<app-filter-selection [filter]="filter"></app-filter-selection>
 		</div>
