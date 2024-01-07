@@ -1,11 +1,9 @@
-import { keepLastValue } from '@/util/signals/keepLastValue';
-import { safeComputed } from '@/util/signals/safeComputed';
+import { FiltersUIService } from '@/board-content/filters/domain/FiltersUIService';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, Input, OnChanges, Signal, signal, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Input, OnChanges, Signal, signal, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RxLet } from '@rx-angular/template/let';
 import { RxPush } from '@rx-angular/template/push';
-import { FiltersService } from '../../domain/FiltersService';
 import { Filter } from '../../domain/types/Filter';
 import { FilterId } from '../../domain/types/FilterId';
 
@@ -26,18 +24,13 @@ export class FilterSelectionComponent implements OnChanges {
     @Input({ alias: 'filter', required: true })
     filterInput!: Filter;
     readonly filter$ = signal<Filter>(undefined as unknown as Filter);
+    private readonly filterId$: Signal<FilterId> = computed(() => this.filter$().id);
 
-    readonly filterId$: Signal<FilterId> = computed(() => this.filter$().id);
+	private readonly filtersUIService = inject(FiltersUIService);
 
-    readonly isActive$: Signal<boolean | undefined> = keepLastValue(safeComputed(
-        this.filtersService.activeFiltersIds$,
-        (activeFilterIds: Set<FilterId>) => activeFilterIds.has(this.filterId$())
-    ));
-
-    constructor(
-        readonly filtersService: FiltersService,
-    ) {
-    }
+	readonly isActive$: Signal<boolean | undefined> = computed(() => {
+		return this.filtersUIService.activeFiltersIds$()?.has(this.filterId$())
+	});
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['filterInput']) {
@@ -46,11 +39,7 @@ export class FilterSelectionComponent implements OnChanges {
     }
 
     setFilterActivity(setAsActive: boolean): Promise<void> {
-        return this.filtersService.setFilterActivity(
-			this.filterId$(),
-			setAsActive,
-			this.filtersService.activeFiltersIds$.context$()
-		);
+        return this.filtersUIService.setFilterActivity(this.filterId$(), setAsActive);
     }
 
 }

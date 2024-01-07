@@ -1,9 +1,8 @@
+import { FiltersUIService } from '@/board-content/filters/domain/FiltersUIService';
 import { FilterSelectionComponent } from '@/board-content/filters/ui/filter-selection/FilterSelectionComponent';
-import { keepLastValue } from '@/util/signals/keepLastValue';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
 import { RxLet } from '@rx-angular/template/let';
-import { FiltersService } from '../../domain/FiltersService';
 import { Filter } from '../../domain/types/Filter';
 
 @Component({
@@ -16,14 +15,12 @@ import { Filter } from '../../domain/types/Filter';
         RxLet,
         FilterSelectionComponent,
     ],
+	providers: [
+		FiltersUIService
+	]
 })
 export class FiltersSelectionComponent {
 
-    readonly filters$: Signal<Filter[] | undefined> = keepLastValue(this.filtersService.filters$);
-
-    constructor(
-        readonly filtersService: FiltersService,
-    ) {
-    }
+    readonly filters$: Signal<Filter[] | undefined> = inject(FiltersUIService).filters$;
 
 }
