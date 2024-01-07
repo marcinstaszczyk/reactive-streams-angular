@@ -1,5 +1,5 @@
 @if (taskIds$(); as taskIds) {
-	<cdk-virtual-scroll-viewport itemSize="20" [maxBufferPx]="0" [minBufferPx]="0" style="height: 60vh">
+	<cdk-virtual-scroll-viewport itemSize="20" [maxBufferPx]="0" [minBufferPx]="0" style="height: 10vh">
 		<app-tasks-table-row
 				*cdkVirtualFor="let taskId of taskIds; trackBy: trackBy"
 				[taskId]="taskId"

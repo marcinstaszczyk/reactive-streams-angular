@@ -1,4 +1,5 @@
-import { AsyncSignal, AsyncSignalState, NOT_LOADED } from '@/util/signals/AsyncSignal';
+import { AsyncSignal, AsyncSignalContext, NOT_LOADED } from '@/util/signals/AsyncSignal';
+import { AsyncSignalContextImpl } from '@/util/signals/internal/AsyncSignalContextImpl';
 import { SafeUnwrapAsyncSignals } from '@/util/signals/internal/SafeUnwrapAsyncSignals';
 import { splitParams } from '@/util/signals/internal/splitParams';
 import { Tuple } from '@/util/types/Tuple';
@@ -61,28 +62,22 @@ export function safeComputed<ST extends Tuple<Signal<any>>, R>(
 		return call(...values);
 	}, options);
 
-	let lastState: Map<Signal<any>, any> | undefined;
-	const state$ = computed(() => {
+	let lastState: AsyncSignalContext = { get: () => undefined };
+	const context$ = computed(() => {
 		const value = result$(); // triggers re-computation on value change
 		if (value !== NOT_LOADED) {
 			untracked(() => {
-				lastState = new Map();
-				lastState.set(result$, value);
-				for (const signal of source) {
-					signal.state$()?.forEach((value, key) => lastState!.set(key, value));
-				}
+				lastState = new AsyncSignalContextImpl(
+					value,
+					result$,
+					source.map((signal$) => signal$.context$())
+				);
 			});
 		}
 		return lastState;
 	})
 
 	return Object.assign(result$, {
-		state$,
-		valueForState: (state: AsyncSignalState): Exclude<R, NOT_LOADED> => {
-			if (!state?.has(result$)) {
-				throw new Error('AsyncSignalState do not contains value for the AsyncSignal');
-			}
-			return state?.get(result$) as Exclude<R, NOT_LOADED>;
-		}
+		context$,
 	});
 }

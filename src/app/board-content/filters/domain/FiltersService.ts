@@ -1,5 +1,5 @@
 import { BoardId, BoardService } from '@/board-content/board';
-import { AsyncSignal, AsyncSignalState } from '@/util/signals/AsyncSignal';
+import { AsyncSignal, AsyncSignalContext } from '@/util/signals/AsyncSignal';
 import { combineProgress } from '@/util/signals/combineProgress';
 import { toAsyncSignal } from '@/util/signals/toAsyncSignal';
 import { toLoading } from '@/util/signals/toLoading';
@@ -43,8 +43,8 @@ export class FiltersService {
     ) {
     }
 
-    async setFilterActivity(filterId: FilterId, setAsActive: boolean, state: AsyncSignalState): Promise<void> {
-        const filterIds: Set<FilterId> = this.activeFiltersIds$.valueForState(state);
+    async setFilterActivity(filterId: FilterId, setAsActive: boolean, context: AsyncSignalContext): Promise<void> {
+        const filterIds: Set<FilterId> = context.get(this.activeFiltersIds$)!;
         const changedIds = new Set(filterIds);
         if (setAsActive) {
             changedIds.add(filterId);
@@ -53,7 +53,7 @@ export class FiltersService {
         }
         this.updateFilterIds$.next(changedIds);
 
-        await this.filtersRepository.setActiveFilterIds(this.currentBoardId$.valueForState(state), changedIds);
+        await this.filtersRepository.setActiveFilterIds(context.get(this.currentBoardId$)!, changedIds);
     }
 
 }

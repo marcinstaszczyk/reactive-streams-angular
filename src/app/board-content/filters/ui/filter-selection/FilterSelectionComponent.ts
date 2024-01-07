@@ -49,7 +49,7 @@ export class FilterSelectionComponent implements OnChanges {
         return this.filtersService.setFilterActivity(
 			this.filterId$(),
 			setAsActive,
-			this.filtersService.activeFiltersIds$.state$()
+			this.filtersService.activeFiltersIds$.context$()
 		);
     }
 
