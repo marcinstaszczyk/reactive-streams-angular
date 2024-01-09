@@ -1,7 +1,6 @@
 import { AsyncSignal } from '@/util/signals/AsyncSignal';
 import { combineProgress } from '@/util/signals/combineProgress';
 import { toAsyncSignal } from '@/util/signals/toAsyncSignal';
-import { toLoading } from '@/util/signals/toLoading';
 import { Injectable, Signal } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
@@ -29,8 +28,8 @@ export class BoardService {
     );
 
 	readonly loadingInProgress$: Signal<boolean> = combineProgress(
-		toLoading(this.allBoards$),
-		toLoading(this.currentBoard$)
+		this.allBoards$.loading$,
+		this.currentBoard$.loading$
 	);
 
 

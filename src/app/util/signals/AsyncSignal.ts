@@ -12,5 +12,8 @@ export type AsyncSignalContext = {
  * asyncSignal() initially returns NOT_LOADED value until async operation is completed.
  */
 export type AsyncSignal<T> = Signal<T | NOT_LOADED> & {
-	context$: Signal<AsyncSignalContext>
+	/** Returns true if AsyncSignal value !== NOT_LOADED. Querying this property is not triggering underlying AsyncSignal operation. */
+	loading$: Signal<boolean>,
+
+	context$: Signal<AsyncSignalContext>,
 };

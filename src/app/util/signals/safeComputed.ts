@@ -51,12 +51,14 @@ export function safeComputed<ST extends Tuple<Signal<any>>, R>(
     const { source, call, options} = splitParams<Tuple<Signal<any>>, Function, CreateComputedOptions<R>>(...params);
 
 	const context$ = signal<AsyncSignalContext>(EMPTY_AsyncSignalContext);
+	const loading$ = signal<boolean>(false);
 
 	const result$: Signal<R | NOT_LOADED> = computed(() => {
 		const values = [];
 		for (const signal of source) {
 			const value = signal();
 			if (value === NOT_LOADED) {
+				untracked(() => loading$.set(true));
 				return NOT_LOADED;
 			}
 			values.push(value);
@@ -64,6 +66,8 @@ export function safeComputed<ST extends Tuple<Signal<any>>, R>(
 		const result = call(...values);
 
 		untracked(() => {
+			loading$.set(result === NOT_LOADED);
+
 			context$.set(new AsyncSignalContextImpl(
 				result,
 				result$,
@@ -76,6 +80,7 @@ export function safeComputed<ST extends Tuple<Signal<any>>, R>(
 
 	return Object.assign(result$, {
 		context$,
+		loading$
 	});
 }
 

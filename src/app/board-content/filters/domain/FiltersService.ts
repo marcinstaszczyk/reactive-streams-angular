@@ -2,7 +2,6 @@ import { BoardId, BoardService } from '@/board-content/board';
 import { AsyncSignal, AsyncSignalContext } from '@/util/signals/AsyncSignal';
 import { combineProgress } from '@/util/signals/combineProgress';
 import { toAsyncSignal } from '@/util/signals/toAsyncSignal';
-import { toLoading } from '@/util/signals/toLoading';
 import { Injectable, Signal } from '@angular/core';
 import { mergeWith, Subject } from 'rxjs';
 import { FiltersRepository } from './repositories/FiltersRepository';
@@ -31,8 +30,8 @@ export class FiltersService {
     );
 
     readonly loadingInProgress$: Signal<boolean> = combineProgress(
-		toLoading(this.filters$),
-		toLoading(this.activeFiltersIds$)
+		this.filters$.loading$,
+		this.activeFiltersIds$.loading$
     );
 
 	private updateFilterIds$ = new Subject<Set<FilterId>>();

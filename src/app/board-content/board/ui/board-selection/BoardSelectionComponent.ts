@@ -1,7 +1,6 @@
 import { AsyncSignal } from '@/util/signals/AsyncSignal';
 import { keepLastValue } from '@/util/signals/keepLastValue';
 import { safeComputed } from '@/util/signals/safeComputed';
-import { toLoading } from '@/util/signals/toLoading';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, Signal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -36,7 +35,7 @@ export class BoardSelectionComponent {
         return this.selectNeverOpened$() ? this.currentBoardAsArray$() : this.allBoards$();
     }))
 
-	readonly allBoardsLoading$ = toLoading(this.allBoards$);
+	readonly allBoardsLoading$ = this.allBoards$.loading$;
 
     constructor(
         readonly boardService: BoardService,
