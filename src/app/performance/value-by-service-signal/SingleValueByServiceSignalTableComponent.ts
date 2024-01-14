@@ -42,6 +42,8 @@ export class SingleValueByServiceSignalTableComponent extends CommonTableCompone
     @ViewChild('scrollViewport', { read: ElementRef, static: true })
 	override scrollViewport?: ElementRef;
 
+	readonly trackBy = (index: number, value: number) => value;
+
     value$ = signal<WrappedValue | undefined>(new WrappedValue('1'));
 
     table?: number[];

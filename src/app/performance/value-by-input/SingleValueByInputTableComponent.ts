@@ -51,6 +51,8 @@ export class SingleValueByInputTableComponent extends CommonTableComponent imple
     @ViewChild('scrollViewport', { read: ElementRef, static: true })
 	override scrollViewport?: ElementRef;
 
+	readonly trackBy = (index: number) => index;
+
     value?: WrappedValue = new WrappedValue('1');
 
     table?: number[];

@@ -51,6 +51,8 @@ export class ValueByInputTableComponent extends CommonTableComponent implements 
     @ViewChild('scrollViewport', { read: ElementRef, static: true })
 	override scrollViewport?: ElementRef;
 
+	readonly trackBy = (index: number, item: WrappedValue | undefined) => item?.value;
+
     baseValue?: number = 1;
 
     table?: Array<WrappedValue | undefined>;

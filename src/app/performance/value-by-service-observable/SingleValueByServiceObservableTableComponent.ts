@@ -45,6 +45,8 @@ export class SingleValueByServiceObservableTableComponent extends CommonTableCom
     @ViewChild('scrollViewport', { read: ElementRef, static: true })
 	override scrollViewport?: ElementRef;
 
+	readonly trackBy = (index: number) => index;
+
     value$ = new BehaviorSubject<WrappedValue | undefined>(new WrappedValue('1'));
 
     table?: number[];

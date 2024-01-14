@@ -8,7 +8,7 @@
 								 [maxBufferPx]="0"
 								 [minBufferPx]="0"
 								 [ngStyle]="{ height: tableHeight + 'px', width: tableWidth + 'px' }">
-		<app-value-by-input-row *cdkVirtualFor="let value of table"
+		<app-value-by-input-row *cdkVirtualFor="let value of table; trackBy: trackBy"
 								[columnsCount]="columnsCount"
 								[value]="value"
 								style="display: block">

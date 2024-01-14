@@ -8,7 +8,7 @@
 								 [maxBufferPx]="0"
 								 [minBufferPx]="0"
 								 [ngStyle]="{ height: tableHeight + 'px', width: tableWidth + 'px' }">
-		<app-single-value-by-service-signal-row *cdkVirtualFor="let item of table"
+		<app-single-value-by-service-signal-row *cdkVirtualFor="let item of table; trackBy: trackBy"
 								[columnsCount]="columnsCount"
 								style="display: block">
 		</app-single-value-by-service-signal-row>
