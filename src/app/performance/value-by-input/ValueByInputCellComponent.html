@@ -1,4 +1,4 @@
-@if (value) {
-	<div>{{ value.value }}</div>
+@if (value()) {
+	<div>{{ value()?.value }}</div>
 }
 

@@ -1,6 +1,6 @@
 import { WrappedValue } from '@/performance/core/WrappedValue';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RxPush } from '@rx-angular/template/push';
 
 @Component({
@@ -15,7 +15,6 @@ import { RxPush } from '@rx-angular/template/push';
 })
 export class ValueByInputCellComponent {
 
-    @Input()
-    value?: WrappedValue;
+	readonly value = input.required<WrappedValue | undefined>();
 
 }

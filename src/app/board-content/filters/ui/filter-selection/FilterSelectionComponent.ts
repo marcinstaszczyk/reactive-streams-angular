@@ -1,6 +1,6 @@
 import { FiltersUIService } from '@/board-content/filters/domain/FiltersUIService';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, Input, OnChanges, Signal, signal, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RxLet } from '@rx-angular/template/let';
 import { RxPush } from '@rx-angular/template/push';
@@ -19,11 +19,10 @@ import { FilterId } from '../../domain/types/FilterId';
         FormsModule,
     ],
 })
-export class FilterSelectionComponent implements OnChanges {
+export class FilterSelectionComponent {
 
-    @Input({ alias: 'filter', required: true })
-    filterInput!: Filter;
-    readonly filter$ = signal<Filter>(undefined as unknown as Filter);
+	readonly filter$ = input.required<Filter>({ alias: 'filter' });
+
     private readonly filterId$: Signal<FilterId> = computed(() => this.filter$().id);
 
 	private readonly filtersUIService = inject(FiltersUIService);
@@ -33,12 +32,6 @@ export class FilterSelectionComponent implements OnChanges {
 	});
 
 	readonly disabled$: Signal<boolean> = this.filtersUIService.filterActivityChangingDisabled$;
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes['filterInput']) {
-            this.filter$.set(this.filterInput);
-        }
-    }
 
     setFilterActivity(setAsActive: boolean): Promise<void> {
         return this.filtersUIService.setFilterActivity(this.filterId$(), setAsActive);
