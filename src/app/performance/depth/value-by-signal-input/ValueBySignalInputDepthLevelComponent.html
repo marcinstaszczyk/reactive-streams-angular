@@ -1,0 +1,7 @@
+<div style="border: 1px solid black; border-bottom: none; border-top: none; padding: 0 1px; display: inline-block">
+	@if (depth() <= 0) {
+		{{value().value}}
+	} @else {
+		<app-value-by-signal-input-depth-level [depth]="depth() - 1" [value]="value()"/>
+	}
+</div>

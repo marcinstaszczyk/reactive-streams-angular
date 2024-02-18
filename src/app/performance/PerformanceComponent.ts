@@ -1,13 +1,15 @@
-import { SingleValueByInputTableComponent } from '@/performance/value-by-input/SingleValueByInputTableComponent';
-import { SingleValueByServiceObservableTableComponent } from '@/performance/value-by-service-observable/SingleValueByServiceObservableTableComponent';
-import { SingleValueByServiceSignalTableComponent } from '@/performance/value-by-service-signal/SingleValueByServiceSignalTableComponent';
-import { ValueByServiceSignalTableComponent } from '@/performance/value-by-service-signal/ValueByServiceSignalTableComponent';
+import { ValueByInputDepthComponent } from '@/performance/depth/value-by-input/ValueByInputDepthComponent';
+import { ValueBySignalInputDepthComponent } from '@/performance/depth/value-by-signal-input/ValueBySignalInputDepthComponent';
+import { SingleValueByInputTableComponent } from '@/performance/table/value-by-input/SingleValueByInputTableComponent';
+import { ValueByInputTableComponent } from '@/performance/table/value-by-input/ValueByInputTableComponent';
+import { SingleValueByServiceObservableTableComponent } from '@/performance/table/value-by-service-observable/SingleValueByServiceObservableTableComponent';
+import { ValueByServiceObservableTableComponent } from '@/performance/table/value-by-service-observable/ValueByServiceObservableTableComponent';
+import { SingleValueByServiceSignalTableComponent } from '@/performance/table/value-by-service-signal/SingleValueByServiceSignalTableComponent';
+import { ValueByServiceSignalTableComponent } from '@/performance/table/value-by-service-signal/ValueByServiceSignalTableComponent';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RxPush } from '@rx-angular/template/push';
 import { Configuration } from './core/Configuration';
-import { ValueByInputTableComponent } from './value-by-input/ValueByInputTableComponent';
-import { ValueByServiceObservableTableComponent } from './value-by-service-observable/ValueByServiceObservableTableComponent';
 
 @Component({
     selector: 'app-performance',
@@ -23,6 +25,8 @@ import { ValueByServiceObservableTableComponent } from './value-by-service-obser
 		SingleValueByInputTableComponent,
 		ValueByServiceSignalTableComponent,
 		SingleValueByServiceSignalTableComponent,
+		ValueByInputDepthComponent,
+		ValueBySignalInputDepthComponent,
 	],
 })
 export class PerformanceComponent {

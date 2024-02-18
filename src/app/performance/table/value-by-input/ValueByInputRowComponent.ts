@@ -1,7 +1,7 @@
-import { WrappedValue } from '@/performance/core/WrappedValue';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { RxPush } from '@rx-angular/template/push';
+import { WrappedValue } from '../../core/WrappedValue';
 import { ValueByInputCellComponent } from './ValueByInputCellComponent';
 
 @Component({

@@ -9,4 +9,7 @@ export class Configuration {
     rowsCount = 100;
     columnsCount = 40;
 
+	depth = 300;
+	depthRepeat = 10;
+
 }

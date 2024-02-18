@@ -46,14 +46,16 @@ export abstract class CommonTableComponent {
 		}
 		const startTime = performance.now();
 		this.handleChangeValue();
-		requestIdleCallback(() => {
+		// requestIdleCallback(() => {
+		// 	const iterationTime: number = performance.now() - startTime;
+		// 	// console.log(iteration, iterationTime)
+		// 	this.changeValueManyTimes(iteration+1, repeats, Math.min(minTime, iterationTime), totalTime + iterationTime);
+		// });
+		setTimeout(() => {
 			const iterationTime: number = performance.now() - startTime;
 			// console.log(iteration, iterationTime)
 			this.changeValueManyTimes(iteration+1, repeats, Math.min(minTime, iterationTime), totalTime + iterationTime);
-		});
-		// setTimeout(() => {
-		// 	console.log(iteration);
-		// })
+		})
 	}
 
 	protected abstract handleChangeValue(): void;

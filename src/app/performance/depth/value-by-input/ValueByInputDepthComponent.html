@@ -1,0 +1,9 @@
+Depth with value by input:
+<app-common-buttons-component/>
+<div style="margin-bottom: 2rem">
+	@if (value) {
+		@for (i of repeatArray(); track $index) {
+			<app-value-by-input-depth-level [depth]="depth" [value]="value"/>
+		}
+	}
+</div>
