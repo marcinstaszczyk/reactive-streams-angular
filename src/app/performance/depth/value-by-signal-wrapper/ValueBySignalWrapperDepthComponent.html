@@ -1,0 +1,9 @@
+Depth with value by signal input:
+<app-common-buttons-component/>
+<div style="margin-bottom: 2rem">
+	@if (render$()) {
+		@for (i of repeatArray$(); track $index) {
+			<app-value-by-signal-wrapper-depth-level [depth]="depth$()" [value$]="value$$()"/>
+		}
+	}
+</div>

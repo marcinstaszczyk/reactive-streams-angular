@@ -1,5 +1,6 @@
 import { ValueByInputDepthComponent } from '@/performance/depth/value-by-input/ValueByInputDepthComponent';
 import { ValueBySignalInputDepthComponent } from '@/performance/depth/value-by-signal-input/ValueBySignalInputDepthComponent';
+import { ValueBySignalWrapperDepthComponent } from '@/performance/depth/value-by-signal-wrapper/ValueBySignalWrapperDepthComponent';
 import { SingleValueByInputTableComponent } from '@/performance/table/value-by-input/SingleValueByInputTableComponent';
 import { ValueByInputTableComponent } from '@/performance/table/value-by-input/ValueByInputTableComponent';
 import { SingleValueByServiceObservableTableComponent } from '@/performance/table/value-by-service-observable/SingleValueByServiceObservableTableComponent';
@@ -27,6 +28,7 @@ import { Configuration } from './core/Configuration';
 		SingleValueByServiceSignalTableComponent,
 		ValueByInputDepthComponent,
 		ValueBySignalInputDepthComponent,
+		ValueBySignalWrapperDepthComponent,
 	],
 })
 export class PerformanceComponent {
