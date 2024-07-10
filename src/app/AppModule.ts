@@ -1,4 +1,4 @@
-import { NgModule, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection } from '@angular/core';
+import { NgModule, provideExperimentalZonelessChangeDetection as provideZonelessChangeDetection } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { RX_RENDER_STRATEGIES_CONFIG } from '@rx-angular/cdk/render-strategies';
